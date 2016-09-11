@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		
+		<title>Eco Dash</title>
+		
+		<!-- meta data -->
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="description" content="">
+		<meta name="keywords" content="">
+		<meta name="author" content="">
+		
+		<!-- The Google JavaScript loader tool (for the Maps, Charts APIs). -->
+		<script src="https://www.google.com/jsapi"></script>
+		
+		<!-- Google Web Fonts. -->
+		<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+		
+		<!-- Third-party JavaScript. -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=drawing"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.2.0/bootstrap-slider.min.js"></script>
+		
+		
+		<!-- api key -->
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCftEx2S9RjScdfNCGa4Z-8HgUVIUjOErk&libraries=drawing"></script>
+			
+		<!-- Third-party CSS. -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.2.0/css/bootstrap-slider.min.css">
+
+		<!-- Load custom JavaScript and stylesheet(s). -->
+		<link rel="stylesheet" href="static/main.css">
+		<script src="/static/script.js"></script>
+		
+	</head>
+	<body>
+	
+		<!-- The DOM of the application. -->
+		<div class="ecodash">
+			
+			<!-- Banner with SERVIR-Mekong logo. -->
+			<div class="banner" align="right">
+				<div style="float:right; width:100%; height: 20px; margin:0px 10px; "><img border="0" style="height:25px; margin-top:2px;" src="static/images/servir.png"></div>
+			</div>
+				
+			<!-- The element into which Google Maps is rendered. -->
+			<div class="map"></div>
+			
+			<!-- The UI wrapper. -->
+			<div class="ui">
+				
+				<!-- Button that opens the main control box after it has been collapsed -->
+				<div class="settings-button">&#9776;</div>
+				<script>
+				$(document).ready(function(){
+					$(".settings-button").click(function () {
+						$(".settings-button").toggle();
+						$(".panel").toggle();
+					});
+				});
+				</script>
+				
+				<!-- The main control box. -->
+				<div class="panel">
+					
+					<input type="hidden" name="counter" id="counter", value=0 >
+
+					<!-- Title, info button with general information text and collapse button. -->
+					<header>
+						<h1>
+							<span>Eco Dash</span>
+							<!-- collapse button for entire panel. -->
+							<div class="collapse-button">&#171;</div>
+							<script>
+							$(document).ready(function(){
+								$(".collapse-button").click(function () {
+									$(".panel").toggle();
+									$(".settings-button").toggle();
+								});
+							});
+							</script>
+							<!-- button that toggles display of general information -->
+							<button class="general-info-button btn btn-default btn-xs pull-right">i</button>
+							<script>
+							$(".general-info-button").click(function () {
+								$(".general-info").toggleClass("general-info-shown");
+							});
+							</script>
+							
+							<!-- Arrow to indicate info button during demo -->
+							<div class="demo-arrow-general-info">&#8598;</div>
+							<!-- General information panel -->
+							<div class="general-info">
+								<span>
+								<b>Welcome to the Eco-Dash</b><br>
+								Lorem ipsum dolor sit amet, nam et ac, ligula viverra dictumst turpis, nibh et vitae duis pulvinar sodales. Nullam viverra voluptas sit, pede pellentesque pellentesque dui suspendisse. Praesent quisque ultricies eget in purus viverra, elit neque mauris pretium ac, dolor massa in ac nulla, tempus per a vel eros vivamus arcu, elit dui mauris.
+								</span>
+							</div>
+						</h1>
+					</header>
+					
+					
+					<!-- Instructions -->
+					<p class="instructions">
+						Enter or select a time period to perform a new calculation.<br>Select a region for further analysis and data export.
+					</p>
+					
+					<!-- Legend (legend border is only used in the demo) -->
+				<div class="legend-border">
+						<div class="legend">
+							<div class="legend-text">
+								<span>Legend:</span>
+							</div>
+								<div class="mylegend-block">
+									<table>
+									  <tr>
+										<th rowspan="3"  height="150px"><img border="0" src="static/images/mylegend.jpg" style="height: 140px"></th>
+										<th><span style="font-weight:normal">&nbsp Increase</span></th>
+									  </tr>
+									  <tr>
+										<td><span>&nbsp Stable</span></td>
+									  </tr> 
+									  <tr>
+										<td><span>&nbsp Decrease</span></td>
+									  </tr>
+									</table>
+								</div>	
+					</div> 
+					
+					
+					
+				
+					
+					<!-- Controls -->
+					<div class="controls">
+						<div class="inputs">
+							<p><b>Controls:</b></p>
+							
+							<input type="radio" name="clickme" value="1"> Province
+							<input type="radio" name="clickme" value="2"> Country
+							<input type="radio" name="clickme" value="3"> Draw polygon
+							<button class="area-button btn btn-default btn-xs pull-right">i</button>
+							<script>
+								$(".area-button").click(function () {
+								$(".area-info").toggleClass("area-info-shown");
+								});
+							</script>		
+							<div class="area-info">
+								<span>
+								<b>This is area info!</b><br>
+								Lorem ipsum dolor sit amet, nam et ac, ligula viverra dictumst turpis, nibh et vitae duis pulvinar sodales. Nullam viverra voluptas sit, pede pellentesque pellentesque dui suspendisse. Praesent quisque ultricies eget in purus viverra, elit neque mauris pretium ac, dolor massa in ac nulla, tempus per a vel eros vivamus arcu, elit dui mauris.
+								</span>
+							</div>
+							<div class="reference-info">
+								<span>
+								<b>This is reference info!</b><br>
+								Lorem ipsum dolor sit amet, nam et ac, ligula viverra dictumst turpis, nibh et vitae duis pulvinar sodales. Nullam viverra voluptas sit, pede pellentesque pellentesque dui suspendisse. Praesent quisque ultricies eget in purus viverra, elit neque mauris pretium ac, dolor massa in ac nulla, tempus per a vel eros vivamus arcu, elit dui mauris.
+								</span>
+							</div>
+							<div class="study-info">
+								<span>
+								<b>This is study info!</b><br>
+								Lorem ipsum dolor sit amet, nam et ac, ligula viverra dictumst turpis, nibh et vitae duis pulvinar sodales. Nullam viverra voluptas sit, pede pellentesque pellentesque dui suspendisse. Praesent quisque ultricies eget in purus viverra, elit neque mauris pretium ac, dolor massa in ac nulla, tempus per a vel eros vivamus arcu, elit dui mauris.
+								</span>
+							</div>	
+													
+							
+						<!-- block for time range sliders --> 	
+						<div class="input-block daterange">
+						<table style="undefined;table-layout: fixed; width: 439px">
+							<colgroup>
+								<col style="width: 76px">
+								<col style="width: 57px">
+								<col style="width: 231px">
+								<col style="width: 100px">
+								<col style="width: 10px">
+							</colgroup>
+							  <tr>
+								<th height="60px">Reference</th>
+								<th><span id="refTimeStart"></span></th>
+								<th><input id="reference" type="text"/></th>
+								<th><span id="refTimeEnd"></th>
+								<th><button class="reference-button btn btn-default btn-xs pull-right">i</button></th>								  
+							  </tr>                    
+							  <tr>
+								<td  height="60px">Study</td>
+								<td><span id="studyTimeStart"></span></td>
+								<td><input id="study" type="text"/></td>
+								<td><span id="studyTimeEnd"></span></td>
+								<td><button class="study-button btn btn-default btn-xs pull-right">i</button></td>
+							  </tr>
+						</table>
+								</div>					
+						
+					
+							<script>
+								$(".reference-button").click(function () {
+								$(".reference-info").toggleClass("reference-info-shown");
+								});
+							</script>		
+							<script>
+								$(".study-button").click(function () {
+								$(".study-info").toggleClass("study-info-shown");
+								});
+							</script>		
+							
+							
+																		
+					<!-- A container which the Charts API will populate.-->
+					<div class="chart"></div>
+					
+					
+				     <!-- The button to close the panel. Desktop-only. -->
+					<div class="clear">Clear</div>
+
+					<!--<button class="export btn btn-primary">Run</button>-->
+			
+					<!-- Block with relevant organisation/company logo and link to websites -->
+					<hr/>
+					<div class="attributions">
+						<a href="https://www.usaid.gov/" target="_blank"><img border="0" src="static/images/usaid.png" style="height: 40px">
+						<a href="https://www.nasa.gov/" target="_blank"><img border="0" src="static/images/nasa.png" style="height: 40px; margin-left:15px">
+						<a href="https://earthengine.google.com/" target="_blank"><img border="0" src="static/images/googlelogo_color_272x92dp.png" style="height:40px">
+					    <a href="http://www.winrock.org/" target="_blank"><img border="0" src="static/images/winrocklogo.jpg" style="height: 45px; margin-left:15px">
+					</div>
+					<div class="attributions">
+						<a href="http://www.adpc.net" target="_blank"><img border="0" src="static/images/adpclogo.jpg" style="height: 45px; margin-left:135px">
+						<img border="0" src="static/images/mardlogo.jpg" style="height:45px; margin-left:35px">
+					</div>
+			
+				
+				
+				<div class="modal fade" id="pleaseWaitDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				  <div class="modal-dialog">
+					<div class="modal-content">
+					  <div class="modal-header">
+						  <h1>Calculating...</h1>
+					  </div>
+					  <div class="modal-body">
+						<div class="progress">
+						  <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+							<span class="sr-only">80% Complete (success)</span>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				
+				
+				
+				
+			</div>
+		</div>
+		<!-- Boot application once the body loads. -->
+		<script>
+			// Here we get the mapid and token for the map tiles that were generated by Earth Engine using the Python script server.py and injected using the Jinja2 templating engine.
+			ecodash.boot(
+          '{{ eeMapId | safe }}',
+          '{{ eeToken | safe }}',
+          '{{ serializedPolygonIds_country | safe }}',
+          '{{ serializedPolygonIds_province | safe }}');
+    </script>
+		</script>
+	</body>
+</html>
