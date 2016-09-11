@@ -288,7 +288,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 	if (myval == "1"){
 
 	provinceNames.forEach((function(provinceName) {
-	map.data.loadGeoJson('static/province/' +provinceName + '.json')}).bind());
+	map.data.loadGeoJson('http://localhost/static/province/' +provinceName + '.json')}).bind());
 		map.data.setStyle(function(feature) {
 		return {
 		  fillColor: 'white',
@@ -472,7 +472,9 @@ ecodash.App.prototype.handlePolygonClick = function(event) {
  
   this.ShowProgress();
   var feature = event.feature;
-    
+  
+  
+  
   // Instantly higlight the polygon and show the title of the polygon.
   this.map.data.overrideStyle(feature, {strokeWeight: 6,
 										fillcolor: CSS_COLOR_NAMES[counter],
