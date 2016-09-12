@@ -173,15 +173,14 @@ class PolygonHandler(webapp2.RequestHandler):
 		content = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
 		
 		print type(content)
-		#self.response.headers['Content-Type'] = 'application/json'
+		self.response.headers['Content-Type'] = 'application/json'
 		#self.response.out.write(content)
 
-		self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
+		#self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
 		self.response.out.write(content)
 		#self.response.write(coords);
 		#self.response.headers['Content-Type'] = 'application/json'
-		self.response.write('Hello, World!')
-
+		
 		#self.response.out.write(content)
 
 		#self.response.out.write(content)

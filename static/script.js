@@ -395,8 +395,8 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 				
 				myName.push("my area " + counter.toString());
 				console.log("show the chart");
-				alert(data)
-				//ecodash.App.prototype.showChart(data);
+				console.log(data.length);
+				ecodash.App.prototype.showChart(data);
 				ecodash.App.prototype.HideProgress();
 			}}).bind(this));
 			
@@ -434,6 +434,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
  */
 ecodash.App.prototype.showChart = function(timeseries) {
 
+  console.log(timeseries);
   $('.panel .clear').show();
   
   if (firstGraph == 0){
