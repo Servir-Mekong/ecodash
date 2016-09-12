@@ -339,33 +339,32 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 	
 	if (myval == "3"){
 	
-		
-		
-  // Create a Google Maps Drawing Manager for drawing polygons.
-    drawingManager = new google.maps.drawing.DrawingManager({
-      drawingMode: google.maps.drawing.OverlayType.POLYGON,
-      drawingControl: false,
-      polygonOptions: {
-        fillColor: CSS_COLOR_NAMES[counter],
-        strokeColor: CSS_COLOR_NAMES[counter]
-      }
-    });
+	console.log("entering drawing mode");
+	
+	// Create a Google Maps Drawing Manager for drawing polygons.
+		drawingManager = new google.maps.drawing.DrawingManager({
+		  drawingMode: google.maps.drawing.OverlayType.POLYGON,
+		  drawingControl: false,
+		  polygonOptions: {
+			fillColor: CSS_COLOR_NAMES[counter],
+			strokeColor: CSS_COLOR_NAMES[counter]
+		  }
+		});
 
 
-    // Respond when a new polygon is drawn.
-    google.maps.event.addListener(drawingManager, 'overlaycomplete',
-        function(event) {
-		   ecodash.App.prototype.ShowProgress();
-		   all_overlays.push(event);
-		   counter = counter + 1;
-          
-		   drawingManager.setOptions({
-				polygonOptions: {
-				fillColor: CSS_COLOR_NAMES[counter],
-				strokeColor: CSS_COLOR_NAMES[counter]
-			  }
-			});
-          //setPolygon(event.overlay);
+		// Respond when a new polygon is drawn.
+		google.maps.event.addListener(drawingManager, 'overlaycomplete',
+			function(event) {
+			   ecodash.App.prototype.ShowProgress();
+			   all_overlays.push(event);
+			   counter = counter + 1;
+			  
+			   drawingManager.setOptions({
+					polygonOptions: {
+					fillColor: CSS_COLOR_NAMES[counter],
+					strokeColor: CSS_COLOR_NAMES[counter]
+				  }
+				});
          
           var geom = event.overlay.getPath().getArray();
                    
