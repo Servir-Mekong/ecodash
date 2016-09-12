@@ -170,29 +170,25 @@ class PolygonHandler(webapp2.RequestHandler):
 		
 		mypoly =  ee.FeatureCollection(ee.Geometry.Polygon(coords))
 		
-		content = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
+		#details = memcache.get(str(counter))
 		
-		thelist = ""
-		mylen = len(content)
-		teller = 1
-		for items in content:
-			if teller < mylen-1:
-				thelist = thelist + str(items[0]) + ", " + str(items[1]) + ", "
-			if teller == mylen-1:
-				thelist = thelist + str(items[0]) + ", " + str(items[1])
-			teller += 1
+		details = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
 		
-		print thelist
+		#memcache.add(str(counter), json.dumps(details), MEMCACHE_EXPIRATION)	
+		content = json.dumps(details) # ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
+		
+
+
 		#self.response.headers['Content-Type'] = 'application/json'
 		#self.response.out.write(content)
-		#self.response.headers['Content-Type'] = 'application/json'   
+		self.response.headers['Content-Type'] = 'application/json'   
 
 		#self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-		self.response.write(thelist)
+		#s#elf.response.write(thelist)
 		#self.response.write(coords);
 		#self.response.headers['Content-Type'] = 'application/json'
 		
-		#self.response.out.write(content)
+		self.response.out.write(content)
 
 		#self.response.out.write(content)
 		#return content
