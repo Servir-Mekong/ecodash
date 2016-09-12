@@ -360,7 +360,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 			   ecodash.App.prototype.ShowProgress();
 			   all_overlays.push(event);
 			   counter = counter + 1;
-			  console.log("set the color");
+			   console.log("set the color");
 			   drawingManager.setOptions({
 					polygonOptions: {
 					fillColor: CSS_COLOR_NAMES[counter],
@@ -368,11 +368,18 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 				  }
 				});
          
-         console.log("set the geom");
+          console.log("set the geom");
           var geom = event.overlay.getPath().getArray();
-                   
-			console.log("make ajax call");
-			console.log(geom);
+          
+          var values = [];         
+			for (var i = 0; i < geom.length; i++){
+            console.log("lat:", geom[i].lat());
+            console.log("lng:", geom[i].lng());
+            values.push([geom[i].lat(),geom[i].lng()]);
+        
+        }
+			
+
 			$.get('/polygon?polygon=' + geom,{mycounter: counter,
 											  refLow : refLow,									 
 									          refHigh : refHigh,

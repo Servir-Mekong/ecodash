@@ -170,12 +170,13 @@ class PolygonHandler(webapp2.RequestHandler):
 		
 		mypoly =  ee.FeatureCollection(ee.Geometry.Polygon(coords))
 		
-		content = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
+		#content = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
 		
-		self.response.headers['Content-Type'] = 'application/json'
+		self.response.write(coords);
+		#self.response.headers['Content-Type'] = 'application/json'
 		#self.response.write('Hello, World!')
 
-		self.response.out.write(content)
+		#self.response.out.write(content)
 
 		#self.response.out.write(content)
 		#return content
