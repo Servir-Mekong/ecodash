@@ -161,14 +161,14 @@ class PolygonHandler(webapp2.RequestHandler):
 		ref_end = refHigh + '-12-31'
 		series_start = studyLow + '-01-01'
 		series_end = studyHigh + '-12-31'
+		
+			
+		coords = []
+				
+		for items in eval(polygon):
+			coords.append([items[1],items[0]])
 		self.response.write('Hello, World!')
 
-			
-		#coords = []
-				
-		#for items in eval(polygon):
-		#	coords.append([items[1],items[0]])
-		
 		#mypoly =  ee.FeatureCollection(ee.Geometry.Polygon(coords))
 		
 		#content = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
