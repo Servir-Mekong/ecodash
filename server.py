@@ -161,17 +161,19 @@ class PolygonHandler(webapp2.RequestHandler):
 		ref_end = refHigh + '-12-31'
 		series_start = studyLow + '-01-01'
 		series_end = studyHigh + '-12-31'
+		self.response.write('Hello, World!').
+
 			
-		coords = []
+		#coords = []
 				
-		for items in eval(polygon):
-			coords.append([items[1],items[0]])
+		#for items in eval(polygon):
+		#	coords.append([items[1],items[0]])
 		
-		mypoly =  ee.FeatureCollection(ee.Geometry.Polygon(coords))
+		#mypoly =  ee.FeatureCollection(ee.Geometry.Polygon(coords))
 		
-		content = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
-		self.response.headers['Content-Type'] = 'application/json'
-		self.response.out.write(content)
+		#content = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
+		#self.response.headers['Content-Type'] = 'application/json'
+		#self.response.out.write(content)
 
 		#self.response.out.write(content)
 		#return content
