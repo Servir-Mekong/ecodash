@@ -351,14 +351,16 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 		  }
 		});
 
-
+		console.log("just setup the the drawing manager");
 		// Respond when a new polygon is drawn.
 		google.maps.event.addListener(drawingManager, 'overlaycomplete',
 			function(event) {
+			   
+			   console.log("show the progress bar");
 			   ecodash.App.prototype.ShowProgress();
 			   all_overlays.push(event);
 			   counter = counter + 1;
-			  
+			  console.log("set the color");
 			   drawingManager.setOptions({
 					polygonOptions: {
 					fillColor: CSS_COLOR_NAMES[counter],
@@ -366,9 +368,10 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 				  }
 				});
          
+         console.log("set the geom");
           var geom = event.overlay.getPath().getArray();
                    
-
+			console.log("make ajax call");
 			$.get('/polygon?polygon=' + geom,{mycounter: counter,
 											  refLow : refLow,									 
 									          refHigh : refHigh,
@@ -376,6 +379,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 									          studyHigh : studyHigh	}).done((function(data) {    
 				
 			myName.push("my area " + counter.toString());
+			console.log("show the chart");
 			ecodash.App.prototype.showChart(data);
 			ecodash.App.prototype.HideProgress();
 			}));
