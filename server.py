@@ -95,7 +95,7 @@ class MainHandler(webapp2.RequestHandler):
 
 # Define webapp2 routing from URL paths to web request handlers. See:
 # http://webapp-improved.appspot.com/tutorials/quickstart.html
-app = webapp2.WSGIApplication([('/', MainHandler)], debug=True)
+#app = webapp2.WSGIApplication([('/', MainHandler)], debug=True)
 
 class DetailsHandler(webapp2.RequestHandler):
   """A servlet to handle requests for details about a Polygon."""
@@ -142,10 +142,10 @@ class DetailsHandler(webapp2.RequestHandler):
 
 # Define webapp2 routing from URL paths to web request handlers. See:
 # http://webapp-improved.appspot.com/tutorials/quickstart.html
-app = webapp2.WSGIApplication([
-    ('/details', DetailsHandler),
-    ('/', MainHandler),
-])
+#app = webapp2.WSGIApplication([
+#    ('/details', DetailsHandler),
+#    ('/', MainHandler),
+#])
 
 class PolygonHandler(webapp2.RequestHandler):
     def get(self):
