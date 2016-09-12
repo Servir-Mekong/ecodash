@@ -28,7 +28,7 @@ MEMCACHE_EXPIRATION = 60 * 60 * 24
 
 
 # The URL fetch timeout time (seconds).
-URL_FETCH_TIMEOUT = 120
+URL_FETCH_TIMEOUT = 60
 
 WIKI_URL = ""
 
@@ -172,7 +172,7 @@ class PolygonHandler(webapp2.RequestHandler):
 		
 		content = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
 		
-		self.response.headers['Content-Type'] = 'application/json'
+		#self.response.headers['Content-Type'] = 'application/json'
 		self.response.out.write(content)
 
 		
@@ -377,7 +377,6 @@ def ComputePolygonDrawTimeSeries(polygon,ref_start,ref_end,series_start,series_e
     ]
 
 
-  print polygon
   feature = polygon
 
   chart_data = cumulative.map(ComputeMean).getInfo()
