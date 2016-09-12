@@ -306,7 +306,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 	}
 	
 	all_overlays = [];
-	//drawingManager.setMap(null);
+	drawingManager.setMap(null);
 	
 	}
 	
@@ -332,14 +332,13 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 		all_overlays[i].overlay.setMap(null);
 	}
 	 all_overlays = [];
-	// drawingManager.setMap(null);
+	drawingManager.setMap(null);
 	
 	
 	}
 	
 	if (myval == "3"){
 	
-	console.log("entering drawing mode");
 	
 	// Create a Google Maps Drawing Manager for drawing polygons.
 		drawingManager = new google.maps.drawing.DrawingManager({
@@ -351,16 +350,13 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 		  }
 		});
 
-		console.log("just setup the the drawing manager");
 		// Respond when a new polygon is drawn.
 		google.maps.event.addListener(drawingManager, 'overlaycomplete',
 			function(event) {
 			   
-			   console.log("show the progress bar");
 			   ecodash.App.prototype.ShowProgress();
 			   all_overlays.push(event);
 			   counter = counter + 1;
-			   console.log("set the color");
 			   drawingManager.setOptions({
 					polygonOptions: {
 					fillColor: CSS_COLOR_NAMES[counter],
@@ -368,18 +364,9 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 				  }
 				});
          
-          console.log("set the geom");
           var geom = event.overlay.getPath().getArray();
           
-          var values = [];         
-			for (var i = 0; i < geom.length; i++){
-            console.log("lat:", geom[i].lat());
-            console.log("lng:", geom[i].lng());
-            values.push([geom[i].lat(),geom[i].lng()]);
-        
-        }
-			
-
+      
 			$.get('/polygon?polygon=' + geom,{mycounter: counter,
 											  refLow : refLow,									 
 									          refHigh : refHigh,
@@ -387,18 +374,12 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 									          studyHigh : studyHigh	}).done((function(data) {    
 				
 			if (data['error']) {
-				console.log("An error! This is embarrassing! Please report to the sys admin. ");
+				error.log("An error! This is embarrassing! Please report to the sys admin. ");
 			} 
 			else {
 		
-				console.log("back from ajax");
 				
 				myName.push("my area " + counter.toString());
-				console.log("show the chart");
-				console.log(data.length);
-				console.log(data);
-				//var array = data.split(',');
-				//console.log(array);
 				ecodash.App.prototype.showChart(data);
 				ecodash.App.prototype.HideProgress();
 			}}).bind(this));
@@ -437,7 +418,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
  */
 ecodash.App.prototype.showChart = function(timeseries) {
 
-  console.log(timeseries);
+
   $('.panel .clear').show();
   
   if (firstGraph == 0){

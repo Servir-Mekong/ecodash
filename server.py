@@ -102,7 +102,6 @@ class DetailsHandler(webapp2.RequestHandler):
   
   def get(self):
     """Returns details about a polygon."""
-    print "entering handler"
     polygon_id = self.request.get('polygon_id') 
     counter = self.request.get('mycounter')
     refLow = self.request.get('refLow')
@@ -115,8 +114,6 @@ class DetailsHandler(webapp2.RequestHandler):
     series_start = studyLow + '-01-01'
     series_end = studyHigh + '-12-31'
 
-    print refLow,refHigh,studyLow,studyHigh
-    print ref_start,ref_end,series_start,series_end
     CountryorProvince = int(self.request.get('folder'))
    
     if CountryorProvince == 0 :
@@ -150,7 +147,6 @@ class DetailsHandler(webapp2.RequestHandler):
 class PolygonHandler(webapp2.RequestHandler):
     def get(self):
 		
-		print "entering handler"
 		polygon =  unicode(self.request.get('polygon')) 
 		refLow = self.request.get('refLow')
 		refHigh = self.request.get('refHigh')
@@ -178,21 +174,11 @@ class PolygonHandler(webapp2.RequestHandler):
 		content = json.dumps(details) # ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
 		
 
-
-		#self.response.headers['Content-Type'] = 'application/json'
-		#self.response.out.write(content)
 		self.response.headers['Content-Type'] = 'application/json'   
-
-		#self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-		#s#elf.response.write(thelist)
-		#self.response.write(coords);
-		#self.response.headers['Content-Type'] = 'application/json'
-		
+	
 		self.response.out.write(content)
 
-		#self.response.out.write(content)
-		#return content
-        
+	    
 # Define webapp2 routing from URL paths to web request handlers. See:
 # http://webapp-improved.appspot.com/tutorials/quickstart.html
 app = webapp2.WSGIApplication([
@@ -261,12 +247,10 @@ def GetPolygonTimeSeries(polygon_id,mypath,ref_start,ref_end,series_start,series
 def ComputePolygonTimeSeries(polygon_id,mypath,ref_start,ref_end,series_start,series_end):
   """Returns a series of brightness over time for the polygon."""
   
-  print ref_start,ref_end,series_start,series_end
   collection = ee.ImageCollection(IMAGE_COLLECTION_ID) #.filterDate('2008-01-01', '2010-12-31').sort('system:time_start')
   reference = collection.filterDate(ref_start,ref_end ).sort('system:time_start')
   series = collection.filterDate(series_start, series_end).sort('system:time_start')
   
-  print "starting.."
   mymean = ee.Image(reference.mean())
   
   #mylist.append(polygon_id)
@@ -324,7 +308,6 @@ def ComputePolygonTimeSeries(polygon_id,mypath,ref_start,ref_end,series_start,se
   mymap = map(ExtractMean, chart_data['features'])
   
 
-  print "finished"
   return mymap
 
 def ComputePolygonDrawTimeSeries(polygon,ref_start,ref_end,series_start,series_end):
@@ -335,7 +318,6 @@ def ComputePolygonDrawTimeSeries(polygon,ref_start,ref_end,series_start,series_e
   
   mymean = ee.Image(reference.mean())
   
-  print "computering"
   # Add a band containing image date as years since 1991.
   def subtract(img):
     #myimg = img.float().subtract(mymean) #.subtract(1991)
@@ -346,7 +328,6 @@ def ComputePolygonDrawTimeSeries(polygon,ref_start,ref_end,series_start,series_e
   
   time0 = series.first().get('system:time_start')
   first = ee.List([ee.Image(0).set('system:time_start', time0).select([0], ['EVI'])])
-  print "computering1"
  
   ## This is a function to pass to Iterate().
   ## As anomaly images are computed, add them to the list.
@@ -376,7 +357,6 @@ def ComputePolygonDrawTimeSeries(polygon,ref_start,ref_end,series_start,series_e
         'system:time_start': img.get('system:time_start')
     })
 
-  print "computering3"
   # Extract the results as a list of lists.
   def ExtractMean(feature):
     return [
@@ -389,11 +369,9 @@ def ComputePolygonDrawTimeSeries(polygon,ref_start,ref_end,series_start,series_e
 
   chart_data = cumulative.map(ComputeMean).getInfo()
   
-  print "computering4"
  
   mymap = map(ExtractMean, chart_data['features'])
-  print "computering5"
-
+  
   return mymap
 
 
