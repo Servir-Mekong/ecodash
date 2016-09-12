@@ -383,7 +383,7 @@ def ComputePolygonDrawTimeSeries(polygon,ref_start,ref_end,series_start,series_e
     ]
 
 
-  feature = polygon
+  feature = ee.FeatureCollection(polygon)
 
   chart_data = cumulative.map(ComputeMean).getInfo()
   
