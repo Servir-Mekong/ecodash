@@ -178,7 +178,7 @@ class PolygonHandler(webapp2.RequestHandler):
 		#self.response.headers['Content-Type'] = 'application/json'   
 
 		self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-		self.response.out.write(content)
+		self.response.write(content)
 		#self.response.write(coords);
 		#self.response.headers['Content-Type'] = 'application/json'
 		
