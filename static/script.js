@@ -372,20 +372,30 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
           var geom = event.overlay.getPath().getArray();
                    
 			console.log("make ajax call");
+			console.log(geom);
 			$.get('/polygon?polygon=' + geom,{mycounter: counter,
 											  refLow : refLow,									 
 									          refHigh : refHigh,
 									          studyLow : studyLow,
 									          studyHigh : studyHigh	}).done((function(data) {    
 				
-			console.log("back from ajax");
-			myName.push("my area " + counter.toString());
-			console.log("show the chart");
-			alert(data)
-			//ecodash.App.prototype.showChart(data);
-			ecodash.App.prototype.HideProgress();
-			}));
- 
+			if (data['error']) {
+				console.log("An error! This is embarrassing! Please report to the sys admin. ");
+			} 
+			else {
+		
+				console.log("back from ajax");
+				
+				myName.push("my area " + counter.toString());
+				console.log("show the chart");
+				alert(data)
+				//ecodash.App.prototype.showChart(data);
+				ecodash.App.prototype.HideProgress();
+			}}).bind(this));
+			
+			
+
+		
           
           
         });

@@ -28,7 +28,7 @@ MEMCACHE_EXPIRATION = 60 * 60 * 24
 
 
 # The URL fetch timeout time (seconds).
-URL_FETCH_TIMEOUT = 60
+URL_FETCH_TIMEOUT = 120
 
 WIKI_URL = ""
 
@@ -150,7 +150,7 @@ app = webapp2.WSGIApplication([
 class PolygonHandler(webapp2.RequestHandler):
     def get(self):
 		
-		print "entering"
+		print "entering handler"
 		polygon =  unicode(self.request.get('polygon')) 
 		refLow = self.request.get('refLow')
 		refHigh = self.request.get('refHigh')
@@ -172,7 +172,7 @@ class PolygonHandler(webapp2.RequestHandler):
 		
 		content = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
 		
-		#self.response.headers['Content-Type'] = 'application/json'
+		self.response.headers['Content-Type'] = 'application/json'
 		#self.response.write('Hello, World!')
 
 		self.response.out.write(content)
@@ -322,7 +322,7 @@ def ComputePolygonDrawTimeSeries(polygon,ref_start,ref_end,series_start,series_e
   
   mymean = ee.Image(reference.mean())
   
-  
+  print "computering"
   # Add a band containing image date as years since 1991.
   def subtract(img):
     #myimg = img.float().subtract(mymean) #.subtract(1991)
@@ -333,6 +333,7 @@ def ComputePolygonDrawTimeSeries(polygon,ref_start,ref_end,series_start,series_e
   
   time0 = series.first().get('system:time_start')
   first = ee.List([ee.Image(0).set('system:time_start', time0).select([0], ['EVI'])])
+  print "computering1"
  
   ## This is a function to pass to Iterate().
   ## As anomaly images are computed, add them to the list.
@@ -362,6 +363,7 @@ def ComputePolygonDrawTimeSeries(polygon,ref_start,ref_end,series_start,series_e
         'system:time_start': img.get('system:time_start')
     })
 
+  print "computering3"
   # Extract the results as a list of lists.
   def ExtractMean(feature):
     return [
@@ -370,14 +372,15 @@ def ComputePolygonDrawTimeSeries(polygon,ref_start,ref_end,series_start,series_e
     ]
 
 
- 
+  print polygon
   feature = polygon
 
   chart_data = cumulative.map(ComputeMean).getInfo()
   
-  
-  print chart_data
+  print "computering4"
+ 
   mymap = map(ExtractMean, chart_data['features'])
+  print "computering5"
 
   return mymap
 
