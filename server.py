@@ -161,7 +161,7 @@ class PolygonHandler(webapp2.RequestHandler):
 		ref_end = refHigh + '-12-31'
 		series_start = studyLow + '-01-01'
 		series_end = studyHigh + '-12-31'
-		self.response.write('Hello, World!').
+		self.response.write('Hello, World!')
 
 			
 		#coords = []

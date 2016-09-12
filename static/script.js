@@ -383,7 +383,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 			console.log("show the chart");
 			alert(data)
 			//ecodash.App.prototype.showChart(data);
-			//ecodash.App.prototype.HideProgress();
+			ecodash.App.prototype.HideProgress();
 			}));
  
           
