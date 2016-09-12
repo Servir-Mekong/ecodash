@@ -172,12 +172,17 @@ class PolygonHandler(webapp2.RequestHandler):
 		
 		content = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
 		
-		thelist = []
+		thelist = ""
+		mylen = len(content)
+		teller = 1
 		for items in content:
-			thelist.append(items[0])
-			thelist.append(items[1])
+			if teller < mylen-1:
+				thelist = thelist + str(items[0]) + ", " + str(items[1]) + ", "
+			if teller == mylen-1:
+				thelist = thelist + str(items[0]) + ", " + str(items[1])
+			teller += 1
 		
-		
+		print thelist
 		#self.response.headers['Content-Type'] = 'application/json'
 		#self.response.out.write(content)
 		#self.response.headers['Content-Type'] = 'application/json'   
