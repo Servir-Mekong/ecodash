@@ -167,10 +167,10 @@ class PolygonHandler(webapp2.RequestHandler):
 				
 		for items in eval(polygon):
 			coords.append([items[1],items[0]])
+		
+		mypoly =  ee.FeatureCollection(ee.Geometry.Polygon(coords))
 		self.response.write('Hello, World!')
 
-		#mypoly =  ee.FeatureCollection(ee.Geometry.Polygon(coords))
-		
 		#content = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
 		#self.response.headers['Content-Type'] = 'application/json'
 		#self.response.out.write(content)
