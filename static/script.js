@@ -399,7 +399,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 				console.log(data);
 				//var array = data.split(',');
 				//console.log(array);
-				//ecodash.App.prototype.showChart(data);
+				ecodash.App.prototype.showChart(data);
 				ecodash.App.prototype.HideProgress();
 			}}).bind(this));
 			
