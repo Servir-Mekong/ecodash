@@ -288,7 +288,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 	if (myval == "1"){
 
 	provinceNames.forEach((function(provinceName) {
-	map.data.loadGeoJson('http://localhost/static/province/' +provinceName + '.json')}).bind());
+	map.data.loadGeoJson('static/province/' +provinceName + '.json')}).bind());
 		map.data.setStyle(function(feature) {
 		return {
 		  fillColor: 'white',
@@ -306,7 +306,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 	}
 	
 	all_overlays = [];
-	drawingManager.setMap(null);
+	//drawingManager.setMap(null);
 	
 	}
 	
@@ -332,7 +332,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 		all_overlays[i].overlay.setMap(null);
 	}
 	 all_overlays = [];
-	 drawingManager.setMap(null);
+	// drawingManager.setMap(null);
 	
 	
 	}
