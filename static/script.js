@@ -397,6 +397,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 				console.log("show the chart");
 				console.log(data.length);
 				console.log(data);
+				data = data.replace('L', '')
 				var datalist = JSON.parse(data);
 				console.log(datalist);
 				//var array = data.split(',');
