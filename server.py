@@ -172,9 +172,9 @@ class PolygonHandler(webapp2.RequestHandler):
 		
 		content = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
 		
-		thelist = []
-		for items in content:
-			thelist.append([int(items[0]),float(items[1])])
+		#thelist = []
+		#for items in content:
+		#	thelist.append([int(items[0]),float(items[1])])
 		
 		
 		#self.response.headers['Content-Type'] = 'application/json'
@@ -182,7 +182,7 @@ class PolygonHandler(webapp2.RequestHandler):
 		self.response.headers['Content-Type'] = 'application/json'   
 
 		#self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-		self.response.write(thelist)
+		self.response.write(content)
 		#self.response.write(coords);
 		#self.response.headers['Content-Type'] = 'application/json'
 		
