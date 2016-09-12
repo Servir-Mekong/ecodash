@@ -150,6 +150,7 @@ app = webapp2.WSGIApplication([
 class PolygonHandler(webapp2.RequestHandler):
     def get(self):
 		
+		print "entering"
 		polygon =  unicode(self.request.get('polygon')) 
 		refLow = self.request.get('refLow')
 		refHigh = self.request.get('refHigh')

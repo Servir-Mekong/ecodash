@@ -378,6 +378,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 									          studyLow : studyLow,
 									          studyHigh : studyHigh	}).done((function(data) {    
 				
+			console.log("back from ajax");
 			myName.push("my area " + counter.toString());
 			console.log("show the chart");
 			ecodash.App.prototype.showChart(data);
