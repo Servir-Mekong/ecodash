@@ -178,12 +178,35 @@ class PolygonHandler(webapp2.RequestHandler):
 	
 		self.response.out.write(content)
 
-	    
+
+class GetMapHandler(webapp2.RequestHandler):
+    
+    def get(self):
+		
+
+		refLow = self.request.get('refLow')
+		refHigh = self.request.get('refHigh')
+		studyLow = self.request.get('studyLow')
+		studyHigh = self.request.get('studyHigh')
+	 
+		mapid = updateMap(refLow,refHigh,studyLow,studyHigh) 
+		 
+		template_values = {
+			'eeMapId': mapid['mapid'],
+			'eeToken': mapid['token']
+        }
+        
+		template = JINJA2_ENVIRONMENT.get_template('index.html')
+		self.response.headers['Content-Type'] = 'application/json'
+		self.response.out.write(json.dumps(template_values))
+	
+	
 # Define webapp2 routing from URL paths to web request handlers. See:
 # http://webapp-improved.appspot.com/tutorials/quickstart.html
 app = webapp2.WSGIApplication([
     ('/details', DetailsHandler),
     ('/polygon', PolygonHandler),
+    ('/getmap', GetMapHandler),
     ('/', MainHandler),
 ])
 
@@ -222,21 +245,54 @@ def EcoDashCalculation():
       'bands': ' EVI_mean',
       'palette' : '931206,ff1b05,fdff42,4bff0f,0fa713'
   })
+  
+
+def updateMap(ref_start,ref_end,series_start,series_end):
+
+
+  """Returns the MapID for the night-time lights trend map."""
+  collection = ee.ImageCollection(IMAGE_COLLECTION_ID)
+  reference = collection.filterDate(ref_start,ref_end ).sort('system:time_start')
+  series = collection.filterDate(series_start, series_end).sort('system:time_start')
+  
+  mymean = ee.Image(reference.mean())
+
+  # Add a band containing image date as years since 1991.
+  def subtractmean(img):
+    myimg = img.subtract(mymean) #.subtract(mymean) #.subtract(1991)
+    return ee.Image(myimg) #.float().addBands(img)
+  
+  mycollection = series.select('EVI').map(subtractmean)
+  
+  countries = ee.FeatureCollection('ft:1tdSwUL7MVpOauSgRzqVTOwdfy17KDbw-1d9omPw');
+  country_names = ['Myanmar (Burma)','Thailand','Laos','Vietnam','Cambodia']; # Specify name of country. Ignored if "use_uploaded_fusion_table" == y
+  mekongCountries = countries.filter(ee.Filter.inList('Country', country_names));
+  
+  fit = mycollection.reduce(ee.Reducer.mean()).clip(mekongCountries)
+  
+  return fit.getMapId({
+      'min': '-400',
+      'max': '400',
+      'bands': ' EVI_mean',
+      'palette' : '931206,ff1b05,fdff42,4bff0f,0fa713'
+  })
+	  
+  
 	
 def GetPolygonTimeSeries(polygon_id,mypath,ref_start,ref_end,series_start,series_end):
   """Returns details about the polygon with the passed-in ID."""
-  details = memcache.get(polygon_id)
+  #details = memcache.get(polygon_id)
 
   # If we've cached details for this polygon, return them.
-  if details is not None:
-    return details
+  #if details is not None:
+  #  return details
 
-  details = {'wikiUrl': WIKI_URL + polygon_id.replace('-', '%20')}
+  details = {}
 
   try:
     details['timeSeries'] = ComputePolygonTimeSeries(polygon_id,mypath,ref_start,ref_end,series_start,series_end)
     # Store the results in memcache.
-    memcache.add(polygon_id, json.dumps(details), MEMCACHE_EXPIRATION)
+    #memcache.add(polygon_id, json.dumps(details), MEMCACHE_EXPIRATION)
   except ee.EEException as e:
     # Handle exceptions from the EE client library.
     details['error'] = str(e)

@@ -24,6 +24,7 @@ var myName = [];
 var DataArr = [];
 var all_overlays = [];
 var firstGraph = 0;
+var myMap;
 
  /**
  * Starts the Surface Water Tool application. The main entry point for the app.
@@ -34,20 +35,10 @@ ecodash.boot = function(eeMapId, eeToken,serializedPolygonIds_country,serialized
 	
 	
 	google.load('visualization', '1.0');
-	/*
-	// Load external libraries.
-	
-	//google.load('jquery', '1');  // TURNED OFF TO MAKE DATEPICKER WORK!
-	//google.load('maps', '3');    // TURNED OFF TO MAKE REGIONPICKER WORK!
-	
-	// Create the app.
-	google.setOnLoadCallback(function() {
-		//var mapType = ecodash.App.getEeMapType(eeMapId, eeToken);
-		//var app = new ecodash.App(mapType);
-		var app = new ecodash.App(eeMapId, eeToken);
-	});
-	*/
-	var app = new ecodash.App(eeMapId, eeToken,JSON.parse(serializedPolygonIds_country),JSON.parse(serializedPolygonIds_province));
+
+	var app = new ecodash.App(eeMapId, 
+							  eeToken,JSON.parse(serializedPolygonIds_country),
+							  JSON.parse(serializedPolygonIds_province));
 };
 
 // ---------------------------------------------------------------------------------- //
@@ -64,20 +55,27 @@ ecodash.App = function(eeMapId, eeToken,countryNames,provinceNames) {
   
   // Create and display the map.
   this.map = ecodash.App.createMap();
-   
-    
+     
    // Initialize the UI components.
   this.initDatePicker();
-  //this.initRegionPicker();
+  
+  // set init slider
   this.initSlider(this.map);
-   
+  
+  // add listenir 
   this.map.data.addListener('click', this.handlePolygonClick.bind(this));
   
   this.initButton(this.map,provinceNames,countryNames);
   
   // Register a click handler to hide the panel when the user clicks close.
   $('.panel .clear').hide();
+  $('.panel .updateMap').hide();
+
   $('.panel .clear').click(this.cleargraph.bind(this));
+  
+  myMap = this.map;
+  $('.panel .updateMap').click(this.ShowMap.bind(this));
+  
   
     // Load the default image.
   this.refreshImage(eeMapId, eeToken,countryNames,provinceNames);
@@ -113,6 +111,12 @@ ecodash.App.prototype.refreshImage = function(eeMapId, eeToken) {
   this.map.overlayMapTypes.push(mapType);
 };
 
+
+/** Updates the image based on the current control panel config. */
+ecodash.App.prototype.refresh = function(eeMapId, eeToken,map) {
+  var mapType = ecodash.App.getEeMapType(eeMapId, eeToken);
+  map.overlayMapTypes.push(mapType);
+};
 
 /**
  * Adds the polygons with the passed-in IDs to the map.
@@ -161,7 +165,7 @@ ecodash.App.prototype.initDatePicker = function() {
 ecodash.App.prototype.initSlider = function(map) {
   $("#reference").slider({ id: "slider12b", 
 						   min: 2000, 
-						   max: 2015, 
+						   max: 2017, 
 						   range: true, 
 						   value: [2000, 2010] 
 						   });
@@ -195,6 +199,9 @@ ecodash.App.prototype.initSlider = function(map) {
 		map.data.revertStyle();
 		firstGraph = 0;
 		DataArr = [];
+		$('.panel .updateMap').show();
+	
+
 	
 	for (var i=0; i < all_overlays.length; i++)
 	 {
@@ -219,6 +226,7 @@ ecodash.App.prototype.initSlider = function(map) {
 		map.data.revertStyle();
 		firstGraph = 0;
 		DataArr = [];
+		$('.panel .updateMap').show();
 
 	
 	for (var i=0; i < all_overlays.length; i++)
@@ -286,6 +294,8 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 		 }
 	
 	if (myval == "1"){
+	
+	
 
 	provinceNames.forEach((function(provinceName) {
 	map.data.loadGeoJson('static/province/' +provinceName + '.json')}).bind());
@@ -306,8 +316,12 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 	}
 	
 	all_overlays = [];
-	drawingManager.setMap(null);
+
+	if (drawingManager){
+		drawingManager.setMap(null);
+	}
 	
+		
 	}
 	
 	
@@ -332,13 +346,14 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 		all_overlays[i].overlay.setMap(null);
 	}
 	 all_overlays = [];
-	drawingManager.setMap(null);
 	
+	if (drawingManager){
+		drawingManager.setMap(null);
+	}
 	
 	}
 	
 	if (myval == "3"){
-	
 	
 	// Create a Google Maps Drawing Manager for drawing polygons.
 		drawingManager = new google.maps.drawing.DrawingManager({
@@ -374,7 +389,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 									          studyHigh : studyHigh	}).done((function(data) {    
 				
 			if (data['error']) {
-				error.log("An error! This is embarrassing! Please report to the sys admin. ");
+				       alert("An error occured! Please refresh the page.");
 			} 
 			else {
 		
@@ -392,22 +407,50 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
         });
 
 
-
-    // Clear the current polygon when the user clicks the "Draw new" button.
-    //$('.polygon-details .draw-new').click(clearPolygon);
         
      drawingManager.setMap(map);
 
-
-	// Respond when the user cancels polygon drawing.
-	//$('.region .cancel').click(this.setDrawingModeEnabled.bind(this, false));
-
-	// Respond when the user clears the polygon.
-	//  $('.region .clear').click(this.clearPolygon.bind(this));
  };
 
 });
 
+}
+
+
+ecodash.App.prototype.ShowMap = function() {
+
+
+	$('.panel .updateMap').hide();
+	
+	ecodash.App.prototype.ShowProgress();
+	
+	// clear the map
+	myMap.overlayMapTypes.clear();
+	var params = {};
+	
+	// set the parameters
+	params['refLow'] = refLow
+	params['refHigh'] = refHigh
+	params['studyLow'] = studyLow
+	params['studyHigh'] = studyHigh
+	
+
+	$.ajax({
+      url: "/getmap",
+	  data: params,
+      dataType: "json",
+      success: function (data) {
+		 var mapType = ecodash.App.getEeMapType(data.eeMapId, data.eeToken);
+		 myMap.overlayMapTypes.push(mapType);
+		 ecodash.App.prototype.HideProgress();
+		
+      },
+      error: function (data) {
+        alert("An error occured! Please refresh the page.");
+      }
+    });	
+	
+	
 }
 
 
