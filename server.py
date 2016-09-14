@@ -252,8 +252,8 @@ def updateMap(ref_start,ref_end,series_start,series_end):
 
   """Returns the MapID for the night-time lights trend map."""
   collection = ee.ImageCollection(IMAGE_COLLECTION_ID)
-  reference = collection.filterDate(ref_start,ref_end ).sort('system:time_start')
-  series = collection.filterDate(series_start, series_end).sort('system:time_start')
+  reference = collection.filterDate(ref_start,ref_end ).sort('system:time_start').select('EVI')
+  series = collection.filterDate(series_start, series_end).sort('system:time_start').select('EVI')
   
   mymean = ee.Image(reference.mean())
 
@@ -304,8 +304,8 @@ def ComputePolygonTimeSeries(polygon_id,mypath,ref_start,ref_end,series_start,se
   """Returns a series of brightness over time for the polygon."""
   
   collection = ee.ImageCollection(IMAGE_COLLECTION_ID) #.filterDate('2008-01-01', '2010-12-31').sort('system:time_start')
-  reference = collection.filterDate(ref_start,ref_end ).sort('system:time_start')
-  series = collection.filterDate(series_start, series_end).sort('system:time_start')
+  reference = collection.filterDate(ref_start,ref_end ).sort('system:time_start').select('EVI')
+  series = collection.filterDate(series_start, series_end).sort('system:time_start').select('EVI')
   
   mymean = ee.Image(reference.mean())
   

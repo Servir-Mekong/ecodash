@@ -67,6 +67,8 @@ ecodash.App = function(eeMapId, eeToken,countryNames,provinceNames) {
   
   this.initButton(this.map,provinceNames,countryNames);
   
+  this.opacitySliders();
+  
   // Register a click handler to hide the panel when the user clicks close.
   $('.panel .clear').hide();
   $('.panel .updateMap').hide();
@@ -565,8 +567,31 @@ ecodash.App.prototype.handlePolygonClick = function(event) {
   counter = counter + 1;
   
   
-  
 };
+
+
+ecodash.App.prototype.opacitySliders = function() {
+
+  // in case of merged permanent and flooded water layers:
+  $("#ecoControl").on("slide", function(slideEvt) {
+	ecodash.App.prototype.setLayerOpacity(slideEvt.value);
+  });
+  $("#ecoControl").on("slideStop", function(slideEvt) {
+	ecodash.App.prototype.setLayerOpacity(slideEvt.value);
+  });
+}
+
+
+ecodash.App.prototype.setLayerOpacity = function(value) {
+  myMap.overlayMapTypes.forEach((function(mapType, index) {
+    console.log(mapType.name)
+    if (mapType) {
+	  var overlay = myMap.overlayMapTypes.getAt(index);
+      overlay.setOpacity(value);
+    }
+  }).bind(this));
+};
+
 
 // ---------------------------------------------------------------------------------- //
 // Static helpers and constants
@@ -588,7 +613,9 @@ ecodash.App.getEeMapType = function(eeMapId, eeToken) {
       url += '?token=' + eeToken;
       return url;
     },
-    tileSize: new google.maps.Size(256, 256)
+    tileSize: new google.maps.Size(256, 256),
+    name: 'ecomap',
+	opacity: 1.0
   };
   return new google.maps.ImageMapType(eeMapOptions);
 };

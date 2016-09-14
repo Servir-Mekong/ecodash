@@ -133,6 +133,15 @@
 						</div>
 										
 						
+						<input id="ecoControl" data-slider-id='ecoControlSlider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="1.0"/>
+								<script>
+								$('#ecoControl').slider({
+									formatter: function(value) {
+										return 'Opacity: ' + value;
+									}
+								});
+								</script>
+						
 						<!-- Controls -->
 						<div class="controls">
 							<div class="inputs">
