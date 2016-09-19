@@ -494,6 +494,11 @@ isindex {
 	background: green;
 }
 
+.ecodash #ecoControlSlider {
+  margin-left: 30px;
+  width: 60px;
+}
+
 #floating-panel {
   position: absolute;
   bottom: 0;
