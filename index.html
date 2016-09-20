@@ -20,7 +20,7 @@
 
     <!-- Third-party JavaScript. -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCftEx2S9RjScdfNCGa4Z-8HgUVIUjOErk &v=3.exp&libraries=drawing"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCftEx2S9RjScdfNCGa4Z-8HgUVIUjOErk&v=3.exp&libraries=drawing"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.2.0/bootstrap-slider.min.js"></script>
@@ -42,7 +42,11 @@
     <div class="ecodash">
 
       <!-- Banner with SERVIR-Mekong logo. -->
-      <div class="banner" align="right"><div style="float:right; width:100%; height: 20px; margin:0px 10px; "><img border="0" style="height:25px; margin-top:2px;" src="static/images/servir.png"></div></div>
+      <div class="banner" align="right">
+        <div style="float:right; width:100%; height:20px; margin:0px 10px;">
+          <img border="0" style="height:25px; margin-top:2px;" src="/static/images/servir.png">
+        </div>
+      </div>
 
       <!-- The element into which Google Maps is rendered. -->
       <div class="map"></div>
@@ -66,7 +70,7 @@
         <div class="panel">
 
           <!-- hidden counter-->
-          <input type="hidden" name="counter" id="counter", value=0 >
+          <input type="hidden" name="counter" id="counter" value="0">
 
           <!-- Title, info button with general information text and collapse button. -->
           <header>
@@ -117,7 +121,7 @@
               <div class="mylegend-block">
                 <table>
                   <tr>
-                    <th rowspan="3"  height="150px"><img border="0" src="static/images/mylegend.png" style="height: 140px"></th>
+                    <th rowspan="3"  height="150px"><img border="0" src="/static/images/mylegend.png" style="height: 140px"></th>
                     <th><span style="font-weight:normal">&nbsp Increase</span></th>
                   </tr>
                   <tr>
@@ -130,7 +134,6 @@
               </div>
             </div>
           </div>
-
 
           <input id="ecoControl" data-slider-id="ecoControlSlider" type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="1.0"/>
           <script>
@@ -173,7 +176,6 @@
                   Lorem ipsum dolor sit amet, nam et ac, ligula viverra dictumst turpis, nibh et vitae duis pulvinar sodales. Nullam viverra voluptas sit, pede pellentesque pellentesque dui suspendisse. Praesent quisque ultricies eget in purus viverra, elit neque mauris pretium ac, dolor massa in ac nulla, tempus per a vel eros vivamus arcu, elit dui mauris.
                 </span>
               </div>
-
 
               <!-- block for time range sliders -->
               <div class="input-block daterange">
@@ -230,15 +232,15 @@
           <!-- Block with relevant organisation/company logo and link to websites -->
           <hr/>
           <div class="attributions">
-            <a href="https://www.usaid.gov/" target="_blank"><img border="0" src="static/images/usaid.png" style="height: 40px"></a>
-            <a href="https://www.nasa.gov/" target="_blank"><img border="0" src="static/images/nasa.png" style="height: 40px; margin-left:15px"></a>
-            <a href="https://earthengine.google.com/" target="_blank"><img border="0" src="static/images/googlelogo_color_272x92dp.png" style="height:40px"></a>
-            <a href="http://www.winrock.org/" target="_blank"><img border="0" src="static/images/winrocklogo.jpg" style="height: 45px; margin-left:15px"></a>
+            <a href="https://www.usaid.gov/" target="_blank"><img border="0" src="/static/images/usaid.png" style="height: 40px"></a>
+            <a href="https://www.nasa.gov/" target="_blank"><img border="0" src="/static/images/nasa.png" style="height: 40px; margin-left:15px"></a>
+            <a href="https://earthengine.google.com/" target="_blank"><img border="0" src="/static/images/googlelogo_color_272x92dp.png" style="height:40px"></a>
+            <a href="http://www.winrock.org/" target="_blank"><img border="0" src="/static/images/winrocklogo.jpg" style="height: 45px; margin-left:15px"></a>
           </div>
           <div class="attributions">
-            <a href="http://www.adpc.net" target="_blank"><img border="0" src="static/images/adpclogo.jpg" style="height: 45px; margin-left:15px"></a>
-            <a href="http://sig-gis.com/" target="_blank"><img border="0" src="static/images/logosig.png" style="height: 45px; margin-left:15px"></a>
-            <a href="http://www.mard.gov.vn/en" target="_blank"><img border="0" src="static/images/mardlogo.jpg" style="height:45px; margin-left:15px"></a>
+            <a href="http://www.adpc.net" target="_blank"><img border="0" src="/static/images/adpclogo.jpg" style="height: 45px; margin-left:15px"></a>
+            <a href="http://sig-gis.com/" target="_blank"><img border="0" src="/static/images/logosig.png" style="height: 45px; margin-left:15px"></a>
+            <a href="http://www.mard.gov.vn/en" target="_blank"><img border="0" src="/static/images/mardlogo.jpg" style="height:45px; margin-left:15px"></a>
           </div>
 
           <!-- panel for progress bar -->
