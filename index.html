@@ -16,7 +16,7 @@
     <script src="https://www.google.com/jsapi"></script>
 
     <!-- Google Web Fonts. -->
-    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
 
     <!-- Third-party JavaScript. -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
@@ -55,9 +55,9 @@
 
         <script>
           $(document).ready(function(){
-          $(".settings-button").click(function () {
-          $(".settings-button").toggle();
-          $(".panel").toggle();
+          $('.settings-button').click(function () {
+          $('.settings-button').toggle();
+          $('.panel').toggle();
           });
           });
         </script>
@@ -76,9 +76,9 @@
               <div class="collapse-button">&#171;</div>
               <script>
                 $(document).ready(function(){
-                $(".collapse-button").click(function () {
-                $(".panel").toggle();
-                $(".settings-button").toggle();
+                $('.collapse-button').click(function () {
+                $('.panel').toggle();
+                $('.settings-button').toggle();
                 });
                 });
               </script>
@@ -86,8 +86,8 @@
               <!-- button that toggles display of general information -->
               <button class="general-info-button btn btn-default btn-xs pull-right">i</button>
               <script>
-                $(".general-info-button").click(function () {
-                $(".general-info").toggleClass("general-info-shown");
+                $('.general-info-button').click(function () {
+                $('.general-info').toggleClass('general-info-shown');
                 });
               </script>
 
@@ -132,7 +132,7 @@
           </div>
 
 
-          <input id="ecoControl" data-slider-id='ecoControlSlider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="1.0"/>
+          <input id="ecoControl" data-slider-id="ecoControlSlider" type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="1.0"/>
           <script>
             $('#ecoControl').slider({
             formatter: function(value) {
@@ -151,8 +151,8 @@
               <input type="radio" name="clickme" value="3"> Draw polygon
               <button class="area-button btn btn-default btn-xs pull-right">i</button>
               <script>
-                $(".area-button").click(function () {
-                $(".area-info").toggleClass("area-info-shown");
+                $('.area-button').click(function () {
+                $('.area-info').toggleClass('area-info-shown');
                 });
               </script>
               <div class="area-info">
@@ -203,13 +203,13 @@
               </div>
 
               <script>
-                $(".reference-button").click(function () {
-                $(".reference-info").toggleClass("reference-info-shown");
+                $('.reference-button').click(function () {
+                $('.reference-info').toggleClass('reference-info-shown');
                 });
               </script>
               <script>
-                $(".study-button").click(function () {
-                $(".study-info").toggleClass("study-info-shown");
+                $('.study-button').click(function () {
+                $('.study-info').toggleClass('study-info-shown');
                 });
               </script>
             </div>
