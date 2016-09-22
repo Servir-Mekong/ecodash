@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Google Earth Engine python code for the SERVIR-Mekong Surface ecodash Tool"""
+"""Google Earth Engine python code for the SERVIR-Mekong ecodash Tool"""
 
 # This script handles the loading of the web application and its timeout settings,
 # as well as the complete Earth Engine code for all the calculations.
