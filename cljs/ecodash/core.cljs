@@ -19,8 +19,8 @@
    [:div#logos
     [:img#usaid  {:src "/static/images/usaid.png"}]
     [:img#nasa   {:src "/static/images/nasa.png"}]
-    [:img#adpc   {:src "/static/images/adpclogo.jpg"}]
     [:img#google {:src "/static/images/googlelogo_color_272x92dp.png"}]
+    [:img#adpc   {:src "/static/images/adpclogo.jpg"}]
     [:img#servir {:src "/static/images/servir.png"}]]
    [:nav
     [:ul

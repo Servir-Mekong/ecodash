@@ -57,18 +57,18 @@ header {
     width:60px;
 }
 
-#logos img#adpc {
-    position:absolute;
-    top:9px;
-    left:300px;
-    width:80px;
-}
-
 #logos img#google {
     position:absolute;
     top:10px;
-    left:410px;
+    left:300px;
     width:120px;
+}
+
+#logos img#adpc {
+    position:absolute;
+    top:9px;
+    left:450px;
+    width:80px;
 }
 
 #logos img#servir {
