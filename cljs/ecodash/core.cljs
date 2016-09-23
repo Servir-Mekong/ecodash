@@ -1,7 +1,8 @@
 (ns ecodash.core
   (:require [goog.dom :as dom]
             [goog.string :as str]
-            [reagent.core :as r]))
+            [reagent.core :as r]
+            [ecodash.application :as app]))
 
 (defonce active-link (r/atom 0))
 
@@ -65,7 +66,7 @@
   (case @active-link
     0 home-page
     1 about-page
-    2 [:h1 "Application"]))
+    2 (app/content)))
 
 (defn ^:export main []
   (r/render [page-header] (dom/getElement "pageheader"))
