@@ -33,9 +33,14 @@
                                       (if (visible-control? :info)
                                         (hide-control! :info)
                                         (show-control! :info)))}]]
-    [:p#instructions
-     "Select a time period to set the baseline, the study period and"
-     " perform a new calculation."]]
+    [:h2 "Temporal Analysis"]
+    [:h3 "Step 1: Select a time period to use as the baseline EVI"]
+    [:h3 "Step 2: Select a time period to measure ∆EVI"]
+    [:h3 "Step 3: Update the map with the cumulative ∆EVI"]
+    [:h2 "Spatial Analysis"]
+    [:h3 "Step 1: Choose a polygon selection method"]
+    [:h3 "Step 2: Click a polygon on the map or draw your own"]
+    [:h3 "Step 3: Review the historical ∆EVI in this region"]]
    [:div#settings-button {:style (get-display-style :settings-button)
                           :on-click (fn []
                                       (hide-control! :settings-button)
