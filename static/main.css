@@ -116,11 +116,63 @@ nav ul li.highlight {
     background-color:rgba(255,255,255,0.2);
 }
 
+#pagecontent a:link,
+#pagecontent a:visited,
+#pagecontent a:active {
+    color:#444;
+    text-decoration:none;
+}
+
+#pagecontent a:hover {
+    color:#444;
+    text-shadow: 0px 0px 4px #333;
+}
+
 /*************/
 /* Home Page */
 /*************/
 
+#home {
+    position:absolute;
+    right:5rem;
+    height:100%;
+    width:350px;
+    padding:2rem;
+    background:rgba(255, 255, 255, 0.8);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#CCFFFFFF, endColorstr=#CCFFFFFF);
+    -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#CCFFFFFF, endColorstr=#CCFFFFFF);
+}
 
+#home h1 {
+    margin-top:20px;
+    padding:0.5rem 0.5rem 0.5rem 1rem;
+    font-size:3.5rem;
+    font-weight:bold;
+    color:gray;
+    line-height:80%;
+}
+
+#home h2 {
+    margin-bottom:10px;
+    padding:0.5rem 0.5rem 0.5rem 1rem;
+    font-size:2.5rem;
+    font-weight:400;
+    color:gray;
+    line-height:110%;
+}
+
+#home h3 {
+    padding:0.5rem 0.5rem 0.75rem 1rem;
+    color:#3C948B;
+    font-family:Open Sans;
+    font-weight:400;
+    font-size:1.1rem;
+    font-style:normal;
+}
+
+#home p {
+    padding:0.5rem;
+}
 
 /**************/
 /* About Page */
