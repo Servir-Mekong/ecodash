@@ -233,13 +233,15 @@ nav ul li.highlight {
 }
 
 #ecodash #ui header {
-    border:1px solid red;
-    padding-bottom:0.5rem;
+    height:1.5rem;
+    margin-bottom:0.5rem;
 }
 
 #ecodash #ui header h1 {
     display:inline;
-    border:1px solid yellow;
+    font-size:1.2rem;
+    font-weight:bold;
+    color:gray;
 }
 
 #ecodash #ui header #collapse-button {
@@ -269,9 +271,15 @@ nav ul li.highlight {
     cursor:pointer;
 }
 
+#ecodash #ui #instructions {
+    border:1px solid red;
+    padding:0.5rem;
+    font-size:0.8rem;
+}
+
 #ecodash #settings-button {
     position:absolute;
-    bottom:0px;
+    top:0px;
     right:0px;
     width:34px;
     font-size:30px;
@@ -280,4 +288,51 @@ nav ul li.highlight {
     background-color:white;
     box-shadow:0px 0px 5px gray;
     cursor:pointer;
+}
+
+#ecodash #general-info {
+    position:absolute;
+    top:10px;
+    right:55px;
+    width:450px;
+    padding:15px;
+    border-radius:2px;
+    background-color:white;
+    box-shadow:0px 0px 5px gray;
+    font-size:14px;
+}
+
+#ecodash #general-info h1 {
+    font-size:16px;
+    font-weight:bold;
+    margin-bottom:2px;
+}
+
+#ecodash #legend {
+    position:absolute;
+    left:0px;
+    bottom:0px;
+    background-color:white;
+    padding:5px;
+    border-top-right-radius:3px;
+}
+
+#ecodash #legend h2 {
+    font-size:0.9rem;
+    font-weight:bold;
+    color:gray;
+    text-align:center;
+    margin:4px;
+}
+
+#ecodash #legend table td {
+    font-size:0.8rem;
+}
+
+#ecodash #legend table td:last-child {
+    padding-left:5px;
+}
+
+#ecodash #legend table td img {
+    height:100px;
 }
