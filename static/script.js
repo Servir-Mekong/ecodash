@@ -1,10 +1,3 @@
-/**
- * @fileoverview Runs the Surface Water Tool application. The code is executed in the
- * user's browser. It communicates with the App Engine backend, renders output
- * to the screen, and handles user interactions.
- */
-
-
 ecodash = {};  // Our namespace.
 
 var refLow = 2000;

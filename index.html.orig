@@ -276,9 +276,5 @@
         '{{ serializedPolygonIds_country | safe }}',
         '{{ serializedPolygonIds_province | safe }}');
       </script>
-
-      <!-- Load the Clojurescript main application code -->
-      <script src="/static/ecodash.js"></script>
-      <script>ecodash.core.main()</script>
   </body>
 </html>

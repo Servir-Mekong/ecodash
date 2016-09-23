@@ -87,8 +87,8 @@ class MainHandler(webapp2.RequestHandler):
         template_values = {
             'eeMapId': mapid['mapid'],
             'eeToken': mapid['token'],
-            'serializedPolygonIds_country': json.dumps(POLYGON_IDS_COUNTRY),
-            'serializedPolygonIds_province': json.dumps(POLYGON_IDS_PROVINCE)
+            'countryPolygons': json.dumps(POLYGON_IDS_COUNTRY),
+            'provincePolygons': json.dumps(POLYGON_IDS_PROVINCE)
         }
         template = JINJA2_ENVIRONMENT.get_template('index.html')
         self.response.out.write(template.render(template_values))

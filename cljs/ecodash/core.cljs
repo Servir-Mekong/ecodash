@@ -68,6 +68,7 @@
     1 about-page
     2 (app/content)))
 
-(defn ^:export main []
+(defn ^:export main [ee-map-id ee-token country-polygons province-polygons]
   (r/render [page-header] (dom/getElement "pageheader"))
-  (r/render [page-content] (dom/getElement "pagecontent")))
+  (r/render [page-content] (dom/getElement "pagecontent"))
+  (app/init ee-map-id ee-token country-polygons province-polygons))

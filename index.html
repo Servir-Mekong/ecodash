@@ -36,7 +36,14 @@
 
     <!-- Load the Clojurescript main application code -->
     <script src="/static/ecodash.js"></script>
-    <script>ecodash.core.main()</script>
+    <script>
+      ecodash.core.main(
+      '{{ eeMapId | safe }}',
+      '{{ eeToken | safe }}',
+      '{{ countryPolygons | safe }}',
+      '{{ provincePolygons | safe }}'
+      )
+    </script>
 
   </body>
 </html>
