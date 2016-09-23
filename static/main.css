@@ -177,3 +177,29 @@ nav ul li.highlight {
 /**************/
 /* About Page */
 /**************/
+
+#about {
+    position:absolute;
+    right:5rem;
+    height:100%;
+    width:350px;
+    padding:2rem;
+    background:rgba(255, 255, 255, 0.8);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#CCFFFFFF, endColorstr=#CCFFFFFF);
+    -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#CCFFFFFF, endColorstr=#CCFFFFFF);
+}
+
+#about h1 {
+    font-size:1.9rem;
+    font-weight:100;
+    padding:0.5rem;
+    color:gray;
+}
+
+#about p {
+    padding:0.5rem;
+}
+
+#about img {
+    padding:0rem 0.5rem;
+}

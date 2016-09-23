@@ -1,5 +1,6 @@
 (ns ecodash.core
   (:require [goog.dom :as dom]
+            [goog.string :as str]
             [reagent.core :as r]))
 
 (defonce active-link (r/atom 0))
@@ -54,7 +55,9 @@
             " so there is no need for desktop installation.")]
    [:a {:href "http://www.sig-gis.com"} [:img {:src "/static/images/logosig.png"}]]
    [:p
-    "Copyright &copy; "
+    "Copyright "
+    (str/unescapeEntities "&copy;")
+    " "
     [:a {:href "http://www.sig-gis.com"} "SIG-GIS"]
     " 2016"]])
 
