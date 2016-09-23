@@ -28,9 +28,41 @@
      [:li (make-nav-link-style 1) "About"]
      [:li (make-nav-link-style 2) "Application"]]]])
 
+(def home-page
+  [:div#home
+   [:h1 "Eco Dash"]
+   [:h2 "Spatio-temporal EVI Mapping"]
+   [:h3 "Explore historic vegetation change."]
+   [:hr]
+   [:p
+    "Eco Dash is a collaborative effort between its developers and its "
+    "community of users. We welcome suggestions for improvements on our "
+    [:a {:href "https://github.com/Servir-Mekong/ecodash/issues"} "Github"]
+    " issues page."]])
+
+(def about-page
+  [:div#about
+   [:h1 "About Eco Dash"]
+   [:p (str "Eco Dash is a custom built, open-source, high resolution satellite"
+            " image viewing and interpretation system that is being developed"
+            " by SERVIR-Mekong as a tool for use in projects that require land"
+            " cover and/or land use reference data. Mapcha promotes consistency"
+            " in locating, interpreting, and labeling reference data plots for"
+            " use in classifying and monitoring land cover / land use change."
+            " The full functionality of Mapcha including collaborative"
+            " compilation of reference point databases is implemented online"
+            " so there is no need for desktop installation.")]
+   [:a {:href "http://www.sig-gis.com"} [:img {:src "/static/images/logosig.png"}]]
+   [:p
+    "Copyright &copy; "
+    [:a {:href "http://www.sig-gis.com"} "SIG-GIS"]
+    " 2016"]])
+
 (defn page-content []
-  [:div
-   [:h1 "Eco Dash"]])
+  (case @active-link
+    0 home-page
+    1 about-page
+    2 [:h1 "Application"]))
 
 (defn ^:export main []
   (r/render [page-header] (dom/getElement "pageheader"))
