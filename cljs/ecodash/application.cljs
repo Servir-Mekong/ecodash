@@ -18,6 +18,27 @@
 (defn hide-control! [control]
   (swap! visible-controls disj control))
 
+(defn map-controls []
+  [:div#controls
+   [:h2 "Update Map (Temporal Analysis)"]
+   [:h3 "Step 1: Select a time period to use as the baseline EVI"]
+   [:input#baseline-start {:type "range" :min "2000" :max "2017" :step "1"}]
+   [:input#baseline-end {:type "range" :min "2000" :max "2017" :step "1"}]
+   [:h3 "Step 2: Select a time period to measure ∆EVI"]
+   [:input#study-start {:type "range" :min "2000" :max "2017" :step "1"}]
+   [:input#study-end {:type "range" :min "2000" :max "2017" :step "1"}]
+   [:h3 "Step 3: Update the map with the cumulative ∆EVI"]
+   [:h2 "Show Graphs (Spatial Analysis)"]
+   [:h3 "Step 1: Choose a polygon selection method"]
+   [:input {:type "radio" :name "polygon-selection-method" :value "1"}]
+   [:label "Province"]
+   [:input {:type "radio" :name "polygon-selection-method" :value "2"}]
+   [:label "Country"]
+   [:input {:type "radio" :name "polygon-selection-method" :value "3"}]
+   [:label "Draw Polygon"]
+   [:h3 "Step 2: Click a polygon on the map or draw your own"]
+   [:h3 "Step 3: Review the historical ∆EVI in this region"]])
+
 (defn content []
   [:div#ecodash
    [:div#map]
@@ -33,21 +54,14 @@
                                       (if (visible-control? :info)
                                         (hide-control! :info)
                                         (show-control! :info)))}]]
-    [:h2 "Temporal Analysis"]
-    [:h3 "Step 1: Select a time period to use as the baseline EVI"]
-    [:h3 "Step 2: Select a time period to measure ∆EVI"]
-    [:h3 "Step 3: Update the map with the cumulative ∆EVI"]
-    [:h2 "Spatial Analysis"]
-    [:h3 "Step 1: Choose a polygon selection method"]
-    [:h3 "Step 2: Click a polygon on the map or draw your own"]
-    [:h3 "Step 3: Review the historical ∆EVI in this region"]]
+    (map-controls)]
    [:div#settings-button {:style (get-display-style :settings-button)
                           :on-click (fn []
                                       (hide-control! :settings-button)
                                       (show-control! :ui))}
     (str/unescapeEntities "&#9776;")]
    [:div#general-info {:style (get-display-style :info)}
-    [:h1 "Welcome to the Eco Dash"]
+    [:h1 "Welcome to Eco Dash"]
     [:p
      "Lorem ipsum dolor sit amet, nam et ac, ligula viverra dictumst"
      " turpis, nibh et vitae duis pulvinar sodales. Nullam viverra voluptas"
