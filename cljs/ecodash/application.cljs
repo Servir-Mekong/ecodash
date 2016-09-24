@@ -57,6 +57,9 @@
 (defonce multi-range1 (multi-range :baseline 2000 2017 1))
 (defonce multi-range2 (multi-range :study 2000 2017 1))
 
+(defonce polygon-selection-method (r/atom "Province"))
+(defonce polygon-selection (r/atom ""))
+
 (defn map-controls []
   [:div#controls
    [:hr]
@@ -73,15 +76,23 @@
    [:h3 "Step 1: Choose a polygon selection method"]
    [:ul
     [:li
-     [:input {:type "radio" :name "polygon-selection-method" :value "province"}]
+     [:input {:type "radio" :name "polygon-selection-method" :value "Province"
+              :default-checked "checked"
+              :on-click #(reset! polygon-selection-method
+                                 (.-value (.-currentTarget %)))}]
      [:label "Province"]]
     [:li
-     [:input {:type "radio" :name "polygon-selection-method" :value "country"}]
+     [:input {:type "radio" :name "polygon-selection-method" :value "Country"
+              :on-click #(reset! polygon-selection-method
+                                 (.-value (.-currentTarget %)))}]
      [:label "Country"]]
     [:li
-     [:input {:type "radio" :name "polygon-selection-method" :value "draw"}]
+     [:input {:type "radio" :name "polygon-selection-method" :value "Draw Polygon"
+              :on-click #(reset! polygon-selection-method
+                                 (.-value (.-currentTarget %)))}]
      [:label "Draw Polygon"]]]
    [:h3 "Step 2: Click a polygon on the map or draw your own"]
+   [:p#polygon (str @polygon-selection-method " Selection: " @polygon-selection)]
    [:h3 "Step 3: Review the historical ∆EVI in this region"]])
 
 ;;=========================

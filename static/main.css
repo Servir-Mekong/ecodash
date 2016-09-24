@@ -436,6 +436,14 @@ nav ul li.highlight {
     color:#333;
 }
 
+#ecodash #ui #controls p#polygon {
+    margin-left:12%;
+    padding:5px;
+    font-size:0.8rem;
+    font-weight:bold;
+    color:#333;
+}
+
 /*****************************/
 /* Multi-Range Slider Widget */
 /*****************************/
