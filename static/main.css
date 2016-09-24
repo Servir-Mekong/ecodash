@@ -354,6 +354,36 @@ nav ul li.highlight {
     margin-bottom:5px;
 }
 
+#ecodash #ui #controls input[type=button] {
+    height:28px;
+    margin:0% 0% 2% 31%;
+    font-size:0.8rem;
+}
+
+#ecodash #ui #controls ul {
+    height:28px;
+    margin-left:10%;
+}
+
+#ecodash #ui #controls ul li {
+    display:inline;
+    list-style-type:none;
+    padding:7px 10px;
+}
+
+#ecodash #ui #controls ul li input[type=radio] {
+    height:100%;
+    vertical-align:middle;
+}
+
+#ecodash #ui #controls ul li label {
+    height:100%;
+    vertical-align:middle;
+    margin-left:5px;
+    font-size:0.8rem;
+    color:#333;
+}
+
 /*****************************/
 /* Multi-Range Slider Widget */
 /*****************************/
@@ -362,6 +392,12 @@ section.range-slider {
     position:relative;
     width:200px;
     height:35px;
+    margin-left:20%;
+}
+
+section.range-slider p {
+    font-size:0.8rem;
+    color:#333;
     text-align:center;
 }
 
@@ -376,6 +412,7 @@ section.range-slider input {
     outline:none;
     overflow:hidden;
     pointer-events:none;
+    cursor:pointer;
 }
 
 section.range-slider input::-webkit-slider-thumb {
@@ -396,7 +433,7 @@ section.range-slider input::-moz-range-thumb {
 section.range-slider input::-moz-range-track {
     position:relative;
     z-index:-1;
-    background-color:rgba(0,0,0,1);
+    background-color:rgba(100,100,100,1);
     border:0;
 }
 

@@ -59,6 +59,7 @@
 
 (defn map-controls []
   [:div#controls
+   [:hr]
    [:h2 "Spatial Analysis (Map)"]
    [:h3 "Step 1: Select a time period to use as the baseline EVI"]
    [multi-range1]
@@ -67,14 +68,19 @@
    [:h3 "Step 3: Update the map with the cumulative ∆EVI"]
    [:input {:type "button" :name "update-map" :value "Update Map"
             :on-click #(js/alert "Update Map")}]
+   [:hr]
    [:h2 "Temporal Analysis (Chart)"]
    [:h3 "Step 1: Choose a polygon selection method"]
-   [:input {:type "radio" :name "polygon-selection-method" :value "province"}]
-   [:label "Province"]
-   [:input {:type "radio" :name "polygon-selection-method" :value "country"}]
-   [:label "Country"]
-   [:input {:type "radio" :name "polygon-selection-method" :value "draw"}]
-   [:label "Draw Polygon"]
+   [:ul
+    [:li
+     [:input {:type "radio" :name "polygon-selection-method" :value "province"}]
+     [:label "Province"]]
+    [:li
+     [:input {:type "radio" :name "polygon-selection-method" :value "country"}]
+     [:label "Country"]]
+    [:li
+     [:input {:type "radio" :name "polygon-selection-method" :value "draw"}]
+     [:label "Draw Polygon"]]]
    [:h3 "Step 2: Click a polygon on the map or draw your own"]
    [:h3 "Step 3: Review the historical ∆EVI in this region"]])
 
