@@ -2,6 +2,10 @@
   (:require [goog.string :as str]
             [reagent.core :as r]))
 
+;;===========================
+;; Show/Hide Page Components
+;;===========================
+
 (defonce visible-controls (r/atom #{:ui}))
 
 (defn visible-control? [control]
@@ -18,26 +22,65 @@
 (defn hide-control! [control]
   (swap! visible-controls disj control))
 
+;;===========================
+;; Multi-Range Slider Widget
+;;===========================
+
+(defonce slider-vals (r/atom {}))
+
+(defn get-slider-vals [slider-id]
+  (let [[min max] (sort (vals (@slider-vals slider-id)))]
+    (str min " - " max)))
+
+(defn update-slider-vals! [slider-id idx slider-val]
+  (swap! slider-vals assoc-in [slider-id idx] (str slider-val)))
+
+(defn multi-range [slider-id min max step]
+  (update-slider-vals! slider-id 0 min)
+  (update-slider-vals! slider-id 1 max)
+  (fn []
+    [:section.range-slider
+     [:p.range-values (get-slider-vals slider-id)]
+     [:input {:type "range" :min (str min) :max (str max)
+              :step (str step) :default-value (str min)
+              :on-change #(let [val (.-value (.-currentTarget %))]
+                            (update-slider-vals! slider-id 0 val))}]
+     [:input {:type "range" :min (str min) :max (str max)
+              :step (str step) :default-value (str max)
+              :on-change #(let [val (.-value (.-currentTarget %))]
+                            (update-slider-vals! slider-id 1 val))}]]))
+
+;;==============
+;; Map Controls
+;;==============
+
+(defonce multi-range1 (multi-range :baseline 2000 2017 1))
+(defonce multi-range2 (multi-range :study 2000 2017 1))
+
 (defn map-controls []
   [:div#controls
-   [:h2 "Update Map (Temporal Analysis)"]
+   [:h2 "Spatial Analysis (Map)"]
    [:h3 "Step 1: Select a time period to use as the baseline EVI"]
-   [:input#baseline-start {:type "range" :min "2000" :max "2017" :step "1"}]
-   [:input#baseline-end {:type "range" :min "2000" :max "2017" :step "1"}]
+   [multi-range1]
    [:h3 "Step 2: Select a time period to measure ∆EVI"]
-   [:input#study-start {:type "range" :min "2000" :max "2017" :step "1"}]
-   [:input#study-end {:type "range" :min "2000" :max "2017" :step "1"}]
+   [multi-range2]
    [:h3 "Step 3: Update the map with the cumulative ∆EVI"]
-   [:h2 "Show Graphs (Spatial Analysis)"]
+   [:input {:type "button" :name "update-map" :value "Update Map"
+            :on-click #(js/alert "Update Map")}]
+   [:h2 "Temporal Analysis (Chart)"]
    [:h3 "Step 1: Choose a polygon selection method"]
-   [:input {:type "radio" :name "polygon-selection-method" :value "1"}]
+   [:input {:type "radio" :name "polygon-selection-method" :value "province"}]
    [:label "Province"]
-   [:input {:type "radio" :name "polygon-selection-method" :value "2"}]
+   [:input {:type "radio" :name "polygon-selection-method" :value "country"}]
    [:label "Country"]
-   [:input {:type "radio" :name "polygon-selection-method" :value "3"}]
+   [:input {:type "radio" :name "polygon-selection-method" :value "draw"}]
    [:label "Draw Polygon"]
    [:h3 "Step 2: Click a polygon on the map or draw your own"]
    [:h3 "Step 3: Review the historical ∆EVI in this region"]])
+
+;;============================
+;; Page Layout and Components
+;;============================
 
 (defn content []
   [:div#ecodash
@@ -54,7 +97,7 @@
                                       (if (visible-control? :info)
                                         (hide-control! :info)
                                         (show-control! :info)))}]]
-    (map-controls)]
+    [map-controls]]
    [:div#settings-button {:style (get-display-style :settings-button)
                           :on-click (fn []
                                       (hide-control! :settings-button)
@@ -80,6 +123,10 @@
       [:tr
        [:td "Decrease"]]]]]
    [:input#counter {:type "hidden" :name "counter" :value "0"}]])
+
+;;===================
+;; Application Logic
+;;===================
 
 (defonce country (google.maps.Data.))
 (defonce province (google.maps.Data.))

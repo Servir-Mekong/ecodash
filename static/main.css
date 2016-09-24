@@ -353,3 +353,59 @@ nav ul li.highlight {
     color:gray;
     margin-bottom:5px;
 }
+
+/*****************************/
+/* Multi-Range Slider Widget */
+/*****************************/
+
+section.range-slider {
+    position:relative;
+    width:200px;
+    height:35px;
+    text-align:center;
+}
+
+section.range-slider input {
+    position:absolute;
+    left:0;
+    top:15px;
+    width:200px;
+    height:18px;
+    margin:0;
+    padding:0;
+    outline:none;
+    overflow:hidden;
+    pointer-events:none;
+}
+
+section.range-slider input::-webkit-slider-thumb {
+    position:relative;
+    z-index:1;
+    outline:0;
+    pointer-events:all;
+}
+
+section.range-slider input::-moz-range-thumb {
+    position:relative;
+    z-index:10;
+    -moz-appearance:none;
+    width:9px;
+    pointer-events:all;
+}
+
+section.range-slider input::-moz-range-track {
+    position:relative;
+    z-index:-1;
+    background-color:rgba(0,0,0,1);
+    border:0;
+}
+
+section.range-slider input:last-of-type::-moz-range-track {
+    -moz-appearance:none;
+    background:none transparent;
+    border:0;
+}
+
+section.range-slider input[type=range]::-moz-focus-outer {
+    border:0;
+}
