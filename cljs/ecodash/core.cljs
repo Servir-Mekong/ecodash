@@ -4,6 +4,10 @@
             [reagent.core :as r]
             [ecodash.application :as app]))
 
+;;=============
+;; Page Header
+;;=============
+
 (defonce active-link (r/atom 0))
 
 (defonce hover-link (r/atom nil))
@@ -29,6 +33,10 @@
      [:li (make-nav-link-style 0) "Home"]
      [:li (make-nav-link-style 1) "About"]
      [:li (make-nav-link-style 2) "Application"]]]])
+
+;;===========
+;; Page Body
+;;===========
 
 (def home-page
   [:div#home
@@ -67,6 +75,10 @@
     0 home-page
     1 about-page
     2 (app/content)))
+
+;;==================
+;; CLJS Entry Point
+;;==================
 
 (defn ^:export main [ee-map-id ee-token country-polygons province-polygons]
   (r/render [page-header] (dom/getElement "pageheader"))

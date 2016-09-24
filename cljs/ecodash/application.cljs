@@ -78,9 +78,9 @@
    [:h3 "Step 2: Click a polygon on the map or draw your own"]
    [:h3 "Step 3: Review the historical ∆EVI in this region"]])
 
-;;============================
-;; Page Layout and Components
-;;============================
+;;=========================
+;; Application Page Layout
+;;=========================
 
 (defn content []
   [:div#ecodash
