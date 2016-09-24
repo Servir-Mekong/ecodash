@@ -93,7 +93,8 @@
      [:label "Draw Polygon"]]]
    [:h3 "Step 2: Click a polygon on the map or draw your own"]
    [:p#polygon (str @polygon-selection-method " Selection: " @polygon-selection)]
-   [:h3 "Step 3: Review the historical ∆EVI in this region"]])
+   [:h3 "Step 3: Review the historical ∆EVI in this region"]
+   [:div#chart]])
 
 ;;=========================
 ;; Application Page Layout
@@ -109,7 +110,7 @@
    [:div#map]
    [:div#ui {:style (get-display-style :ui)}
     [:header
-     [:h1 "Map Controls"]
+     [:h1 "Eco Dash Controls"]
      [:div#collapse-button {:on-click (fn []
                                         (hide-control! :ui)
                                         (show-control! :settings-button))}
