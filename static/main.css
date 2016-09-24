@@ -388,20 +388,20 @@ nav ul li.highlight {
 /* Multi-Range Slider Widget */
 /*****************************/
 
-section.range-slider {
+.range-slider {
     position:relative;
     width:200px;
     height:35px;
     margin-left:20%;
 }
 
-section.range-slider p {
+.range-slider p {
     font-size:0.8rem;
     color:#333;
     text-align:center;
 }
 
-section.range-slider input {
+.range-slider input {
     position:absolute;
     left:0;
     top:15px;
@@ -415,14 +415,14 @@ section.range-slider input {
     cursor:pointer;
 }
 
-section.range-slider input::-webkit-slider-thumb {
+.range-slider input::-webkit-slider-thumb {
     position:relative;
     z-index:1;
     outline:0;
     pointer-events:all;
 }
 
-section.range-slider input::-moz-range-thumb {
+.range-slider input::-moz-range-thumb {
     position:relative;
     z-index:10;
     -moz-appearance:none;
@@ -430,19 +430,19 @@ section.range-slider input::-moz-range-thumb {
     pointer-events:all;
 }
 
-section.range-slider input::-moz-range-track {
+.range-slider input::-moz-range-track {
     position:relative;
     z-index:-1;
     background-color:rgba(100,100,100,1);
     border:0;
 }
 
-section.range-slider input:last-of-type::-moz-range-track {
+.range-slider input:last-of-type::-moz-range-track {
     -moz-appearance:none;
     background:none transparent;
     border:0;
 }
 
-section.range-slider input[type=range]::-moz-focus-outer {
+.range-slider input[type=range]::-moz-focus-outer {
     border:0;
 }

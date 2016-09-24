@@ -39,8 +39,8 @@
   (update-slider-vals! slider-id 0 min)
   (update-slider-vals! slider-id 1 max)
   (fn []
-    [:section.range-slider
-     [:p.range-values (get-slider-vals slider-id)]
+    [:div.range-slider
+     [:p (get-slider-vals slider-id)]
      [:input {:type "range" :min (str min) :max (str max)
               :step (str step) :default-value (str min)
               :on-change #(let [val (.-value (.-currentTarget %))]
