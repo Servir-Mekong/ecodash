@@ -351,7 +351,7 @@ nav ul li.highlight {
     font-size:0.8rem;
     font-weight:bold;
     color:gray;
-    margin-bottom:5px;
+    margin:5px 0px;
 }
 
 #ecodash #ui #controls input[type=button] {
