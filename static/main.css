@@ -267,7 +267,8 @@ nav ul li.highlight {
 #ecodash #legend {
     position:absolute;
     left:0px;
-    bottom:0px;
+    bottom:45px;
+    width:80px;
     background-color:white;
     padding:5px;
     border-top-right-radius:3px;
@@ -291,6 +292,57 @@ nav ul li.highlight {
 
 #ecodash #legend table td img {
     height:100px;
+}
+
+#ecodash #opacity {
+    position:absolute;
+    left:0px;
+    bottom:0px;
+    height:35px;
+    width:80px;
+    background-color:white;
+    padding:5px;
+}
+
+#ecodash #opacity p {
+    font-size:0.8rem;
+    color:#333;
+    text-align:center;
+}
+
+#ecodash #opacity input {
+    height:18px;
+    width:80px;
+    outline:none;
+    overflow:hidden;
+    pointer-events:none;
+    cursor:pointer;
+}
+
+#ecodash #opacity input::-webkit-slider-thumb {
+    position:relative;
+    z-index:1;
+    outline:0;
+    pointer-events:all;
+}
+
+#ecodash #opacity input::-moz-range-thumb {
+    position:relative;
+    z-index:10;
+    -moz-appearance:none;
+    width:9px;
+    pointer-events:all;
+}
+
+#ecodash #opacity input::-moz-range-track {
+    position:relative;
+    z-index:-1;
+    background-color:rgba(100,100,100,1);
+    border:0;
+}
+
+#ecodash #opacity input[type=range]::-moz-focus-outer {
+    border:0;
 }
 
 /***********************************/

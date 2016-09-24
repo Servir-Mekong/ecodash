@@ -88,6 +88,11 @@
 ;; Application Page Layout
 ;;=========================
 
+(defonce opacity (r/atom 1.0))
+
+(defn update-opacity! [val]
+  (reset! opacity val))
+
 (defn content []
   [:div#ecodash
    [:div#map]
@@ -118,7 +123,7 @@
      " ultricies eget in purus viverra, elit neque mauris pretium ac, dolor"
      " massa in ac nulla, tempus per a vel eros vivamus arcu, elit dui mauris."]]
    [:div#legend
-    [:h2 "Legend"]
+    [:h2 "∆EVI"]
     [:table
      [:tbody
       [:tr
@@ -128,6 +133,10 @@
        [:td "Stable"]]
       [:tr
        [:td "Decrease"]]]]]
+   [:div#opacity
+    [:p (str "Opacity: " @opacity)]
+    [:input {:type "range" :min "0" :max "1" :step "0.1" :default-value "1"
+             :on-change #(update-opacity! (.-value (.-currentTarget %)))}]]
    [:input#counter {:type "hidden" :name "counter" :value "0"}]])
 
 ;;===================
