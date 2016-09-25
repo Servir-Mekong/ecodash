@@ -349,6 +349,21 @@ nav ul li.highlight {
     border:0;
 }
 
+#ecodash p#feedback {
+    position:absolute;
+    bottom:0;
+    left:31%;
+    width:7.2rem;
+    height:1.2rem;
+    border-top-left-radius:3px;
+    border-top-right-radius:3px;
+    background-color:white;
+    padding:5px;
+    font-size:0.8rem;
+    text-align:center;
+    box-shadow:0px 0px 5px gray;
+}
+
 /***********************************/
 /* Application Page Sidebar Header */
 /***********************************/
@@ -445,8 +460,7 @@ nav ul li.highlight {
     margin-left:12%;
     padding:5px;
     font-size:0.8rem;
-    font-weight:bold;
-    color:gray;
+    color:#333;
 }
 
 /*****************************/

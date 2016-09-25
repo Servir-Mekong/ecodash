@@ -159,6 +159,9 @@
     [:p (str "Opacity: " @opacity)]
     [:input {:type "range" :min "0" :max "1" :step "0.1" :default-value "1"
              :on-change #(update-opacity! (.-value (.-currentTarget %)))}]]
+   [:p#feedback [:a {:href "https://github.com/Servir-Mekong/ecodash/issues"
+                     :target "_blank"}
+                 "Give us Feedback!"]]
    [:div.spinner {:style (get-spinner-visibility)}]
    [:input#counter {:type "hidden" :name "counter" :value "0"}]])
 

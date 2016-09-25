@@ -47,7 +47,8 @@
    [:p
     "Eco Dash is a collaborative effort between its developers and its "
     "community of users. We welcome suggestions for improvements on our "
-    [:a {:href "https://github.com/Servir-Mekong/ecodash/issues"} "Github"]
+    [:a {:href "https://github.com/Servir-Mekong/ecodash/issues" :target "_blank"}
+     "Github"]
     " issues page."]])
 
 (def about-page
@@ -62,12 +63,13 @@
             " The full functionality of Mapcha including collaborative"
             " compilation of reference point databases is implemented online"
             " so there is no need for desktop installation.")]
-   [:a {:href "http://www.sig-gis.com"} [:img {:src "/static/images/logosig.png"}]]
+   [:a {:href "http://www.sig-gis.com" :target "_blank"}
+    [:img {:src "/static/images/logosig.png"}]]
    [:p
     "Copyright "
     (str/unescapeEntities "&copy;")
     " "
-    [:a {:href "http://www.sig-gis.com"} "SIG-GIS"]
+    [:a {:href "http://www.sig-gis.com" :target "_blank"} "SIG-GIS"]
     " 2016"]])
 
 (defn page-content []
