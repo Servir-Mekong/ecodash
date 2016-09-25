@@ -70,6 +70,8 @@
     {:visibility "visible"}
     {:visibility "hidden"}))
 
+(declare show-map!)
+
 (defn map-controls []
   [:div#controls
    [:hr]
@@ -80,7 +82,8 @@
    [multi-range2]
    [:h3 "Step 3: Update the map with the cumulative ∆EVI"]
    [:input {:type "button" :name "update-map" :value "Update Map"
-            :on-click toggle-spinner-visibility!}]
+            :on-click #(do (toggle-spinner-visibility!)
+                           (show-map!))}]
    [:hr]
    [:h2 "Temporal Analysis (Chart)"]
    [:h3 "Step 1: Choose a polygon selection method"]
@@ -169,14 +172,55 @@
 ;; Application Logic
 ;;===================
 
-(defonce country (google.maps.Data.))
-(defonce province (google.maps.Data.))
+;; (defonce country (google.maps.Data.))
+;; (defonce province (google.maps.Data.))
 
 (defn log [& vals]
   (.log js/console (apply str vals)))
 
+;; FIXME: stub
+(defn create-map []
+  nil)
+
+;; FIXME: stub
+(defn init-date-picker []
+  nil)
+
+;; FIXME: stub
+(defn init-slider [map]
+  nil)
+
+;; FIXME: stub
+(defn handle-polygon-click []
+  nil)
+
+;; FIXME: stub
+(defn init-button [map country-polygons province-polygons]
+  nil)
+
+;; FIXME: stub
+(defn opacity-sliders []
+  nil)
+
+;; FIXME: stub
+(defn show-map! []
+  nil)
+
+;; FIXME: stub
+(defn refresh-image [ee-map-id ee-token country-polygons province-polygons]
+  nil)
+
 (defn init [ee-map-id ee-token country-polygons province-polygons]
-  (log ee-map-id)
-  (log ee-token)
-  (log country-polygons)
-  (log province-polygons))
+  (log "EE Map ID: " ee-map-id)
+  (log "EE Token: " ee-token)
+  (log "Countries: " (count country-polygons))
+  (log "Provinces: " (count province-polygons))
+  (.load js/google "visualization" "1.0")
+  (let [counter 0
+        map (create-map)]
+    (init-date-picker)
+    (init-slider map)
+    (.addListener (.-data map) "click" (handle-polygon-click)) ;; ???
+    (init-button map country-polygons province-polygons)
+    (opacity-sliders)
+    (refresh-image ee-map-id ee-token country-polygons province-polygons)))
