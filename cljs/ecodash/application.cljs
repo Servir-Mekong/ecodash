@@ -60,6 +60,16 @@
 (defonce polygon-selection-method (r/atom "Province"))
 (defonce polygon-selection (r/atom ""))
 
+(defonce spinner-visible? (r/atom false))
+
+(defn toggle-spinner-visibility! []
+  (swap! spinner-visible? not))
+
+(defn get-spinner-visibility []
+  (if @spinner-visible?
+    {:visibility "visible"}
+    {:visibility "hidden"}))
+
 (defn map-controls []
   [:div#controls
    [:hr]
@@ -70,7 +80,7 @@
    [multi-range2]
    [:h3 "Step 3: Update the map with the cumulative ∆EVI"]
    [:input {:type "button" :name "update-map" :value "Update Map"
-            :on-click #(js/alert "Update Map")}]
+            :on-click toggle-spinner-visibility!}]
    [:hr]
    [:h2 "Temporal Analysis (Chart)"]
    [:h3 "Step 1: Choose a polygon selection method"]
@@ -149,6 +159,7 @@
     [:p (str "Opacity: " @opacity)]
     [:input {:type "range" :min "0" :max "1" :step "0.1" :default-value "1"
              :on-change #(update-opacity! (.-value (.-currentTarget %)))}]]
+   [:div.spinner {:style (get-spinner-visibility)}]
    [:input#counter {:type "hidden" :name "counter" :value "0"}]])
 
 ;;===================

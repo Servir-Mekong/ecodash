@@ -441,7 +441,7 @@ nav ul li.highlight {
     padding:5px;
     font-size:0.8rem;
     font-weight:bold;
-    color:#333;
+    color:gray;
 }
 
 /*****************************/
@@ -505,4 +505,38 @@ nav ul li.highlight {
 
 .range-slider input[type=range]::-moz-focus-outer {
     border:0;
+}
+
+/******************/
+/* Spinner Widget */
+/******************/
+
+.spinner {
+    position:absolute;
+    top:38%;
+    left:33%;
+    width:4rem;
+    height:4rem;
+    border-radius:2rem;
+    border-bottom:0.5rem solid orange;
+    -moz-animation:sweep 1s infinite linear;
+    -webkit-animation:sweep 1s infinite linear;
+}
+
+@-moz-keyframes sweep {
+    from {
+        -moz-transform:rotate(0deg);
+    }
+    to {
+        -moz-transform:rotate(360deg);
+    }
+}
+
+@-webkit-keyframes sweep {
+    from {
+        -webkit-transform:rotate(0deg);
+    }
+    to {
+        -webkit-transform:rotate(360deg);
+    }
 }
