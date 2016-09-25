@@ -182,7 +182,7 @@
 (defn create-map []
   (google.maps.Map.
    (dom/getElement "map")
-   #js {:center #js {:lng 105.8 :lat 11.8}
+   #js {:center #js {:lng 107.5 :lat 17.0}
         :zoom 5
         :maxZoom 12
         :streetViewControl false}))
