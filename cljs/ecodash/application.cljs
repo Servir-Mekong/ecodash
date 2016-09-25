@@ -79,7 +79,8 @@
     {:visibility "visible"}
     {:visibility "hidden"}))
 
-(declare show-map!)
+(declare show-map! remove-map-features! enable-province-selection!
+         enable-country-selection! enable-custom-polygon-selection!)
 
 (defn map-controls []
   [:div#controls
@@ -100,18 +101,24 @@
     [:li
      [:input {:type "radio" :name "polygon-selection-method" :value "Province"
               :default-checked "checked"
-              :on-click #(reset! polygon-selection-method
-                                 (.-value (.-currentTarget %)))}]
+              :on-click #(do (reset! polygon-selection-method
+                                     (.-value (.-currentTarget %)))
+                             (remove-map-features!)
+                             (enable-province-selection!))}]
      [:label "Province"]]
     [:li
      [:input {:type "radio" :name "polygon-selection-method" :value "Country"
-              :on-click #(reset! polygon-selection-method
-                                 (.-value (.-currentTarget %)))}]
+              :on-click #(do (reset! polygon-selection-method
+                                     (.-value (.-currentTarget %)))
+                             (remove-map-features!)
+                             (enable-country-selection!))}]
      [:label "Country"]]
     [:li
      [:input {:type "radio" :name "polygon-selection-method" :value "Draw Polygon"
-              :on-click #(reset! polygon-selection-method
-                                 (.-value (.-currentTarget %)))}]
+              :on-click #(do (reset! polygon-selection-method
+                                     (.-value (.-currentTarget %)))
+                             (remove-map-features!)
+                             (enable-custom-polygon-selection!))}]
      [:label "Draw Polygon"]]]
    [:h3 "Step 2: Click a polygon on the map or draw your own"]
    [:p#polygon (str @polygon-selection-method " Selection: " @polygon-selection)]
@@ -196,6 +203,29 @@
         :streetViewControl false}))
 
 ;; FIXME: stub
+(defn show-map! []
+  nil)
+
+(defonce google-map (atom nil))
+
+;; FIXME: do this if checkbox == 1?
+(defn remove-map-features! []
+  (let [map-features (.-data @google-map)]
+    (.forEach map-features #(.remove map-features %))))
+
+;; FIXME: stub
+(defn enable-province-selection! []
+  nil)
+
+;; FIXME: stub
+(defn enable-country-selection! []
+  nil)
+
+;; FIXME: stub
+(defn enable-custom-polygon-selection! []
+  nil)
+
+;; FIXME: stub
 (defn handle-polygon-click []
   nil)
 
@@ -205,10 +235,6 @@
 
 ;; FIXME: stub
 (defn opacity-sliders []
-  nil)
-
-;; FIXME: stub
-(defn show-map! []
   nil)
 
 (defn get-ee-map-type [ee-map-id ee-token]
@@ -233,6 +259,7 @@
   (.load js/google "visualization" "1.0")
   (let [counter 0
         map (create-map)]
+    (reset! google-map map)
     (.addListener (.-data map) "click" (handle-polygon-click)) ;; ???
     (init-button map country-polygons province-polygons)
     (opacity-sliders)
