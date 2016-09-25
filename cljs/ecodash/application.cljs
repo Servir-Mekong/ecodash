@@ -51,6 +51,14 @@
               :on-change #(let [val (.-value (.-currentTarget %))]
                             (update-slider-vals! slider-id 1 val))}]]))
 
+;; FIXME: slider :on-change should:
+;; 1. hide div#chart
+;; 2. call (.revertStyle (.-data map))
+;; 3. (doseq [an-overlay @all-overlays]
+;;      (.setMap (.-overlay an-overlay) nil))
+;;    (reset! all-overlays [])
+;; NOTE: (init-button) adds overlays to all-overlays
+
 ;;==============
 ;; Map Controls
 ;;==============
@@ -188,14 +196,6 @@
         :streetViewControl false}))
 
 ;; FIXME: stub
-(defn init-date-picker []
-  nil)
-
-;; FIXME: stub
-(defn init-slider [map]
-  nil)
-
-;; FIXME: stub
 (defn handle-polygon-click []
   nil)
 
@@ -233,8 +233,6 @@
   (.load js/google "visualization" "1.0")
   (let [counter 0
         map (create-map)]
-    (init-date-picker)
-    (init-slider map)
     (.addListener (.-data map) "click" (handle-polygon-click)) ;; ???
     (init-button map country-polygons province-polygons)
     (opacity-sliders)
