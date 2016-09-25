@@ -250,8 +250,8 @@
                            ee-map-id "/" zoom "/" (.-x tile) "/" (.-y tile)
                            "?token=" ee-token))}))
 
-(defn refresh-image [map ee-map-id ee-token]
-  (.push (.-overlayMapTypes map)
+(defn refresh-image [ee-map-id ee-token]
+  (.push (.-overlayMapTypes @google-map)
          (get-ee-map-type ee-map-id ee-token)))
 
 (defn init [ee-map-id ee-token country-polygons province-polygons]
@@ -260,10 +260,9 @@
   (log "Countries: " (count country-polygons))
   (log "Provinces: " (count province-polygons))
   (.load js/google "visualization" "1.0")
-  (let [counter 0
-        map (create-map)]
-    (reset! google-map map)
-    (.addListener (.-data map) "click" (handle-polygon-click)) ;; ???
-    (init-button map country-polygons province-polygons)
-    (opacity-sliders)
-    (refresh-image map ee-map-id ee-token)))
+  (reset! google-map (create-map))
+  (reset! country-names country-polygons)
+  (reset! province-names province-polygons)
+  (.addListener (.-data @google-map) "click" (handle-polygon-click)) ;; ???
+  (opacity-sliders)
+  (refresh-image ee-map-id ee-token))
