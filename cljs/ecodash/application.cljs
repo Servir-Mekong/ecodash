@@ -1,7 +1,10 @@
 (ns ecodash.application
   (:require [goog.dom :as dom]
             [goog.string :as str]
-            [reagent.core :as r]))
+            [reagent.core :as r]
+            [cljs-http.client :as http]
+            [cljs.core.async :refer [<!]])
+  (:require-macros [cljs.core.async.macros :refer [go]]))
 
 ;;===========================
 ;; Show/Hide Page Components

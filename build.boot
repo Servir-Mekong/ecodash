@@ -10,6 +10,8 @@
  :resource-paths #{"static"}
  :dependencies   '[[org.clojure/clojure         "1.8.0"]
                    [org.clojure/clojurescript   "1.8.51"]
+                   [org.clojure/core.async      "0.2.391"]
+                   [cljs-http                   "0.1.41"]
                    [reagent                     "0.6.0"]
                    [adzerk/boot-cljs            "1.7.228-1" :scope "test"]
                    [adzerk/boot-cljs-repl       "0.3.0"     :scope "test"]
