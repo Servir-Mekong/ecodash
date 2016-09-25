@@ -256,6 +256,7 @@ nav ul li.highlight {
     background-color:white;
     box-shadow:0px 0px 5px gray;
     font-size:14px;
+    z-index:100;
 }
 
 #ecodash #general-info h1 {
@@ -267,7 +268,7 @@ nav ul li.highlight {
 #ecodash #legend {
     position:absolute;
     left:0px;
-    bottom:45px;
+    bottom:55px;
     width:80px;
     background-color:white;
     padding:5px;
@@ -298,7 +299,7 @@ nav ul li.highlight {
     position:absolute;
     left:0px;
     bottom:0px;
-    height:35px;
+    height:45px;
     width:80px;
     background-color:white;
     padding:5px;
@@ -311,8 +312,11 @@ nav ul li.highlight {
 }
 
 #ecodash #opacity input {
-    height:18px;
+    position:absolute;
+    left:5;
+    top:25px;
     width:80px;
+    height:22px;
     outline:none;
     overflow:hidden;
     pointer-events:none;
@@ -408,8 +412,9 @@ nav ul li.highlight {
 
 #ecodash #ui #controls input[type=button] {
     height:28px;
-    margin:0% 0% 2% 31%;
+    margin:2% 0% 2% 31%;
     font-size:0.8rem;
+    color:#333;
 }
 
 #ecodash #ui #controls ul {
@@ -451,7 +456,7 @@ nav ul li.highlight {
 .range-slider {
     position:relative;
     width:200px;
-    height:35px;
+    height:45px;
     margin-left:20%;
 }
 
@@ -464,11 +469,9 @@ nav ul li.highlight {
 .range-slider input {
     position:absolute;
     left:0;
-    top:15px;
+    top:20px;
     width:200px;
-    height:18px;
-    margin:0;
-    padding:0;
+    height:22px;
     outline:none;
     overflow:hidden;
     pointer-events:none;
