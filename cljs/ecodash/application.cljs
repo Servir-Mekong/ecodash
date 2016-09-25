@@ -1,5 +1,6 @@
 (ns ecodash.application
-  (:require [goog.string :as str]
+  (:require [goog.dom :as dom]
+            [goog.string :as str]
             [reagent.core :as r]))
 
 ;;===========================
@@ -178,9 +179,13 @@
 (defn log [& vals]
   (.log js/console (apply str vals)))
 
-;; FIXME: stub
 (defn create-map []
-  nil)
+  (google.maps.Map.
+   (dom/getElement "map")
+   #js {:center #js {:lng 105.8 :lat 11.8}
+        :zoom 5
+        :maxZoom 12
+        :streetViewControl false}))
 
 ;; FIXME: stub
 (defn init-date-picker []
@@ -206,9 +211,19 @@
 (defn show-map! []
   nil)
 
-;; FIXME: stub
-(defn refresh-image [ee-map-id ee-token country-polygons province-polygons]
-  nil)
+(defn get-ee-map-type [ee-map-id ee-token]
+  (google.maps.ImageMapType.
+   #js {:name "ecomap"
+        :opacity 1.0
+        :tileSize (google.maps.Size. 256 256)
+        :getTileUrl (fn [tile zoom]
+                      (str "https://earthengine.googleapis.com/map/"
+                           ee-map-id "/" zoom "/" (.-x tile) "/" (.-y tile)
+                           "?token=" ee-token))}))
+
+(defn refresh-image [map ee-map-id ee-token]
+  (.push (.-overlayMapTypes map)
+         (get-ee-map-type ee-map-id ee-token)))
 
 (defn init [ee-map-id ee-token country-polygons province-polygons]
   (log "EE Map ID: " ee-map-id)
@@ -223,4 +238,4 @@
     (.addListener (.-data map) "click" (handle-polygon-click)) ;; ???
     (init-button map country-polygons province-polygons)
     (opacity-sliders)
-    (refresh-image ee-map-id ee-token country-polygons province-polygons)))
+    (refresh-image map ee-map-id ee-token)))
