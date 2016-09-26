@@ -197,78 +197,19 @@
 ;; Application Logic
 ;;===================
 
-(defn log [& vals]
-  (.log js/console (apply str vals)))
-
 (defonce google-map (atom nil))
 
-(defn create-map []
-  (google.maps.Map.
-   (dom/getElement "map")
-   #js {:center #js {:lng 107.5 :lat 17.0}
-        :zoom 5
-        :maxZoom 12
-        :streetViewControl false}))
+(defonce province-names (atom []))
 
-(defn remove-map-features! []
-  (let [map-features (.-data @google-map)]
-    (.forEach map-features #(.remove map-features %))))
+(defonce country-names (atom []))
 
-(defn update-opacity! [val]
-  (reset! opacity val)
-  (let [overlay-map-types (.-overlayMapTypes @google-map)]
-    (.forEach overlay-map-types
-              (fn [map-type index]
-                (if map-type
-                  (.setOpacity (.getAt overlay-map-types index) val))))))
+(defonce country-or-province (atom nil))
+
+(defonce polygon-counter (atom 0))
 
 (defonce active-drawing-manager (atom nil))
 
 (defonce all-overlays (atom []))
-
-(defonce polygon-counter (atom 0))
-
-(defonce province-names (atom []))
-
-(defonce country-or-province (atom nil))
-
-(defn enable-province-selection! []
-  (let [map-features (.-data @google-map)]
-    (doseq [province @province-names]
-      (.loadGeoJson map-features (str "/static/province/" province ".json")))
-    (.setStyle map-features
-               (fn [feature] #js {:fillColor "white"
-                                  :strokeColor "white"
-                                  :strokeWeight 2}))
-    (doseq [event @all-overlays]
-      (.setMap (.-overlay event) nil))
-    (when @active-drawing-manager
-      (.setMap @active-drawing-manager nil)
-      (reset! active-drawing-manager nil))
-    (reset! all-overlays [])
-    (reset! polygon-counter 0)
-    (reset! polygon-selection [])
-    (reset! country-or-province 0)))
-
-(defonce country-names (atom []))
-
-(defn enable-country-selection! []
-  (let [map-features (.-data @google-map)]
-    (doseq [country @country-names]
-      (.loadGeoJson map-features (str "/static/country/" country ".json")))
-    (.setStyle map-features
-               (fn [feature] #js {:fillColor "white"
-                                  :strokeColor "white"
-                                  :strokeWeight 2}))
-    (doseq [event @all-overlays]
-      (.setMap (.-overlay event) nil))
-    (when @active-drawing-manager
-      (.setMap @active-drawing-manager nil)
-      (reset! active-drawing-manager nil))
-    (reset! all-overlays [])
-    (reset! polygon-counter 0)
-    (reset! polygon-selection [])
-    (reset! country-or-province 1)))
 
 (defonce css-colors
   ["Aqua" "Black" "Blue" "BlueViolet" "Brown" "Aquamarine" "BurlyWood" "CadetBlue"
@@ -294,6 +235,57 @@
    "SlateGray" "SlateGrey" "Snow" "SpringGreen" "SteelBlue" "Tan" "Teal" "Thistle"
    "Tomato" "Turquoise" "Violet" "Wheat" "White" "WhiteSmoke" "Yellow"
    "YellowGreen"])
+
+(defn log [& vals]
+  (.log js/console (apply str vals)))
+
+(defn create-map []
+  (google.maps.Map.
+   (dom/getElement "map")
+   #js {:center #js {:lng 107.5 :lat 17.0}
+        :zoom 5
+        :maxZoom 12
+        :streetViewControl false}))
+
+(defn remove-map-features! []
+  (let [map-features (.-data @google-map)]
+    (.forEach map-features #(.remove map-features %))
+    (doseq [event @all-overlays]
+      (.setMap (.-overlay event) nil))
+    (when @active-drawing-manager
+      (.setMap @active-drawing-manager nil)
+      (reset! active-drawing-manager nil))
+    (reset! all-overlays [])
+    (reset! polygon-counter 0)
+    (reset! polygon-selection [])))
+
+(defn update-opacity! [val]
+  (reset! opacity val)
+  (let [overlay-map-types (.-overlayMapTypes @google-map)]
+    (.forEach overlay-map-types
+              (fn [map-type index]
+                (if map-type
+                  (.setOpacity (.getAt overlay-map-types index) val))))))
+
+(defn enable-province-selection! []
+  (let [map-features (.-data @google-map)]
+    (doseq [province @province-names]
+      (.loadGeoJson map-features (str "/static/province/" province ".json")))
+    (.setStyle map-features
+               (fn [feature] #js {:fillColor "white"
+                                  :strokeColor "white"
+                                  :strokeWeight 2}))
+    (reset! country-or-province 0)))
+
+(defn enable-country-selection! []
+  (let [map-features (.-data @google-map)]
+    (doseq [country @country-names]
+      (.loadGeoJson map-features (str "/static/country/" country ".json")))
+    (.setStyle map-features
+               (fn [feature] #js {:fillColor "white"
+                                  :strokeColor "white"
+                                  :strokeWeight 2}))
+    (reset! country-or-province 1)))
 
 ;; FIXME: stub
 (defn show-chart! [response]
