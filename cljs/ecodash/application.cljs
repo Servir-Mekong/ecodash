@@ -250,6 +250,7 @@
         :streetViewControl false}))
 
 (defn clear-chart! []
+  (reset! chart-data nil)
   (hide-control! :chart)
   (set! (.-innerHTML (dom/getElement "chart")) nil))
 
@@ -265,7 +266,6 @@
     (reset! all-overlays [])
     (reset! polygon-counter 0)
     (reset! polygon-selection [])
-    (reset! chart-data nil)
     (clear-chart!)))
 
 (defn update-opacity! [val]
@@ -313,12 +313,16 @@
     (doto (google.visualization.ChartWrapper.
            #js {:chartType "LineChart"
                 :dataTable table
-                :options #js {:width 450
+                :options #js {:height 200
+                              :width 385
                               :title "Biophysical Health"
-                              :curveType "function"
-                              :legend #js {:position "right"}
                               :titleTextStyle #js {:fontName "Open Sans"}
-                              :chartArea #js {:width "40%"}
+                              :legend #js {:position "right"}
+                              :curveType "function"
+                              :chartArea #js {:left 50
+                                              :top 50
+                                              :height 100
+                                              :width 200}
                               :colors (clj->js css-colors)}})
       (.setContainerId (dom/getElement "chart"))
       (.draw))

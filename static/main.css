@@ -473,6 +473,11 @@ nav ul li.highlight {
     font-style:italic;
 }
 
+#ecodash #ui #controls #chart {
+    height:200px;
+    width:385px;
+}
+
 /*****************************/
 /* Multi-Range Slider Widget */
 /*****************************/
