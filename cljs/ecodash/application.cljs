@@ -80,8 +80,11 @@
 
 (defonce spinner-visible? (r/atom false))
 
-(defn toggle-spinner-visibility! []
-  (swap! spinner-visible? not))
+(defn show-progress! []
+  (reset! spinner-visible? true))
+
+(defn hide-progress! []
+  (reset! spinner-visible? false))
 
 (defn get-spinner-visibility []
   (if @spinner-visible?
@@ -101,8 +104,7 @@
    [multi-range2]
    [:h3 "Step 3: Update the map with the cumulative ∆EVI"]
    [:input {:type "button" :name "update-map" :value "Update Map"
-            :on-click #(do (toggle-spinner-visibility!)
-                           (show-map!))}]
+            :on-click show-map!}]
    [:hr]
    [:h2 "Temporal Analysis (Chart)"]
    [:h3 "Step 1: Choose a polygon selection method"]
@@ -298,14 +300,6 @@
 (defn show-chart! [response]
   nil)
 
-;; FIXME: stub
-(defn show-progress! []
-  nil)
-
-;; FIXME: stub
-(defn hide-progress! []
-  nil)
-
 ;; AJAX Response Example:
 ;; {:status 200
 ;;  :success true
@@ -346,9 +340,9 @@
           (log "AJAX Response: " response)
           (if (:success response)
             (do (swap! my-name conj (str "my area " counter))
-                (show-chart! response)
-                (hide-progress!))
-            (js/alert "An error occurred! Please refresh the page."))))))
+                (show-chart! response))
+            (js/alert "An error occurred! Please refresh the page."))
+          (hide-progress!)))))
 
 (defn enable-custom-polygon-selection! []
   (let [counter         @polygon-counter
@@ -391,9 +385,9 @@
           (if (:success response)
             (let [ee-map-id (-> response :body :eeMapId)
                   ee-token  (-> response :body :eeToken)]
-              (.push overlay-map-types (get-ee-map-type ee-map-id ee-token))
-              (hide-progress!))
-            (js/alert "An error occurred! Please refresh the page."))))))
+              (.push overlay-map-types (get-ee-map-type ee-map-id ee-token)))
+            (js/alert "An error occurred! Please refresh the page."))
+          (hide-progress!)))))
 
 ;; FIXME: stub
 (defn handle-polygon-click []
