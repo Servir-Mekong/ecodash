@@ -1,5 +1,5 @@
-application: biotool-141304
-version: 1
+application: sig-trendy-lights-test
+version: 3
 
 runtime: python27
 api_version: 1
@@ -31,3 +31,10 @@ skip_files:
 - ^(.*/)?.*/RCS/.*$
 - ^(.*/)?\..*$
 - Crypto
+- boot.properties
+- build.boot
+- ^(.*/)?.*\.cljs$
+- google_charts_externs.js
+- ^(.*/)?.*\.orig$
+- ^out(.*/)?$
+- ^target(.*/)?$
