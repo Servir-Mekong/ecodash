@@ -45,9 +45,11 @@
 
 ;; FIXME: slider :on-change should:
 ;; 1. hide div#chart
-;; 2. call (.revertStyle (.-data map))
-;; 3. (doseq [an-overlay @all-overlays]
-;;      (.setMap (.-overlay an-overlay) nil))
+;; 2. set polygon-counter to 0
+;; 4. set my-name to []
+;; 5. call (.revertStyle (.-data @google-map))
+;; 6. (doseq [event @all-overlays]
+;;      (.setMap (.-overlay event) nil))
 ;;    (reset! all-overlays [])
 (defn multi-range [slider-id min max step]
   (update-slider-vals! slider-id 0 min)
@@ -72,6 +74,8 @@
 (defonce multi-range2 (multi-range :study 2000 2017 1))
 
 (defonce polygon-selection-method (r/atom ""))
+
+;; FIXME: update this with a country/province name when a polygon is selected
 (defonce polygon-selection (r/atom ""))
 
 (defonce spinner-visible? (r/atom false))
@@ -192,11 +196,10 @@
 ;; Application Logic
 ;;===================
 
-;; (defonce country (google.maps.Data.))
-;; (defonce province (google.maps.Data.))
-
 (defn log [& vals]
   (.log js/console (apply str vals)))
+
+(defonce google-map (atom nil))
 
 (defn create-map []
   (google.maps.Map.
@@ -206,18 +209,17 @@
         :maxZoom 12
         :streetViewControl false}))
 
-(defonce google-map (atom nil))
-
-;; FIXME: do this if checkbox == 1?
 (defn remove-map-features! []
   (let [map-features (.-data @google-map)]
     (.forEach map-features #(.remove map-features %))))
 
+(defonce active-drawing-manager (atom nil))
+
+(defonce all-overlays (atom []))
+
 (defonce province-names (atom []))
 
-;; FIXME: set checkbox = 1 and CountryorProvince = 0
-;; FIXME: remove all map overlays
-;; FIXME: (if drawingManager (.setMap drawingManager nil))
+;; FIXME: set CountryorProvince = 0
 (defn enable-province-selection! []
   (let [map-features (.-data @google-map)]
     (doseq [province @province-names]
@@ -225,13 +227,17 @@
     (.setStyle map-features
                (fn [feature] #js {:fillColor "white"
                                   :strokeColor "white"
-                                  :strokeWeight 2}))))
+                                  :strokeWeight 2}))
+    (doseq [event @all-overlays]
+      (.setMap (.-overlay event) nil))
+    (reset! all-overlays [])
+    (when @active-drawing-manager
+      (.setMap @active-drawing-manager nil)
+      (reset! active-drawing-manager nil))))
 
 (defonce country-names (atom []))
 
-;; FIXME: set checkbox = 1 and CountryorProvince = 1
-;; FIXME: remove all map overlays
-;; FIXME: (if drawingManager (.setMap drawingManager nil))
+;; FIXME: set CountryorProvince = 1
 (defn enable-country-selection! []
   (let [map-features (.-data @google-map)]
     (doseq [country @country-names]
@@ -239,7 +245,13 @@
     (.setStyle map-features
                (fn [feature] #js {:fillColor "white"
                                   :strokeColor "white"
-                                  :strokeWeight 2}))))
+                                  :strokeWeight 2}))
+    (doseq [event @all-overlays]
+      (.setMap (.-overlay event) nil))
+    (reset! all-overlays [])
+    (when @active-drawing-manager
+      (.setMap @active-drawing-manager nil)
+      (reset! active-drawing-manager nil))))
 
 (defonce css-colors
   ["Aqua" "Black" "Blue" "BlueViolet" "Brown" "Aquamarine" "BurlyWood" "CadetBlue"
@@ -266,16 +278,20 @@
    "Tomato" "Turquoise" "Violet" "Wheat" "White" "WhiteSmoke" "Yellow"
    "YellowGreen"])
 
-;; FIXME: make sure this is updated correctly
 (defonce polygon-counter (atom 0))
-
-;; FIXME: make sure this is updated correctly
-(defonce all-overlays (atom #{}))
 
 (defonce my-name (atom []))
 
 ;; FIXME: stub
 (defn show-chart! [response]
+  nil)
+
+;; FIXME: stub
+(defn show-progress! []
+  nil)
+
+;; FIXME: stub
+(defn hide-progress! []
   nil)
 
 ;; AJAX Response Example:
@@ -295,7 +311,7 @@
 ;;  :error-code :no-error,
 ;;  :error-text ""}
 (defn custom-overlay-handler [drawing-manager event]
-  ;; (show-progress!)
+  (show-progress!)
   (swap! all-overlays conj event)
   (swap! polygon-counter inc)
   (let [color (css-colors @polygon-counter)]
@@ -318,8 +334,7 @@
           (if (:success response)
             (do (swap! my-name conj (str "my area " @polygon-counter))
                 (show-chart! response)
-                ;; (hide-progress!)
-                )
+                (hide-progress!))
             (js/alert "An error occurred! Please refresh the page."))))))
 
 (defn enable-custom-polygon-selection! []
@@ -333,7 +348,8 @@
     (google.maps.event.addListener drawing-manager
                                    "overlaycomplete"
                                    #(custom-overlay-handler drawing-manager %))
-    (.setMap drawing-manager @google-map)))
+    (.setMap drawing-manager @google-map)
+    (reset! active-drawing-manager drawing-manager)))
 
 ;; FIXME: stub
 (defn show-map! []
@@ -373,6 +389,8 @@
     (reset! google-map (create-map))
     (reset! country-names country-polygons)
     (reset! province-names province-polygons)
-    (.addListener (.-data @google-map) "click" (handle-polygon-click)) ;; ???
+    (.addListener (.-data @google-map) "click" handle-polygon-click)
     (opacity-sliders)
     (refresh-image ee-map-id ee-token)))
+
+;; FIXME: Should I implement the "Clear" button (:on-click clear-graph!)
