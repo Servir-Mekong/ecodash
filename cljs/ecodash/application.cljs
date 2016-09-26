@@ -332,12 +332,12 @@
                             "studyLow=" (study 0) "&"
                             "studyHigh=" (study 1))
         counter         @polygon-counter]
+    (swap! polygon-selection conj (str "Shape " counter))
     (log "AJAX Request: " polygon-url)
     (go (let [response (<! (http/get polygon-url))]
           (log "AJAX Response: " response)
           (if (:success response)
-            (do (swap! polygon-selection conj (str "Shape " counter))
-                (show-chart! (-> response :body)))
+            (show-chart! (-> response :body))
             (js/alert "An error occurred! Please refresh the page."))
           (hide-progress!)))))
 
@@ -407,12 +407,12 @@
                            "studyLow=" (study 0) "&"
                            "studyHigh=" (study 1) "&"
                            "folder=" @country-or-province)]
+      (swap! polygon-selection conj title)
       (log "AJAX Request: " details-url)
       (go (let [response (<! (http/get details-url))]
             (log "AJAX Response: " response)
             (if (:success response)
-              (do (swap! polygon-selection conj title)
-                  (show-chart! (-> response :body :timeSeries)))
+              (show-chart! (-> response :body :timeSeries))
               (js/alert "An error occurred! Please refresh the page."))
             (hide-progress!))))))
 
