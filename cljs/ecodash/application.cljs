@@ -71,7 +71,7 @@
 (defonce multi-range1 (multi-range :baseline 2000 2017 1))
 (defonce multi-range2 (multi-range :study 2000 2017 1))
 
-(defonce polygon-selection-method (r/atom "Province"))
+(defonce polygon-selection-method (r/atom ""))
 (defonce polygon-selection (r/atom ""))
 
 (defonce spinner-visible? (r/atom false))
@@ -105,7 +105,6 @@
    [:ul
     [:li
      [:input {:type "radio" :name "polygon-selection-method" :value "Province"
-              :default-checked "checked"
               :on-click #(do (reset! polygon-selection-method
                                      (.-value (.-currentTarget %)))
                              (remove-map-features!)
