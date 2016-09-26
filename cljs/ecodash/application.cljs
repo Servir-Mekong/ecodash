@@ -39,6 +39,12 @@
 (defn update-slider-vals! [slider-id idx slider-val]
   (swap! slider-vals assoc-in [slider-id idx] (str slider-val)))
 
+;; FIXME: slider :on-change should:
+;; 1. hide div#chart
+;; 2. call (.revertStyle (.-data map))
+;; 3. (doseq [an-overlay @all-overlays]
+;;      (.setMap (.-overlay an-overlay) nil))
+;;    (reset! all-overlays [])
 (defn multi-range [slider-id min max step]
   (update-slider-vals! slider-id 0 min)
   (update-slider-vals! slider-id 1 max)
@@ -53,14 +59,6 @@
               :step (str step) :default-value (str max)
               :on-change #(let [val (.-value (.-currentTarget %))]
                             (update-slider-vals! slider-id 1 val))}]]))
-
-;; FIXME: slider :on-change should:
-;; 1. hide div#chart
-;; 2. call (.revertStyle (.-data map))
-;; 3. (doseq [an-overlay @all-overlays]
-;;      (.setMap (.-overlay an-overlay) nil))
-;;    (reset! all-overlays [])
-;; NOTE: (init-button) adds overlays to all-overlays
 
 ;;==============
 ;; Map Controls
@@ -205,10 +203,6 @@
         :maxZoom 12
         :streetViewControl false}))
 
-;; FIXME: stub
-(defn show-map! []
-  nil)
-
 (defonce google-map (atom nil))
 
 ;; FIXME: do this if checkbox == 1?
@@ -216,24 +210,127 @@
   (let [map-features (.-data @google-map)]
     (.forEach map-features #(.remove map-features %))))
 
-;; FIXME: stub
+(defonce province-names (atom []))
+
+;; FIXME: set checkbox = 1 and CountryorProvince = 0
+;; FIXME: remove all map overlays
+;; FIXME: (if drawingManager (.setMap drawingManager nil))
 (defn enable-province-selection! []
-  nil)
+  (let [map-features (.-data @google-map)]
+    (doseq [province @province-names]
+      (.loadGeoJson map-features (str "/static/province/" province ".json")))
+    (.setStyle map-features
+               (fn [feature] #js {:fillColor "white"
+                                  :strokeColor "white"
+                                  :strokeWeight 2}))))
 
-;; FIXME: stub
+(defonce country-names (atom []))
+
+;; FIXME: set checkbox = 1 and CountryorProvince = 1
+;; FIXME: remove all map overlays
+;; FIXME: (if drawingManager (.setMap drawingManager nil))
 (defn enable-country-selection! []
-  nil)
+  (let [map-features (.-data @google-map)]
+    (doseq [country @country-names]
+      (.loadGeoJson map-features (str "/static/country/" country ".json")))
+    (.setStyle map-features
+               (fn [feature] #js {:fillColor "white"
+                                  :strokeColor "white"
+                                  :strokeWeight 2}))))
+
+(defonce css-colors
+  ["Aqua" "Black" "Blue" "BlueViolet" "Brown" "Aquamarine" "BurlyWood" "CadetBlue"
+   "Chartreuse" "Chocolate" "Coral" "CornflowerBlue" "Cornsilk" "Crimson" "Cyan"
+   "DarkBlue" "DarkCyan" "DarkGoldenRod" "DarkGray" "DarkGrey" "DarkGreen"
+   "DarkKhaki" "DarkMagenta" "DarkOliveGreen" "Darkorange" "DarkOrchid" "DarkRed"
+   "DarkSalmon" "DarkSeaGreen" "DarkSlateBlue" "DarkSlateGray" "DarkSlateGrey"
+   "DarkTurquoise" "DarkViolet" "DeepPink" "DeepSkyBlue" "DimGray" "DimGrey"
+   "DodgerBlue" "FireBrick" "FloralWhite" "ForestGreen" "Fuchsia" "Gainsboro"
+   "GhostWhite" "Gold" "GoldenRod" "Gray" "Grey" "Green" "GreenYellow" "HoneyDew"
+   "HotPink" "IndianRed" "Indigo" "Ivory" "Khaki" "Lavender" "LavenderBlush"
+   "LawnGreen" "LemonChiffon" "LightBlue" "LightCoral" "LightCyan"
+   "LightGoldenRodYellow" "LightGray" "LightGrey" "LightGreen" "LightPink"
+   "LightSalmon" "LightSeaGreen" "LightSkyBlue" "LightSlateGray" "LightSlateGrey"
+   "LightSteelBlue" "LightYellow" "Lime" "LimeGreen" "Linen" "Magenta" "Maroon"
+   "MediumAquaMarine" "MediumBlue" "MediumOrchid" "MediumPurple" "MediumSeaGreen"
+   "MediumSlateBlue" "MediumSpringGreen" "MediumTurquoise" "MediumVioletRed"
+   "MidnightBlue" "MintCream" "MistyRose" "Moccasin" "NavajoWhite" "Navy" "OldLace"
+   "Olive" "OliveDrab" "Orange" "OrangeRed" "Orchid" "PaleGoldenRod" "PaleGreen"
+   "PaleTurquoise" "PaleVioletRed" "PapayaWhip" "PeachPuff" "Peru" "Pink" "Plum"
+   "PowderBlue" "Purple" "Red" "RosyBrown" "RoyalBlue" "SaddleBrown" "Salmon"
+   "SandyBrown" "SeaGreen" "SeaShell" "Sienna" "Silver" "SkyBlue" "SlateBlue"
+   "SlateGray" "SlateGrey" "Snow" "SpringGreen" "SteelBlue" "Tan" "Teal" "Thistle"
+   "Tomato" "Turquoise" "Violet" "Wheat" "White" "WhiteSmoke" "Yellow"
+   "YellowGreen"])
+
+;; FIXME: make sure this is updated correctly
+(defonce polygon-counter (atom 0))
+
+;; FIXME: make sure this is updated correctly
+(defonce all-overlays (atom #{}))
+
+;; FIXME: implement AJAX result processing (script.js line 386)
+;; function(data) {
+;; if (data['error']) {
+;; 	       alert("An error occured! Please refresh the page.");
+;; }
+;; else {
+;; 	myName.push("my area " + counter.toString());
+;; 	ecodash.App.prototype.showChart(data);
+;; 	ecodash.App.prototype.HideProgress();
+;; }}
+;; AJAX Response Example:
+;; {:status 0
+;;  :success false
+;;  :body ""
+;;  :headers {}
+;;  :trace-redirects ["http://api.burningswell.dev/continents"
+;;                    "http://api.burningswell.dev/continents"]
+;;  :error-code :http-error
+;;  :error-text " [0]"}
+(defn custom-overlay-handler [drawing-manager event]
+  ;; (show-progress!)
+  (swap! all-overlays conj event)
+  (swap! polygon-counter inc)
+  (let [color (css-colors @polygon-counter)]
+    (.setOptions drawing-manager
+                 #js {:polygonOptions
+                      #js {:fillColor color
+                           :strokeColor color}}))
+  (let [geom           (-> event .-overlay .getPath .getArray)
+        baseline-start (get-in @slider-vals [:baseline 0])
+        baseline-end   (get-in @slider-vals [:baseline 1])
+        study-start    (get-in @slider-vals [:study 0])
+        study-end      (get-in @slider-vals [:study 1])
+        polygon-url    (str "/polygon?"
+                            "polygon=" geom "&"
+                            "refLow=" baseline-start "&"
+                            "refHigh=" baseline-end "&"
+                            "studyLow=" study-start "&"
+                            "studyHigh=" study-end)]
+    (log "AJAX Request: " polygon-url)
+    (go (let [response (<! (http/get polygon-url))]
+          (log "AJAX Response: " response)))))
+
+(defn enable-custom-polygon-selection! []
+  (let [counter         @polygon-counter
+        drawing-manager (google.maps.drawing.DrawingManager.
+                         #js {:drawingMode google.maps.drawing.OverlayType.POLYGON
+                              :drawingControl false
+                              :polygonOptions
+                              #js {:fillColor (css-colors counter)
+                                   :strokeColor (css-colors counter)}})]
+    (google.maps.event.addListener drawing-manager
+                                   "overlaycomplete"
+                                   #(custom-overlay-handler drawing-manager %))
+    (.setMap drawing-manager @google-map)))
 
 ;; FIXME: stub
-(defn enable-custom-polygon-selection! []
+(defn show-map! []
   nil)
 
 ;; FIXME: stub
 (defn handle-polygon-click []
-  nil)
-
-;; FIXME: stub
-(defn init-button [map country-polygons province-polygons]
   nil)
 
 ;; FIXME: stub
