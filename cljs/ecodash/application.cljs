@@ -133,7 +133,7 @@
    [:p#polygon (str @polygon-selection-method " Selection: "
                     (clojure.string/join ", " @polygon-selection))]
    [:h3 "Step 3: Review the historical ∆EVI in this region"]
-   [:div#chart]])
+   [:div#chart {:style (get-display-style :chart)}]])
 
 ;;=========================
 ;; Application Page Layout
@@ -287,9 +287,35 @@
                                   :strokeWeight 2}))
     (reset! country-or-province 1)))
 
-;; FIXME: stub
-(defn show-chart! [response]
-  nil)
+(defonce chart-data (atom nil))
+
+(defn show-chart! [time-series]
+  (if @chart-data
+    (swap! chart-data
+           #(mapv (fn [val-stack [time val]] (conj val-stack val))
+                  %
+                  time-series))
+    (reset! chart-data
+            (mapv (fn [[time val]] [(js/Date. (js/parseInt time 10)) val])
+                  time-series)))
+  (let [table (google.visualization.DataTable.)]
+    (.addColumn table "date")
+    (doseq [polygon-name @polygon-selection]
+      (.addColumn table "number" polygon-name))
+    (.addRows table (clj->js @chart-data))
+    (doto (google.visualization.ChartWrapper.
+           #js {:chartType "LineChart"
+                :dataTable table
+                :options #js {:width 450
+                              :title "Biophysical Health"
+                              :curveType "function"
+                              :legend #js {:position "right"}
+                              :titleTextStyle #js {:fontName "Open Sans"}
+                              :chartArea #js {:width "40%"}
+                              :colors (clj->js css-colors)}})
+      (.setContainerId (dom/getElement "chart"))
+      (.draw))
+    (show-control! :chart)))
 
 (defn custom-overlay-handler [drawing-manager event]
   (show-progress!)
