@@ -94,11 +94,15 @@
    [:h3 "Step 3: Update the map with the cumulative ∆EVI"]
    [:input {:type "button" :name "update-map" :value "Update Map"
             :on-click #(do (remove-map-features!)
+                           (reset! polygon-selection-method "")
                            (show-map!))}]
    [:h3 "Step 4: Choose a polygon selection method"]
    [:ul
     [:li
      [:input {:type "radio" :name "polygon-selection-method" :value "Province"
+              :checked (if (= @polygon-selection-method "Province")
+                         "checked"
+                         "")
               :on-click #(do (reset! polygon-selection-method
                                      (.-value (.-currentTarget %)))
                              (remove-map-features!)
@@ -106,6 +110,9 @@
      [:label "Province"]]
     [:li
      [:input {:type "radio" :name "polygon-selection-method" :value "Country"
+              :checked (if (= @polygon-selection-method "Country")
+                         "checked"
+                         "")
               :on-click #(do (reset! polygon-selection-method
                                      (.-value (.-currentTarget %)))
                              (remove-map-features!)
@@ -113,6 +120,9 @@
      [:label "Country"]]
     [:li
      [:input {:type "radio" :name "polygon-selection-method" :value "Draw Polygon"
+              :checked (if (= @polygon-selection-method "Draw Polygon")
+                         "checked"
+                         "")
               :on-click #(do (reset! polygon-selection-method
                                      (.-value (.-currentTarget %)))
                              (remove-map-features!)
