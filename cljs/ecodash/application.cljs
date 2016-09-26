@@ -139,8 +139,7 @@
 
 (defonce opacity (r/atom 1.0))
 
-(defn update-opacity! [val]
-  (reset! opacity val))
+(declare update-opacity!)
 
 (defn content []
   [:div#ecodash
@@ -185,7 +184,8 @@
    [:div#opacity
     [:p (str "Opacity: " @opacity)]
     [:input {:type "range" :min "0" :max "1" :step "0.1" :default-value "1"
-             :on-change #(update-opacity! (.-value (.-currentTarget %)))}]]
+             :on-change #(update-opacity!
+                          (js/parseFloat (.-value (.-currentTarget %))))}]]
    [:p#feedback [:a {:href "https://github.com/Servir-Mekong/ecodash/issues"
                      :target "_blank"}
                  "Give us Feedback!"]]
@@ -213,9 +213,21 @@
   (let [map-features (.-data @google-map)]
     (.forEach map-features #(.remove map-features %))))
 
+(defn update-opacity! [val]
+  (reset! opacity val)
+  (let [overlay-map-types (.-overlayMapTypes @google-map)]
+    (.forEach overlay-map-types
+              (fn [map-type index]
+                (if map-type
+                  (.setOpacity (.getAt overlay-map-types index) val))))))
+
 (defonce active-drawing-manager (atom nil))
 
 (defonce all-overlays (atom []))
+
+(defonce polygon-counter (atom 0))
+
+(defonce my-name (atom []))
 
 (defonce province-names (atom []))
 
@@ -230,10 +242,10 @@
                                   :strokeWeight 2}))
     (doseq [event @all-overlays]
       (.setMap (.-overlay event) nil))
-    (reset! all-overlays [])
     (when @active-drawing-manager
       (.setMap @active-drawing-manager nil)
       (reset! active-drawing-manager nil))
+    (reset! all-overlays [])
     (reset! polygon-counter 0)
     (reset! my-name [])))
 
@@ -250,10 +262,10 @@
                                   :strokeWeight 2}))
     (doseq [event @all-overlays]
       (.setMap (.-overlay event) nil))
-    (reset! all-overlays [])
     (when @active-drawing-manager
       (.setMap @active-drawing-manager nil)
       (reset! active-drawing-manager nil))
+    (reset! all-overlays [])
     (reset! polygon-counter 0)
     (reset! my-name [])))
 
@@ -281,10 +293,6 @@
    "SlateGray" "SlateGrey" "Snow" "SpringGreen" "SteelBlue" "Tan" "Teal" "Thistle"
    "Tomato" "Turquoise" "Violet" "Wheat" "White" "WhiteSmoke" "Yellow"
    "YellowGreen"])
-
-(defonce polygon-counter (atom 0))
-
-(defonce my-name (atom []))
 
 ;; FIXME: stub
 (defn show-chart! [response]
@@ -364,10 +372,6 @@
 (defn handle-polygon-click []
   nil)
 
-;; FIXME: stub
-(defn opacity-sliders []
-  nil)
-
 (defn get-ee-map-type [ee-map-id ee-token]
   (google.maps.ImageMapType.
    #js {:name "ecomap"
@@ -395,7 +399,6 @@
     (reset! country-names country-polygons)
     (reset! province-names province-polygons)
     (.addListener (.-data @google-map) "click" handle-polygon-click)
-    (opacity-sliders)
     (refresh-image ee-map-id ee-token)))
 
 ;; FIXME: Should I implement the "Clear" button (:on-click clear-graph!)
