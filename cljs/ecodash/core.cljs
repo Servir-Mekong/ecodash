@@ -38,8 +38,13 @@
 ;; Page Body
 ;;===========
 
-(def home-page
-  [:div#home
+(defn make-page-visibility-style [link-num]
+  (if (= @active-link link-num)
+    {:style {:visibility "visible"}}
+    {:style {:visibility "hidden"}}))
+
+(defn home-page [page-visibility]
+  [:div#home page-visibility
    [:h1 "Eco Dash"]
    [:h2 "Spatio-temporal EVI Mapping"]
    [:h3 "Explore historic vegetation change."]
@@ -51,21 +56,25 @@
      "Github"]
     " issues page."]])
 
-(def about-page
-  [:div#about
+(defn about-page [page-visibility]
+  [:div#about page-visibility
    [:h1 "About Eco Dash"]
-   [:p (str "Eco Dash is a custom built, open-source, high resolution satellite"
-            " image viewing and interpretation system that is being developed"
-            " by SERVIR-Mekong as a tool for use in projects that require land"
-            " cover and/or land use reference data. Mapcha promotes consistency"
-            " in locating, interpreting, and labeling reference data plots for"
-            " use in classifying and monitoring land cover / land use change."
-            " The full functionality of Mapcha including collaborative"
-            " compilation of reference point databases is implemented online"
-            " so there is no need for desktop installation.")]
-   [:a {:href "http://www.sig-gis.com" :target "_blank"}
-    [:img {:src "/static/images/logosig.png"}]]
-   [:p
+   [:p (str "Eco Dash is an open-source, web GIS tool created by SERVIR-Mekong"
+            " for exploring the change in Enhanced Vegetation Index (EVI) of"
+            " countries and their provinces in the Mekong River region of"
+            " southeast Asia.")]
+   [:hr]
+   [:img {:src "/static/images/servir.png"}]
+   [:img {:src "/static/images/usaid.png"}]
+   [:img {:src "/static/images/nasa.png"}]
+   [:img {:src "/static/images/googlelogo_color_272x92dp.png"}]
+   [:img {:src "/static/images/adpclogo.jpg"}]
+   [:img {:src "/static/images/logosig.png"}]
+   [:img {:src "/static/images/winrocklogo.jpg"}]
+   [:img {:src "/static/images/mardlogo.jpg"}]
+   [:img {:src "/static/images/sei_tr.png"}]
+   [:img {:src "/static/images/deltares_tr.png"}]
+   [:p#copyright
     "Copyright "
     (str/unescapeEntities "&copy;")
     " "
@@ -73,10 +82,10 @@
     " 2016"]])
 
 (defn page-content []
-  (case @active-link
-    0 home-page
-    1 about-page
-    2 (app/content)))
+  [:div#all-pages
+   [home-page   (make-page-visibility-style 0)]
+   [about-page  (make-page-visibility-style 1)]
+   [app/content (make-page-visibility-style 2)]])
 
 ;;==================
 ;; CLJS Entry Point

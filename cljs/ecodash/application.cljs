@@ -143,8 +143,8 @@
 
 (declare update-opacity!)
 
-(defn content []
-  [:div#ecodash
+(defn content [page-visibility]
+  [:div#ecodash page-visibility
    [:div#map]
    [:div#ui {:style (get-display-style :ui)}
     [:header
