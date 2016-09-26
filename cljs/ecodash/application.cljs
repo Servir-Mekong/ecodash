@@ -191,8 +191,7 @@
    [:p#feedback [:a {:href "https://github.com/Servir-Mekong/ecodash/issues"
                      :target "_blank"}
                  "Give us Feedback!"]]
-   [:div.spinner {:style (get-spinner-visibility)}]
-   [:input#counter {:type "hidden" :name "counter" :value "0"}]])
+   [:div.spinner {:style (get-spinner-visibility)}]])
 
 ;;===================
 ;; Application Logic
@@ -233,7 +232,8 @@
 
 (defonce province-names (atom []))
 
-;; FIXME: set CountryorProvince = 0
+(defonce country-or-province (atom nil))
+
 (defn enable-province-selection! []
   (let [map-features (.-data @google-map)]
     (doseq [province @province-names]
@@ -249,11 +249,11 @@
       (reset! active-drawing-manager nil))
     (reset! all-overlays [])
     (reset! polygon-counter 0)
-    (reset! my-name [])))
+    (reset! my-name [])
+    (reset! country-or-province 0)))
 
 (defonce country-names (atom []))
 
-;; FIXME: set CountryorProvince = 1
 (defn enable-country-selection! []
   (let [map-features (.-data @google-map)]
     (doseq [country @country-names]
@@ -269,7 +269,8 @@
       (reset! active-drawing-manager nil))
     (reset! all-overlays [])
     (reset! polygon-counter 0)
-    (reset! my-name [])))
+    (reset! my-name [])
+    (reset! country-or-province 1)))
 
 (defonce css-colors
   ["Aqua" "Black" "Blue" "BlueViolet" "Brown" "Aquamarine" "BurlyWood" "CadetBlue"
@@ -300,22 +301,6 @@
 (defn show-chart! [response]
   nil)
 
-;; AJAX Response Example:
-;; {:status 200
-;;  :success true
-;;  :body [[1105228800000 0]
-;;         [1105228800000 -720.2132428209686]
-;;         [1106611200000 -1655.7901306366732]
-;;         ...]
-;;  :headers {"content-type" "application/json",
-;;            "cache-control" "no-cache",
-;;            "content-length" "8589",
-;;            "server" "Development/2.0",
-;;            "date" "Mon, 26 Sep 2016 01:15:17 GMT"},
-;;  :trace-redirects ["/polygon?polygon=(23.845649887659356%2C%2095.09765625)%2C(20.715015145512083%2C%2094.04296875)%2C(19.932041306115536%2C%2097.3828125)%2C(22.350075806124863%2C%2097.8662109375)&refLow=2006&refHigh=2011&studyLow=2005&studyHigh=2014"
-;;                    "/polygon?polygon=(23.845649887659356%2C%2095.09765625)%2C(20.715015145512083%2C%2094.04296875)%2C(19.932041306115536%2C%2097.3828125)%2C(22.350075806124863%2C%2097.8662109375)&refLow=2006&refHigh=2011&studyLow=2005&studyHigh=2014"],
-;;  :error-code :no-error,
-;;  :error-text ""}
 (defn custom-overlay-handler [drawing-manager event]
   (show-progress!)
   (swap! all-overlays conj event)
@@ -340,7 +325,7 @@
           (log "AJAX Response: " response)
           (if (:success response)
             (do (swap! my-name conj (str "my area " counter))
-                (show-chart! response))
+                (show-chart! (-> response :body)))
             (js/alert "An error occurred! Please refresh the page."))
           (hide-progress!)))))
 
@@ -389,9 +374,35 @@
             (js/alert "An error occurred! Please refresh the page."))
           (hide-progress!)))))
 
-;; FIXME: stub
-(defn handle-polygon-click []
-  nil)
+(defn handle-polygon-click [event]
+  (show-progress!)
+  (let [feature (.-feature event)
+        color   (css-colors @polygon-counter)]
+    (.overrideStyle (.-data @google-map)
+                    feature
+                    #js {:fillColor color
+                         :strokeColor color
+                         :strokeWeight 6})
+    (swap! polygon-counter inc)
+    (let [title       (.getProperty feature "title")
+          id          (.getProperty feature "id")
+          baseline    (get-slider-vals :baseline)
+          study       (get-slider-vals :study)
+          details-url (str "/details?"
+                           "polygon_id=" id "&"
+                           "refLow=" (baseline 0) "&"
+                           "refHigh=" (baseline 1) "&"
+                           "studyLow=" (study 0) "&"
+                           "studyHigh=" (study 1) "&"
+                           "folder=" @country-or-province)]
+      (log "AJAX Request: " details-url)
+      (go (let [response (<! (http/get details-url))]
+            (log "AJAX Response: " response)
+            (if (:success response)
+              (do (swap! my-name conj title)
+                  (show-chart! (-> response :body :timeSeries)))
+              (js/alert "An error occurred! Please refresh the page."))
+            (hide-progress!))))))
 
 (defn refresh-image [ee-map-id ee-token]
   (.push (.-overlayMapTypes @google-map)
