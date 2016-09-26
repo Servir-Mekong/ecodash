@@ -34,7 +34,10 @@
 (defonce slider-vals (r/atom {}))
 
 (defn get-slider-vals [slider-id]
-  (let [[min max] (sort (vals (@slider-vals slider-id)))]
+  (into [] (sort (vals (@slider-vals slider-id)))))
+
+(defn get-formatted-slider-vals [slider-id]
+  (let [[min max] (get-slider-vals slider-id)]
     (str min " - " max)))
 
 (defn update-slider-vals! [slider-id idx slider-val]
@@ -51,7 +54,7 @@
   (update-slider-vals! slider-id 1 max)
   (fn []
     [:div.range-slider
-     [:p (get-slider-vals slider-id)]
+     [:p (get-formatted-slider-vals slider-id)]
      [:input {:type "range" :min (str min) :max (str max)
               :step (str step) :default-value (str min)
               :on-change #(let [val (.-value (.-currentTarget %))]
@@ -299,16 +302,14 @@
                       #js {:fillColor color
                            :strokeColor color}}))
   (let [geom           (-> event .-overlay .getPath .getArray)
-        baseline-start (get-in @slider-vals [:baseline 0])
-        baseline-end   (get-in @slider-vals [:baseline 1])
-        study-start    (get-in @slider-vals [:study 0])
-        study-end      (get-in @slider-vals [:study 1])
+        baseline       (get-slider-vals :baseline)
+        study          (get-slider-vals :study)
         polygon-url    (str "/polygon?"
                             "polygon=" geom "&"
-                            "refLow=" baseline-start "&"
-                            "refHigh=" baseline-end "&"
-                            "studyLow=" study-start "&"
-                            "studyHigh=" study-end)]
+                            "refLow=" (baseline 0) "&"
+                            "refHigh=" (baseline 1) "&"
+                            "studyLow=" (study 0) "&"
+                            "studyHigh=" (study 1))]
     (log "AJAX Request: " polygon-url)
     (go (let [response (<! (http/get polygon-url))]
           (log "AJAX Response: " response)))))
