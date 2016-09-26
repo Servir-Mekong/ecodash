@@ -46,9 +46,9 @@
 ;; FIXME: slider :on-change should:
 ;; 1. hide div#chart
 ;; 2. set polygon-counter to 0
-;; 4. set my-name to []
-;; 5. call (.revertStyle (.-data @google-map))
-;; 6. (doseq [event @all-overlays]
+;; 3. set polygon-selection to []
+;; 4. call (.revertStyle (.-data @google-map))
+;; 5. (doseq [event @all-overlays]
 ;;      (.setMap (.-overlay event) nil))
 ;;    (reset! all-overlays [])
 (defn multi-range [slider-id min max step]
@@ -75,8 +75,7 @@
 
 (defonce polygon-selection-method (r/atom ""))
 
-;; FIXME: update this with a country/province name when a polygon is selected
-(defonce polygon-selection (r/atom ""))
+(defonce polygon-selection (r/atom []))
 
 (defonce spinner-visible? (r/atom false))
 
@@ -131,7 +130,8 @@
                              (enable-custom-polygon-selection!))}]
      [:label "Draw Polygon"]]]
    [:h3 "Step 2: Click a polygon on the map or draw your own"]
-   [:p#polygon (str @polygon-selection-method " Selection: " @polygon-selection)]
+   [:p#polygon (str @polygon-selection-method " Selection: "
+                    (clojure.string/join ", " @polygon-selection))]
    [:h3 "Step 3: Review the historical ∆EVI in this region"]
    [:div#chart]])
 
@@ -228,8 +228,6 @@
 
 (defonce polygon-counter (atom 0))
 
-(defonce my-name (atom []))
-
 (defonce province-names (atom []))
 
 (defonce country-or-province (atom nil))
@@ -249,7 +247,7 @@
       (reset! active-drawing-manager nil))
     (reset! all-overlays [])
     (reset! polygon-counter 0)
-    (reset! my-name [])
+    (reset! polygon-selection [])
     (reset! country-or-province 0)))
 
 (defonce country-names (atom []))
@@ -269,7 +267,7 @@
       (reset! active-drawing-manager nil))
     (reset! all-overlays [])
     (reset! polygon-counter 0)
-    (reset! my-name [])
+    (reset! polygon-selection [])
     (reset! country-or-province 1)))
 
 (defonce css-colors
@@ -324,7 +322,7 @@
     (go (let [response (<! (http/get polygon-url))]
           (log "AJAX Response: " response)
           (if (:success response)
-            (do (swap! my-name conj (str "my area " counter))
+            (do (swap! polygon-selection conj (str "Shape " counter))
                 (show-chart! (-> response :body)))
             (js/alert "An error occurred! Please refresh the page."))
           (hide-progress!)))))
@@ -399,7 +397,7 @@
       (go (let [response (<! (http/get details-url))]
             (log "AJAX Response: " response)
             (if (:success response)
-              (do (swap! my-name conj title)
+              (do (swap! polygon-selection conj title)
                   (show-chart! (-> response :body :timeSeries)))
               (js/alert "An error occurred! Please refresh the page."))
             (hide-progress!))))))
