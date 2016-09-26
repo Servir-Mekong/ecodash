@@ -10,6 +10,7 @@
  :resource-paths #{"static"}
  :dependencies   '[[org.clojure/clojure         "1.8.0"]
                    [org.clojure/clojurescript   "1.8.51"]
+                   [com.cognitect/transit-cljs  "0.8.239"]
                    [org.clojure/core.async      "0.2.391"]
                    [cljs-http                   "0.1.41"]
                    [reagent                     "0.6.0"]

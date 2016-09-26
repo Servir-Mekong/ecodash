@@ -2,6 +2,7 @@
   (:require [goog.dom :as dom]
             [goog.string :as str]
             [reagent.core :as r]
+            [cognitect.transit :as transit]
             [cljs-http.client :as http]
             [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
@@ -352,14 +353,17 @@
          (get-ee-map-type ee-map-id ee-token)))
 
 (defn init [ee-map-id ee-token country-polygons province-polygons]
-  (log "EE Map ID: " ee-map-id)
-  (log "EE Token: " ee-token)
-  (log "Countries: " (count country-polygons))
-  (log "Provinces: " (count province-polygons))
-  (.load js/google "visualization" "1.0")
-  (reset! google-map (create-map))
-  (reset! country-names country-polygons)
-  (reset! province-names province-polygons)
-  (.addListener (.-data @google-map) "click" (handle-polygon-click)) ;; ???
-  (opacity-sliders)
-  (refresh-image ee-map-id ee-token))
+  (let [json-reader       (transit/reader :json)
+        country-polygons  (transit/read json-reader country-polygons)
+        province-polygons (transit/read json-reader province-polygons)]
+    (log "EE Map ID: " ee-map-id)
+    (log "EE Token: " ee-token)
+    (log "Countries: " (count country-polygons))
+    (log "Provinces: " (count province-polygons))
+    (.load js/google "visualization" "1.0")
+    (reset! google-map (create-map))
+    (reset! country-names country-polygons)
+    (reset! province-names province-polygons)
+    (.addListener (.-data @google-map) "click" (handle-polygon-click)) ;; ???
+    (opacity-sliders)
+    (refresh-image ee-map-id ee-token)))
