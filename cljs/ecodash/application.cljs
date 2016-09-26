@@ -233,7 +233,9 @@
     (reset! all-overlays [])
     (when @active-drawing-manager
       (.setMap @active-drawing-manager nil)
-      (reset! active-drawing-manager nil))))
+      (reset! active-drawing-manager nil))
+    (reset! polygon-counter 0)
+    (reset! my-name [])))
 
 (defonce country-names (atom []))
 
@@ -251,7 +253,9 @@
     (reset! all-overlays [])
     (when @active-drawing-manager
       (.setMap @active-drawing-manager nil)
-      (reset! active-drawing-manager nil))))
+      (reset! active-drawing-manager nil))
+    (reset! polygon-counter 0)
+    (reset! my-name [])))
 
 (defonce css-colors
   ["Aqua" "Black" "Blue" "BlueViolet" "Brown" "Aquamarine" "BurlyWood" "CadetBlue"
@@ -327,12 +331,13 @@
                             "refLow=" (baseline 0) "&"
                             "refHigh=" (baseline 1) "&"
                             "studyLow=" (study 0) "&"
-                            "studyHigh=" (study 1))]
+                            "studyHigh=" (study 1))
+        counter         @polygon-counter]
     (log "AJAX Request: " polygon-url)
     (go (let [response (<! (http/get polygon-url))]
           (log "AJAX Response: " response)
           (if (:success response)
-            (do (swap! my-name conj (str "my area " @polygon-counter))
+            (do (swap! my-name conj (str "my area " counter))
                 (show-chart! response)
                 (hide-progress!))
             (js/alert "An error occurred! Please refresh the page."))))))
