@@ -101,7 +101,8 @@
    [multi-range2]
    [:h3 "Step 3: Update the map with the cumulative ∆EVI"]
    [:input {:type "button" :name "update-map" :value "Update Map"
-            :on-click show-map!}]
+            :on-click #(do (remove-map-features!)
+                           (show-map!))}]
    [:h3 "Step 4: Choose a polygon selection method"]
    [:ul
     [:li
@@ -207,6 +208,8 @@
 
 (defonce all-overlays (atom []))
 
+(defonce chart-data (atom nil))
+
 (defonce css-colors
   ["Aqua" "Black" "Blue" "BlueViolet" "Brown" "Aquamarine" "BurlyWood" "CadetBlue"
    "Chartreuse" "Chocolate" "Coral" "CornflowerBlue" "Cornsilk" "Crimson" "Cyan"
@@ -243,6 +246,10 @@
         :maxZoom 12
         :streetViewControl false}))
 
+(defn clear-chart! []
+  (hide-control! :chart)
+  (set! (.-innerHTML (dom/getElement "chart")) nil))
+
 (defn remove-map-features! []
   (let [map-features (.-data @google-map)]
     (.forEach map-features #(.remove map-features %))
@@ -253,7 +260,9 @@
       (reset! active-drawing-manager nil))
     (reset! all-overlays [])
     (reset! polygon-counter 0)
-    (reset! polygon-selection [])))
+    (reset! polygon-selection [])
+    (reset! chart-data nil)
+    (clear-chart!)))
 
 (defn update-opacity! [val]
   (reset! opacity val)
@@ -282,8 +291,6 @@
                                   :strokeColor "white"
                                   :strokeWeight 2}))
     (reset! country-or-province 1)))
-
-(defonce chart-data (atom nil))
 
 (defn show-chart! [time-series]
   (if @chart-data
@@ -434,5 +441,3 @@
     (reset! province-names province-polygons)
     (.addListener (.-data @google-map) "click" handle-polygon-click)
     (refresh-image ee-map-id ee-token)))
-
-;; FIXME: Should I implement the "Clear" button (:on-click clear-graph!)
