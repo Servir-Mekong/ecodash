@@ -129,9 +129,10 @@
                              (enable-custom-polygon-selection!))}]
      [:label "Draw Polygon"]]]
    [:h3 "Step 5: Click a polygon on the map or draw your own"]
-   [:p#polygon (str @polygon-selection-method " Selection: "
-                    (clojure.string/join ", " @polygon-selection))]
-   [:h3 "Step 6: Review the historical ∆EVI in the selected polygons"]
+   [:p#polygon
+    (str @polygon-selection-method " Selection: ")
+    [:em (clojure.string/join ", " @polygon-selection)]]
+   [:h3 "Step 6: Review the historical ∆EVI in the selection"]
    [:div#chart {:style (get-display-style :chart)}]])
 
 ;;=========================
