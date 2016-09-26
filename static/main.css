@@ -371,6 +371,7 @@ nav ul li.highlight {
 #ecodash #ui header {
     height:1.5rem;
     margin-bottom:0.5rem;
+    border-bottom:2px solid #666;
 }
 
 #ecodash #ui header h1 {
@@ -410,6 +411,11 @@ nav ul li.highlight {
 /*********************************/
 /* Application Page Map Controls */
 /*********************************/
+
+#ecodash #ui #controls {
+    height:95%;
+    overflow:scroll;
+}
 
 #ecodash #ui #controls h2 {
     font-size:1rem;

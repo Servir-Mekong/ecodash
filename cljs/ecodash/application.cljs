@@ -95,8 +95,6 @@
 
 (defn map-controls []
   [:div#controls
-   [:hr]
-   [:h2 "Spatial Analysis (Map)"]
    [:h3 "Step 1: Select a time period to use as the baseline EVI"]
    [multi-range1]
    [:h3 "Step 2: Select a time period to measure ∆EVI"]
@@ -104,9 +102,7 @@
    [:h3 "Step 3: Update the map with the cumulative ∆EVI"]
    [:input {:type "button" :name "update-map" :value "Update Map"
             :on-click show-map!}]
-   [:hr]
-   [:h2 "Temporal Analysis (Chart)"]
-   [:h3 "Step 1: Choose a polygon selection method"]
+   [:h3 "Step 4: Choose a polygon selection method"]
    [:ul
     [:li
      [:input {:type "radio" :name "polygon-selection-method" :value "Province"
@@ -129,10 +125,10 @@
                              (remove-map-features!)
                              (enable-custom-polygon-selection!))}]
      [:label "Draw Polygon"]]]
-   [:h3 "Step 2: Click a polygon on the map or draw your own"]
+   [:h3 "Step 5: Click a polygon on the map or draw your own"]
    [:p#polygon (str @polygon-selection-method " Selection: "
                     (clojure.string/join ", " @polygon-selection))]
-   [:h3 "Step 3: Review the historical ∆EVI in this region"]
+   [:h3 "Step 6: Review the historical ∆EVI in the selected polygons"]
    [:div#chart {:style (get-display-style :chart)}]])
 
 ;;=========================
