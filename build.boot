@@ -36,6 +36,6 @@
 
 (deftask prod []
   (comp (cljs :optimizations    :advanced
-              :source-map       false
+              :source-map       true
               :compiler-options {:externs ["google_charts_externs.js"]})
         (target :dir #{"target"})))
