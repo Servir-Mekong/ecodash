@@ -273,25 +273,28 @@
 ;; FIXME: make sure this is updated correctly
 (defonce all-overlays (atom #{}))
 
-;; FIXME: implement AJAX result processing (script.js line 386)
-;; function(data) {
-;; if (data['error']) {
-;; 	       alert("An error occured! Please refresh the page.");
-;; }
-;; else {
-;; 	myName.push("my area " + counter.toString());
-;; 	ecodash.App.prototype.showChart(data);
-;; 	ecodash.App.prototype.HideProgress();
-;; }}
+(defonce my-name (atom []))
+
+;; FIXME: stub
+(defn show-chart! [response]
+  nil)
+
 ;; AJAX Response Example:
-;; {:status 0
-;;  :success false
-;;  :body ""
-;;  :headers {}
-;;  :trace-redirects ["http://api.burningswell.dev/continents"
-;;                    "http://api.burningswell.dev/continents"]
-;;  :error-code :http-error
-;;  :error-text " [0]"}
+;; {:status 200
+;;  :success true
+;;  :body [[1105228800000 0]
+;;         [1105228800000 -720.2132428209686]
+;;         [1106611200000 -1655.7901306366732]
+;;         ...]
+;;  :headers {"content-type" "application/json",
+;;            "cache-control" "no-cache",
+;;            "content-length" "8589",
+;;            "server" "Development/2.0",
+;;            "date" "Mon, 26 Sep 2016 01:15:17 GMT"},
+;;  :trace-redirects ["/polygon?polygon=(23.845649887659356%2C%2095.09765625)%2C(20.715015145512083%2C%2094.04296875)%2C(19.932041306115536%2C%2097.3828125)%2C(22.350075806124863%2C%2097.8662109375)&refLow=2006&refHigh=2011&studyLow=2005&studyHigh=2014"
+;;                    "/polygon?polygon=(23.845649887659356%2C%2095.09765625)%2C(20.715015145512083%2C%2094.04296875)%2C(19.932041306115536%2C%2097.3828125)%2C(22.350075806124863%2C%2097.8662109375)&refLow=2006&refHigh=2011&studyLow=2005&studyHigh=2014"],
+;;  :error-code :no-error,
+;;  :error-text ""}
 (defn custom-overlay-handler [drawing-manager event]
   ;; (show-progress!)
   (swap! all-overlays conj event)
@@ -312,7 +315,13 @@
                             "studyHigh=" (study 1))]
     (log "AJAX Request: " polygon-url)
     (go (let [response (<! (http/get polygon-url))]
-          (log "AJAX Response: " response)))))
+          (log "AJAX Response: " response)
+          (if (:success response)
+            (do (swap! my-name conj (str "my area " @polygon-counter))
+                (show-chart! response)
+                ;; (hide-progress!)
+                )
+            (js/alert "An error occurred! Please refresh the page."))))))
 
 (defn enable-custom-polygon-selection! []
   (let [counter         @polygon-counter
