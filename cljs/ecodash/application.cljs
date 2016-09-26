@@ -43,14 +43,6 @@
 (defn update-slider-vals! [slider-id idx slider-val]
   (swap! slider-vals assoc-in [slider-id idx] (str slider-val)))
 
-;; FIXME: slider :on-change should:
-;; 1. hide div#chart
-;; 2. set polygon-counter to 0
-;; 3. set polygon-selection to []
-;; 4. call (.revertStyle (.-data @google-map))
-;; 5. (doseq [event @all-overlays]
-;;      (.setMap (.-overlay event) nil))
-;;    (reset! all-overlays [])
 (defn multi-range [slider-id min max step]
   (update-slider-vals! slider-id 0 min)
   (update-slider-vals! slider-id 1 max)
@@ -253,6 +245,7 @@
 (defn remove-map-features! []
   (let [map-features (.-data @google-map)]
     (.forEach map-features #(.remove map-features %))
+    (.revertStyle map-features)
     (doseq [event @all-overlays]
       (.setMap (.-overlay event) nil))
     (when @active-drawing-manager
