@@ -14,6 +14,7 @@
                    [org.clojure/core.async      "0.2.391"]
                    [cljs-http                   "0.1.41"]
                    [reagent                     "0.6.0"]
+                   [cljsjs/google-maps          "3.18-1"]
                    [adzerk/boot-cljs            "1.7.228-1" :scope "test"]
                    [adzerk/boot-cljs-repl       "0.3.0"     :scope "test"]
                    [crisptrutski/boot-cljs-test "0.2.1"     :scope "test"]
@@ -34,6 +35,7 @@
         (target :dir #{"target"})))
 
 (deftask prod []
-  (comp (cljs :optimizations :advanced
-              :source-map    true)
+  (comp (cljs :optimizations    :advanced
+              :source-map       true
+              :compiler-options {:externs ["google_charts_externs.js"]})
         (target :dir #{"target"})))
