@@ -364,14 +364,6 @@
     (.setMap drawing-manager @google-map)
     (reset! active-drawing-manager drawing-manager)))
 
-;; FIXME: stub
-(defn show-map! []
-  nil)
-
-;; FIXME: stub
-(defn handle-polygon-click []
-  nil)
-
 (defn get-ee-map-type [ee-map-id ee-token]
   (google.maps.ImageMapType.
    #js {:name "ecomap"
@@ -381,6 +373,31 @@
                       (str "https://earthengine.googleapis.com/map/"
                            ee-map-id "/" zoom "/" (.-x tile) "/" (.-y tile)
                            "?token=" ee-token))}))
+
+(defn show-map! []
+  (let [overlay-map-types (.-overlayMapTypes @google-map)
+        baseline          (get-slider-vals :baseline)
+        study             (get-slider-vals :study)
+        map-url           (str "/getmap?"
+                               "refLow=" (baseline 0) "&"
+                               "refHigh=" (baseline 1) "&"
+                               "studyLow=" (study 0) "&"
+                               "studyHigh=" (study 1))]
+    (show-progress!)
+    (.clear overlay-map-types)
+    (log "AJAX Request: " map-url)
+    (go (let [response (<! (http/get map-url))]
+          (log "AJAX Response: " response)
+          (if (:success response)
+            (let [ee-map-id (-> response :body :eeMapId)
+                  ee-token  (-> response :body :eeToken)]
+              (.push overlay-map-types (get-ee-map-type ee-map-id ee-token))
+              (hide-progress!))
+            (js/alert "An error occurred! Please refresh the page."))))))
+
+;; FIXME: stub
+(defn handle-polygon-click []
+  nil)
 
 (defn refresh-image [ee-map-id ee-token]
   (.push (.-overlayMapTypes @google-map)
