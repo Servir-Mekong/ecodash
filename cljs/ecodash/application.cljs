@@ -276,6 +276,8 @@
                 (if map-type
                   (.setOpacity (.getAt overlay-map-types index) val))))))
 
+;; 1. load the JSON file from disk for each province and display them on the map
+;; 2. set the stroke and fill colors to white and the stroke weight to 2
 (defn enable-province-selection! []
   (let [map-features (.-data @google-map)]
     (doseq [province @province-names]
@@ -286,6 +288,8 @@
                                   :strokeWeight 2}))
     (reset! country-or-province 0)))
 
+;; 1. load the JSON file from disk for each country and display them on the map
+;; 2. set the stroke and fill colors to white and the stroke weight to 2
 (defn enable-country-selection! []
   (let [map-features (.-data @google-map)]
     (doseq [country @country-names]
@@ -328,6 +332,14 @@
       (.draw))
     (show-control! :chart)))
 
+;; 1. add event to all-overlays
+;; 2. increment polygon-counter
+;; 3. update the drawing-manager to use the next polygon color
+;; 4. collect the polygon coords and reads the baseline and study slider vals
+;; 5. send an AJAX request for that polygon over the specified time ranges
+;; 6. log the AJAX request url and response maps to the console
+;; 7. add (str "my area " @polygon-counter) to my-name
+;; 8. show a new chart
 (defn custom-overlay-handler [drawing-manager event]
   (show-progress!)
   (swap! all-overlays conj event)
@@ -356,6 +368,9 @@
             (js/alert "An error occurred! Please refresh the page."))
           (hide-progress!)))))
 
+;; 1. create drawing-manager
+;; 2. attach it to the map
+;; 3. add event listener to the map to call custom-overlay-handler when done drawing
 (defn enable-custom-polygon-selection! []
   (let [counter         @polygon-counter
         drawing-manager (google.maps.drawing.DrawingManager.
