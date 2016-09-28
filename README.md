@@ -1,7 +1,7 @@
 # EcoDash
 A web application for the EVI change detection algorithm of SERVIR-Mekong using Google Earth Engine and App Engine. The application itself can be found at <a href="http://ecodash.appspot.com/">ecodash.appspot.com</a>.
 
-![Screenshot](static/images/ecodash_screenshot_application.png)
+![Screenshot](static/images/screenshot.png)
 
 Dependencies (not included here) are:
 - ee

@@ -3,3 +3,6 @@
 .nrepl*
 target/
 out/
+ee/
+httplib2/
+oauth2client/
