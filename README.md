@@ -23,14 +23,19 @@ Earth Engine is listed [here](https://developers.google.com/earth-engine).
 
 ## Running
 
-1. First, you need to build ecodash.js from the Clojurescript files in cljs:
+First, you need to build ecodash.js from the Clojurescript files in cljs:
+
 ```bash
 $ cd cljs
 $ boot prod
 ```
-2. Now return to the toplevel directory and launch the Google App Engine development server:
+
+Now return to the toplevel directory and launch the Google App Engine
+development server:
+
 ```bash
 $ cd ..
 $ dev_appserver.py .
 ```
-3. Your application is now live at: [http://localhost:8080](http://localhost:8080)
+
+Your application is now live at: [http://localhost:8080](http://localhost:8080)
