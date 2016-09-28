@@ -9,7 +9,7 @@ handlers:
 - url: /static/
   static_dir: static
   application_readable: true
-  http_headers: 
+  http_headers:
     Access-Control-Allow-Origin: "*"
 - url: /oauth2callback
   script: oauth2client.appengine.application

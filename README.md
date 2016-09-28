@@ -13,13 +13,9 @@ Earth Engine is listed [here](https://developers.google.com/earth-engine).
 
 1. Clone this repository
 2. Install Python 2.7
-3. Install these Python libs:
-   * ee
-   * httplib2
-   * oauth2client
-4. Install the [Google Cloud SDK for Python](https://cloud.google.com/appengine/docs/python/download)
-5. Install Java Development Kit 1.8+
-6. Install [Boot](http://boot-clj.com)
+3. Install the [Google Cloud SDK for Python](https://cloud.google.com/appengine/docs/python/download)
+4. Install Java Development Kit 1.8+
+5. Install [Boot](http://boot-clj.com)
 
 ## Running
 
