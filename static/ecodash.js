@@ -1,1 +1,1 @@
-../target/ecodash.js
+../cljs/target/ecodash.js

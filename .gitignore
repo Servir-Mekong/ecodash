@@ -1,8 +1,6 @@
-*.pyc
-*.pem
 .nrepl*
-target/
-out/
+cljs/target/
 ee/
 httplib2/
 oauth2client/
+*.pyc
