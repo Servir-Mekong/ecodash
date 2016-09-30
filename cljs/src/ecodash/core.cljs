@@ -31,8 +31,7 @@
    [:nav
     [:ul
      [:li (make-nav-link-style 0) "Home"]
-     [:li (make-nav-link-style 1) "About"]
-     [:li (make-nav-link-style 2) "Application"]]]])
+     [:li (make-nav-link-style 1) "About"]]]])
 
 ;;===========
 ;; Page Body
@@ -42,19 +41,6 @@
   (if (= @active-link link-num)
     {:style {:visibility "visible"}}
     {:style {:visibility "hidden"}}))
-
-(defn home-page [page-visibility]
-  [:div#home page-visibility
-   [:h1 "Eco Dash"]
-   [:h2 "Spatio-temporal EVI Mapping"]
-   [:h3 "Explore historic vegetation change."]
-   [:hr]
-   [:p
-    "Eco Dash is a collaborative effort between its developers and its "
-    "community of users. We welcome suggestions for improvements on our "
-    [:a {:href "https://github.com/Servir-Mekong/ecodash/issues" :target "_blank"}
-     "Github"]
-    " issues page."]])
 
 (defn about-page [page-visibility]
   [:div#about page-visibility
@@ -83,9 +69,8 @@
 
 (defn page-content []
   [:div#all-pages
-   [home-page   (make-page-visibility-style 0)]
-   [about-page  (make-page-visibility-style 1)]
-   [app/content (make-page-visibility-style 2)]])
+   [app/content (make-page-visibility-style 0)]
+   [about-page  (make-page-visibility-style 1)]])
 
 ;;==================
 ;; CLJS Entry Point
