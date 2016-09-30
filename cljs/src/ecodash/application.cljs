@@ -87,7 +87,7 @@
 
 (defn map-controls []
   [:div#controls
-   [:h3 "Step 1: Select a time period to use as the baseline EVI"]
+   [:h3 "Step 1: Select a time period for the baseline EVI"]
    [multi-range1]
    [:h3 "Step 2: Select a time period to measure ∆EVI"]
    [multi-range2]
