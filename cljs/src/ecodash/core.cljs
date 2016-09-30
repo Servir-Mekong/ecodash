@@ -43,8 +43,8 @@
 
 (defn about-page [page-visibility]
   [:div#about page-visibility
-   [:h1 "About Eco Dash"]
-   [:p (str "Eco Dash is an open-source, web GIS tool created by SERVIR-Mekong"
+   [:h1 "About EcoDash"]
+   [:p (str "EcoDash is an open-source, web GIS tool created by SERVIR-Mekong"
             " for exploring the change in Enhanced Vegetation Index (EVI) of"
             " countries and their provinces in the Mekong River region of"
             " southeast Asia.")]

@@ -148,7 +148,7 @@
    [:div#map]
    [:div#ui {:style (get-display-style :ui)}
     [:header
-     [:h1 "Eco Dash Controls"]
+     [:h1 "EcoDash Controls"]
      [:div#collapse-button {:on-click (fn []
                                         (hide-control! :ui)
                                         (show-control! :settings-button))}
@@ -165,12 +165,12 @@
                                       (show-control! :ui))}
     (str/unescapeEntities "&#9776;")]
    [:div#general-info {:style (get-display-style :info)}
-    [:h1 "Eco Dash"]
+    [:h1 "EcoDash"]
     [:h2 "Spatio-temporal EVI Mapping"]
     [:h3 "Explore historic vegetation change."]
     [:hr]
     [:p
-     "Eco Dash is a collaborative effort between its developers and its "
+     "EcoDash is a collaborative effort between its developers and its "
      "community of users. We welcome suggestions for improvements on our "
      [:a {:href "https://github.com/Servir-Mekong/ecodash/issues" :target "_blank"}
       "Github"]
