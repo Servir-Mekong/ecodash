@@ -2,7 +2,7 @@
 
 A web application for the EVI change detection algorithm of SERVIR-Mekong using
 Google Earth Engine and App Engine. The application itself can be found at
-[http://ecodash.appspot.com](http://ecodash.appspot.com). The Python
+[http://ecodash-beta.appspot.com](http://ecodash-beta.appspot.com). The Python
 and JavaScript client libraries for calling the Earth Engine API can be found
 [here](https://github.com/google/earthengine-api). More information about Google
 Earth Engine is listed [here](https://developers.google.com/earth-engine).

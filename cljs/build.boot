@@ -1,8 +1,8 @@
 (task-options!
  pom  {:project     'Servir-Mekong/ecodash
-       :version     "1.0.0-SNAPSHOT"
+       :version     "1.0.0"
        :description "EVI web explorer for Southeast Asia"
-       :url         "http://ecodash.appspot.com"}
+       :url         "http://ecodash-beta.appspot.com"}
  repl {:eval        '(set! *warn-on-reflection* true)})
 
 (set-env!
