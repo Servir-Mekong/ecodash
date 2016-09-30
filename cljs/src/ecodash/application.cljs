@@ -188,7 +188,7 @@
     [:input {:type "range" :min "0" :max "1" :step "0.1" :default-value "1"
              :on-change #(update-opacity!
                           (js/parseFloat (.-value (.-currentTarget %))))}]]
-   [:p#feedback [:a {:href "https://github.com/Servir-Mekong/ecodash/issues"
+   [:p#feedback [:a {:href "https://docs.google.com/a/sig-gis.com/forms/d/1c7QP7BqDbURH3bLs9uphtXgFY6AEYKjN8vKsWRS85QI/edit?ts=57ec66c4"
                      :target "_blank"}
                  "Give us Feedback!"]]
    [:div.spinner {:style (get-spinner-visibility)}]])
