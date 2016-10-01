@@ -130,11 +130,12 @@ nav ul li.highlight {
 
 #about {
     position:absolute;
-    top:0px;
-    right:5rem;
+    top:0%;
+    left:10%;
     height:100%;
-    width:350px;
-    padding:2rem;
+    width:76%;
+    padding:2%;
+    overflow:scroll;
     background:rgba(255, 255, 255, 0.8);
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#CCFFFFFF, endColorstr=#CCFFFFFF);
     -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#CCFFFFFF, endColorstr=#CCFFFFFF);
@@ -151,17 +152,26 @@ nav ul li.highlight {
     padding:0.5rem;
 }
 
+#about #about-logos {
+    width:70%;
+    margin:auto;
+}
+
+#about #about-logos img {
+    display:inline;
+    height:35px;
+    padding:0.5rem;
+}
+
 #about p#copyright {
-    clear:both;
     padding:0.5rem;
     width:100%;
     text-align:center;
 }
 
-#about img {
-    float:left;
-    height:35px;
-    padding:0.5rem;
+#about #bottom-spacer {
+    height:100px;
+    width:100%;
 }
 
 /****************************************/
@@ -210,10 +220,10 @@ nav ul li.highlight {
 
 #ecodash #general-info {
     position:absolute;
-    top:15%;
-    left:20%;
-    height:56%;
-    width:56%;
+    top:5%;
+    left:15%;
+    height:76%;
+    width:66%;
     padding:2%;
     border-radius:3px;
     background-color:white;
@@ -222,24 +232,11 @@ nav ul li.highlight {
 }
 
 #ecodash #general-info h1 {
-    padding:0rem 0rem 0.5rem 1rem;
-    font-size:3rem;
+    text-align:center;
+    margin-bottom:0.5rem;
+    font-size:2.4rem;
     font-weight:bold;
     color:gray;
-}
-
-#ecodash #general-info h2 {
-    padding:0rem 0rem 1rem 1rem;
-    font-size:2rem;
-    font-weight:400;
-    color:gray;
-}
-
-#ecodash #general-info h3 {
-    padding:0rem 0rem 0.75rem 1rem;
-    font-size:1.2rem;
-    font-weight:400;
-    color:#3C948B;
 }
 
 #ecodash #general-info p {
@@ -248,7 +245,7 @@ nav ul li.highlight {
 }
 
 #ecodash #general-info input {
-    margin:0.5rem 39%;
+    margin:1rem 39%;
     padding:0.25rem;
     font-size:1.2rem;
 }

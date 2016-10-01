@@ -165,10 +165,20 @@
                                       (show-control! :ui))}
     (str/unescapeEntities "&#9776;")]
    [:div#general-info {:style (get-display-style :info)}
-    [:h1 "EcoDash"]
-    [:h2 "Spatio-temporal EVI Mapping"]
-    [:h3 "Explore historic vegetation change."]
+    [:h1 "Sustainable Landscapes Ecosystem Monitoring Tool (EcoDash)"]
     [:hr]
+    [:p
+     "This tool might best be thought of as a \"landscape calculator\" --"
+     " leveraging the extensive MODIS satellite archive and processing power"
+     " available via Google Earth Engine to facilitate the comparison of baseline"
+     " conditions in an area during a reference period with one or more"
+     " contrasting points in time. In its current implementation, the data"
+     " focus is the widely used \"Enhanced Vegetation Index\", a measure of an"
+     " area's bioproductivity. The user can specify the reference and study"
+     " periods as well as one or more areas of interest and view results"
+     " graphically."]
+    [:p
+     "Follow the numbered steps in the right panel to get started."]
     [:p
      "EcoDash is a collaborative effort between its developers and its "
      "community of users. We welcome suggestions for improvements on our "
