@@ -336,15 +336,15 @@
            #js {:chartType "LineChart"
                 :dataTable table
                 :options #js {:height 200
-                              :width 385
+                              :width 300
                               :title "Biophysical Health"
-                              :titleTextStyle #js {:fontName "Open Sans"}
+                              :titleTextStyle #js {:fontName "Roboto"}
                               :legend #js {:position "right"}
                               :curveType "function"
                               :chartArea #js {:left 50
                                               :top 50
                                               :height 100
-                                              :width 200}
+                                              :width 150}
                               :colors (clj->js css-colors)}})
       (.setContainerId (dom/getElement "chart"))
       (.draw))
