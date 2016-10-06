@@ -489,41 +489,98 @@ nav ul li.highlight {
     width:200px;
     height:22px;
     outline:none;
-    overflow:hidden;
     pointer-events:none;
-    cursor:pointer;
+    background:transparent;
+    -webkit-appearance:none;
 }
 
 .range-slider input::-webkit-slider-thumb {
-    position:relative;
-    z-index:1;
-    outline:0;
     pointer-events:all;
+    position:relative;
+    z-index:10;
+    background:#ffffff;
+    border:1px solid #000000;
+    border-radius:3px;
+    box-shadow:1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    cursor:pointer;
+    height:16px;
+    width:8px;
+    -webkit-appearance:none;
+    margin:-6px;
 }
 
 .range-slider input::-moz-range-thumb {
+    pointer-events:all;
     position:relative;
     z-index:10;
-    -moz-appearance:none;
-    width:9px;
+    background:#ffffff;
+    border:1px solid #000000;
+    border-radius:3px;
+    box-shadow:1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    cursor:pointer;
+    height:16px;
+    width:8px;
+}
+
+.range-slider input::-ms-thumb {
     pointer-events:all;
+    position:relative;
+    z-index:10;
+    background:#ffffff;
+    border:1px solid #000000;
+    border-radius:3px;
+    box-shadow:1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    cursor:pointer;
+    height:16px;
+    width:8px;
+}
+
+.range-slider input::-webkit-slider-runnable-track {
+    height:6px;
+    width:95%;
+    border:1px solid #010101;
+    border-radius:1px;
+    box-shadow:1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background:#ccc;
 }
 
 .range-slider input::-moz-range-track {
-    position:relative;
-    z-index:-1;
-    background-color:rgba(100,100,100,1);
-    border:0;
+    height:6px;
+    width:95%;
+    border:1px solid #010101;
+    border-radius:1px;
+    box-shadow:1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background:#ccc;
 }
 
 .range-slider input:last-of-type::-moz-range-track {
-    -moz-appearance:none;
-    background:none transparent;
-    border:0;
+    visibility:hidden;
 }
 
-.range-slider input[type=range]::-moz-focus-outer {
-    border:0;
+.range-slider input::-moz-focus-outer {
+    border:0px;
+}
+
+.range-slider input::-ms-track {
+    height:6px;
+    width:95%;
+    border:1px solid #010101;
+    border-radius:1px;
+    box-shadow:1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background:#ccc;
+    color:transparent;
+}
+
+.range-slider input::-ms-fill-lower {
+    background:transparent;
+}
+
+.range-slider input::-ms-fill-upper {
+    background:transparent;
+}
+
+.range-slider input:last-of-type::-ms-track {
+    visibility:hidden;
 }
 
 /******************/
