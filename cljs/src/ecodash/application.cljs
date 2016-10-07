@@ -139,6 +139,9 @@
 ;; Application Page Layout
 ;;=========================
 
+(defn msie? []
+  (exists? js/MSPointerEvent))
+
 (defonce opacity (r/atom 1.0))
 
 (declare update-opacity!)
@@ -203,9 +206,15 @@
        [:td "Decrease"]]]]]
    [:div#opacity
     [:p (str "Opacity: " @opacity)]
-    [:input {:type "range" :min "0" :max "1" :step "0.1" :default-value "1"
-             :on-change #(update-opacity!
-                          (js/parseFloat (.-value (.-currentTarget %))))}]]
+    [:input (merge {:type "range" :min "0" :max "1" :step "0.1" :default-value "1"}
+                   (if (msie?)
+                     {:style {:pointer-events "all"}
+                      :on-click #(update-opacity!
+                                  (js/parseFloat
+                                   (.-value (.-currentTarget %))))}
+                     {:on-change #(update-opacity!
+                                   (js/parseFloat
+                                    (.-value (.-currentTarget %))))}))]]
    [:p#feedback [:a {:href "https://docs.google.com/a/sig-gis.com/forms/d/1c7QP7BqDbURH3bLs9uphtXgFY6AEYKjN8vKsWRS85QI/edit?ts=57ec66c4"
                      :target "_blank"}
                  "Give us Feedback!"]]

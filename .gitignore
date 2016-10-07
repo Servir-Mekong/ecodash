@@ -1,3 +1,4 @@
 .nrepl*
+cljs/out/
 cljs/target/
 *.pyc
