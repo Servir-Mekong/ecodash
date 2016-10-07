@@ -31,6 +31,9 @@
 ;; Multi-Range Slider Widget
 ;;===========================
 
+(defn msie? []
+  (exists? js/MSPointerEvent))
+
 (defonce slider-vals (r/atom {}))
 
 (defn get-slider-vals [slider-id]
@@ -47,16 +50,25 @@
   (update-slider-vals! slider-id 0 low)
   (update-slider-vals! slider-id 1 high)
   (fn []
-    [:div.range-slider
+    [:div.range-slider {:style (if (msie?) {:height "70"} {})}
      [:p (get-formatted-slider-vals slider-id)]
-     [:input {:type "range" :min (str min) :max (str max)
-              :step (str step) :default-value (str low)
-              :on-change #(let [val (.-value (.-currentTarget %))]
-                            (update-slider-vals! slider-id 0 val))}]
-     [:input {:type "range" :min (str min) :max (str max)
-              :step (str step) :default-value (str high)
-              :on-change #(let [val (.-value (.-currentTarget %))]
-                            (update-slider-vals! slider-id 1 val))}]]))
+     [:input (merge {:type "range" :min (str min) :max (str max)
+                     :step (str step) :default-value (str low)}
+                    (if (msie?)
+                      {:style {:pointer-events "all"}
+                       :on-click #(let [val (.-value (.-currentTarget %))]
+                                    (update-slider-vals! slider-id 0 val))}
+                      {:on-change #(let [val (.-value (.-currentTarget %))]
+                                     (update-slider-vals! slider-id 0 val))}))]
+     [:input (merge {:type "range" :min (str min) :max (str max)
+                     :step (str step) :default-value (str high)}
+                    (if (msie?)
+                      {:style {:pointer-events "all"
+                               :top "45px"}
+                       :on-click #(let [val (.-value (.-currentTarget %))]
+                                    (update-slider-vals! slider-id 1 val))}
+                      {:on-change #(let [val (.-value (.-currentTarget %))]
+                                     (update-slider-vals! slider-id 1 val))}))]]))
 
 ;;==============
 ;; Map Controls
@@ -138,9 +150,6 @@
 ;;=========================
 ;; Application Page Layout
 ;;=========================
-
-(defn msie? []
-  (exists? js/MSPointerEvent))
 
 (defonce opacity (r/atom 1.0))
 

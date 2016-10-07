@@ -461,10 +461,6 @@ nav ul li.highlight {
     visibility:hidden;
 }
 
-.range-slider input:last-of-type::-ms-track {
-    visibility:hidden;
-}
-
 /*****************/
 /* Slider Widget */
 /*****************/
