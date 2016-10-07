@@ -303,36 +303,6 @@ nav ul li.highlight {
     top:25px;
     width:80px;
     height:22px;
-    outline:none;
-    overflow:hidden;
-    pointer-events:none;
-    cursor:pointer;
-}
-
-#ecodash #opacity input::-webkit-slider-thumb {
-    position:relative;
-    z-index:1;
-    outline:0;
-    pointer-events:all;
-}
-
-#ecodash #opacity input::-moz-range-thumb {
-    position:relative;
-    z-index:10;
-    -moz-appearance:none;
-    width:9px;
-    pointer-events:all;
-}
-
-#ecodash #opacity input::-moz-range-track {
-    position:relative;
-    z-index:-1;
-    background-color:rgba(100,100,100,1);
-    border:0;
-}
-
-#ecodash #opacity input[type=range]::-moz-focus-outer {
-    border:0;
 }
 
 #ecodash p#feedback {
@@ -485,13 +455,28 @@ nav ul li.highlight {
     top:20px;
     width:200px;
     height:22px;
+}
+
+.range-slider input:last-of-type::-moz-range-track {
+    visibility:hidden;
+}
+
+.range-slider input:last-of-type::-ms-track {
+    visibility:hidden;
+}
+
+/*****************/
+/* Slider Widget */
+/*****************/
+
+input[type=range] {
     outline:none;
     pointer-events:none;
     background:transparent;
     -webkit-appearance:none;
 }
 
-.range-slider input::-webkit-slider-thumb {
+input[type=range]::-webkit-slider-thumb {
     pointer-events:all;
     position:relative;
     z-index:10;
@@ -506,7 +491,7 @@ nav ul li.highlight {
     margin:-6px;
 }
 
-.range-slider input::-moz-range-thumb {
+input[type=range]::-moz-range-thumb {
     pointer-events:all;
     position:relative;
     z-index:10;
@@ -519,7 +504,7 @@ nav ul li.highlight {
     width:8px;
 }
 
-.range-slider input::-ms-thumb {
+input[type=range]::-ms-thumb {
     pointer-events:all;
     position:relative;
     z-index:10;
@@ -532,7 +517,7 @@ nav ul li.highlight {
     width:8px;
 }
 
-.range-slider input::-webkit-slider-runnable-track {
+input[type=range]::-webkit-slider-runnable-track {
     height:6px;
     width:95%;
     border:1px solid #010101;
@@ -541,7 +526,7 @@ nav ul li.highlight {
     background:#ccc;
 }
 
-.range-slider input::-moz-range-track {
+input[type=range]::-moz-range-track {
     height:6px;
     width:95%;
     border:1px solid #010101;
@@ -550,15 +535,11 @@ nav ul li.highlight {
     background:#ccc;
 }
 
-.range-slider input:last-of-type::-moz-range-track {
-    visibility:hidden;
-}
-
-.range-slider input::-moz-focus-outer {
+input[type=range]::-moz-focus-outer {
     border:0px;
 }
 
-.range-slider input::-ms-track {
+input[type=range]::-ms-track {
     height:6px;
     width:95%;
     border:1px solid #010101;
@@ -568,16 +549,12 @@ nav ul li.highlight {
     color:transparent;
 }
 
-.range-slider input::-ms-fill-lower {
+input[type=range]::-ms-fill-lower {
     background:transparent;
 }
 
-.range-slider input::-ms-fill-upper {
+input[type=range]::-ms-fill-upper {
     background:transparent;
-}
-
-.range-slider input:last-of-type::-ms-track {
-    visibility:hidden;
 }
 
 /******************/
