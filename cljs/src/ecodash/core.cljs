@@ -22,7 +22,7 @@
 
 (defn page-header []
   [:header
-   [:div#logos
+   [:div.logos
     [:img#usaid  {:src "/static/images/usaid.png"}]
     [:img#nasa   {:src "/static/images/nasa.png"}]
     [:img#adpc   {:src "/static/images/adpclogo.jpg"}]
@@ -109,6 +109,17 @@
    [app/content (make-page-visibility-style 0)]
    [about-page  (make-page-visibility-style 1)]])
 
+;;=============
+;; Page Footer
+;;=============
+
+(defn page-footer []
+  [:footer
+   [:div.logos
+    [:img#sig      {:src "/static/images/logosig.png"}]
+    [:img#sei      {:src "/static/images/sei_tr.png"}]
+    [:img#deltares {:src "/static/images/deltares_tr.png"}]]])
+
 ;;==================
 ;; CLJS Entry Point
 ;;==================
@@ -116,4 +127,5 @@
 (defn ^:export main [ee-map-id ee-token country-polygons province-polygons]
   (r/render [page-header] (dom/getElement "pageheader"))
   (r/render [page-content] (dom/getElement "pagecontent"))
+  (r/render [page-footer] (dom/getElement "pagefooter"))
   (app/init ee-map-id ee-token country-polygons province-polygons))
