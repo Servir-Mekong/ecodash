@@ -101,8 +101,7 @@
     (str/unescapeEntities "&copy;")
     " Winrock and "
     [:a {:href "http://www.sig-gis.com" :target "_blank"} "SIG-GIS"]
-    " 2016"]
-   [:div#bottom-spacer]])
+    " 2016"]])
 
 (defn page-content []
   [:div#all-pages
