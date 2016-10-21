@@ -95,13 +95,7 @@
     [:img {:src "/static/images/winrocklogo.jpg"}]
     [:img {:src "/static/images/mardlogo.jpg"}]
     [:img {:src "/static/images/sei_tr.png"}]
-    [:img {:src "/static/images/deltares_tr.png"}]]
-   [:p#copyright
-    "Copyright "
-    (str/unescapeEntities "&copy;")
-    " Winrock and "
-    [:a {:href "http://www.sig-gis.com" :target "_blank"} "SIG-GIS"]
-    " 2016"]])
+    [:img {:src "/static/images/deltares_tr.png"}]]])
 
 (defn page-content []
   [:div#all-pages
