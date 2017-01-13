@@ -339,11 +339,11 @@
 (defn show-chart! [time-series]
   (if @chart-data
     (swap! chart-data
-           #(mapv (fn [val-stack [time val]] (conj val-stack val))
+           #(mapv (fn [val-stack [time val]] (conj val-stack (/ val 1000.0)))
                   %
                   time-series))
     (reset! chart-data
-            (mapv (fn [[time val]] [(js/Date. (js/parseInt time 10)) val])
+            (mapv (fn [[time val]] [(js/Date. (js/parseInt time 10)) (/ val 1000.0)])
                   time-series)))
   (let [table (google.visualization.DataTable.)]
     (.addColumn table "date")
