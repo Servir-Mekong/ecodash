@@ -23,7 +23,7 @@ First, you need to build ecodash.js from the Clojurescript files in cljs:
 
 ```bash
 $ cd cljs
-$ boot prod
+$ boot production
 ```
 
 Now return to the toplevel directory and launch the Google App Engine

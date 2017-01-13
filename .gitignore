@@ -1,4 +1,5 @@
+*.pyc
 .nrepl*
 cljs/out/
-cljs/target/
-*.pyc
+cljs/
+static/compiled_js/
