@@ -83,7 +83,6 @@ class MainHandler(webapp2.RequestHandler):
     
     def get(self):
         mapid = GetMapId()
-        counter = self.request.get('mycounter')
         template_values = {
             'eeMapId': mapid['mapid'],
             'eeToken': mapid['token'],
@@ -306,10 +305,17 @@ def ComputePolygonTimeSeries(polygon_id,mypath,ref_start,ref_end,series_start,se
   collection = ee.ImageCollection(IMAGE_COLLECTION_ID) #.filterDate('2008-01-01', '2010-12-31').sort('system:time_start')
   reference = collection.filterDate(ref_start,ref_end ).sort('system:time_start').select('EVI')
   series = collection.filterDate(series_start, series_end).sort('system:time_start').select('EVI')
+
+  def calcMonthlyMean(imageCollection):
+      mylist = ee.List([])
+      months = range(1,12)
+      for m in months:
+          w = imageCollection.filter(ee.Filter.calendarRange(m,m,'month')).mean()
+          mylist = mylist.add(w.set('month',m).set('date',ee.Date.fromYMD(1,m,1)).set('system:time_start',ee.Date.fromYMD(1,m,1)))
+      return ee.imageCollection.fromImages(mylist)
   
-  mymean = ee.Image(reference.mean())
-  
-  #mylist.append(polygon_id)
+  referenceMonthlyMean = ee.ImageCollection(calcMonthlyMean(reference))
+  seriesMonthlyMean = ee.ImageCollection(calcMonthlyMean(series))
   
   # Add a band containing image date as years since 1991.
   def subtract(img):
