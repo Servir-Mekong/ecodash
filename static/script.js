@@ -26,17 +26,19 @@ var all_overlays = [];
 var firstGraph = 0;
 var myMap;
 
+var currentShape; 
+
  /**
  * Starts the Surface Water Tool application. The main entry point for the app.
  * @param {string} eeMapId The Earth Engine map ID.
  * @param {string} eeToken The Earth Engine map token.
  */
-ecodash.boot = function(eeMapId, eeToken,serializedPolygonIds_country,serializedPolygonIds_province) {
+var boot = function(eeMapId, eeToken,serializedPolygonIds_country,serializedPolygonIds_province) {
 	
 	
 	google.load('visualization', '1.0');
 
-	var app = new ecodash.App(eeMapId, 
+	var app = new App(eeMapId, 
 							  eeToken,JSON.parse(serializedPolygonIds_country),
 							  JSON.parse(serializedPolygonIds_province));
 };
@@ -49,38 +51,52 @@ ecodash.boot = function(eeMapId, eeToken,serializedPolygonIds_country,serialized
  * The main Surface Water Tool application.
  * @param {google.maps.ImageMapType} mapType The map type to render on the map.
  */
-ecodash.App = function(eeMapId, eeToken,countryNames,provinceNames) {
+var App = function(eeMapId, eeToken,countryNames,provinceNames) {
   
   counter = 0;
   
   // Create and display the map.
-  this.map = ecodash.App.createMap();
+  map = createMap();
      
    // Initialize the UI components.
-  this.initDatePicker();
+  initDatePicker();
   
   // set init slider
-  this.initSlider(this.map);
+  initSlider(map);
   
   // add listenir 
-  this.map.data.addListener('click', this.handlePolygonClick.bind(this));
+  map.data.addListener('click', handlePolygonClick.bind(this));
   
-  this.initButton(this.map,provinceNames,countryNames);
   
-  this.opacitySliders();
+  // set controls 
+	var customControlDiv = document.createElement('div');
+    var customControl = new CustomControl(customControlDiv, map);
+    
+    console.log("adding the kml download functions");
+    customControlDiv.index = 1;
+    customControlDiv.style['padding-top'] = '25px';
+    customControlDiv.style['padding-right'] = '25px';
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(customControlDiv);
+    
+    //for browsing and reading the kml file
+    document.getElementById('fileOpen').addEventListener('change', fileOpenDialog, false);
+  
+  initButton(map,provinceNames,countryNames);
+  
+  opacitySliders();
   
   // Register a click handler to hide the panel when the user clicks close.
   $('.panel .clear').hide();
   $('.panel .updateMap').hide();
 
-  $('.panel .clear').click(this.cleargraph.bind(this));
+  $('.panel .clear').click(cleargraph.bind(this));
   
-  myMap = this.map;
-  $('.panel .updateMap').click(this.ShowMap.bind(this));
+  myMap = map;
+  $('.panel .updateMap').click(ShowMap.bind(this));
   
   
     // Load the default image.
-  this.refreshImage(eeMapId, eeToken,countryNames,provinceNames);
+  refreshImage(eeMapId, eeToken,countryNames,provinceNames);
 };
 
 /**
@@ -89,11 +105,11 @@ ecodash.App = function(eeMapId, eeToken,countryNames,provinceNames) {
  * @param {google.maps.ImageMapType} mapType The map type to include on the map.
  * @return {google.maps.Map} A map instance with the map type rendered.
  */
-ecodash.App.createMap = function() {
+var createMap = function() {
   var mapOptions = {
-    center: ecodash.App.DEFAULT_CENTER,
-    zoom: ecodash.App.DEFAULT_ZOOM,
-	maxZoom: ecodash.App.MAX_ZOOM,
+    center: DEFAULT_CENTER,
+    zoom: DEFAULT_ZOOM,
+	maxZoom: MAX_ZOOM,
 	//disableDefaultUI: true,
 	streetViewControl: false
   };
@@ -108,15 +124,15 @@ ecodash.App.createMap = function() {
 // ---------------------------------------------------------------------------------- //
 
 /** Updates the image based on the current control panel config. */
-ecodash.App.prototype.refreshImage = function(eeMapId, eeToken) {
-  var mapType = ecodash.App.getEeMapType(eeMapId, eeToken);
-  this.map.overlayMapTypes.push(mapType);
+var refreshImage = function(eeMapId, eeToken) {
+  var mapType = getEeMapType(eeMapId, eeToken);
+  map.overlayMapTypes.push(mapType);
 };
 
 
 /** Updates the image based on the current control panel config. */
-ecodash.App.prototype.refresh = function(eeMapId, eeToken,map) {
-  var mapType = ecodash.App.getEeMapType(eeMapId, eeToken);
+var refresh = function(eeMapId, eeToken,map) {
+  var mapType = getEeMapType(eeMapId, eeToken);
   map.overlayMapTypes.push(mapType);
 };
 
@@ -125,13 +141,13 @@ ecodash.App.prototype.refresh = function(eeMapId, eeToken,map) {
  * @param {Array<string>} polygonIds The IDs of the polygons to show on the map.
  *     For example ['poland', 'moldova'].
  */
-ecodash.App.prototype.addPolygons = function(polygonIds) {
+var addPolygons = function(polygonIds) {
 
   polygonIds.forEach((function(polygonId) {
-    this.map.data.loadGeoJson('static/province/' + polygonId + '.json');
+    map.data.loadGeoJson('static/province/' + polygonId + '.json');
 	 }).bind(this));
   
-  this.map.data.setStyle(function(feature) {
+  map.data.setStyle(function(feature) {
     return {
       fillColor: 'white',
       strokeColor: 'white',
@@ -146,7 +162,7 @@ ecodash.App.prototype.addPolygons = function(polygonIds) {
 // ---------------------------------------------------------------------------------- //
 
 /** Initializes the date picker. */
-ecodash.App.prototype.initDatePicker = function() {
+var initDatePicker = function() {
   // Create the date pickers.
   $('.date-picker').datepicker({
     format: ' yyyy', // Notice the Extra space at the beginning
@@ -161,10 +177,10 @@ ecodash.App.prototype.initDatePicker = function() {
   $('.date-picker').datepicker('update', '2013');
 
   // Respond when the user updates the dates.
-  $('.date-picker').change(this.refreshImage.bind(this));
+  $('.date-picker').change(refreshImage.bind(this));
 };
 
-ecodash.App.prototype.initSlider = function(map) {
+var initSlider = function(map) {
   $("#reference").slider({ id: "slider12b", 
 						   min: 2000, 
 						   max: 2017, 
@@ -247,7 +263,7 @@ ecodash.App.prototype.initSlider = function(map) {
 
 
 
-ecodash.App.prototype.ShowProgress = function() {
+var ShowProgress = function() {
     
     var pleaseWait = $('#pleaseWaitDialog'); 
     
@@ -259,7 +275,7 @@ ecodash.App.prototype.ShowProgress = function() {
 }
 
 
-ecodash.App.prototype.HideProgress = function() {
+var HideProgress = function() {
     
      var pleaseWait = $('#pleaseWaitDialog'); 
     
@@ -270,7 +286,7 @@ ecodash.App.prototype.HideProgress = function() {
     hidePleaseWait();
 }
 
-ecodash.App.prototype.cleargraph = function() {
+var cleargraph = function() {
 
  
   $('.panel .chart').empty(); 
@@ -280,12 +296,12 @@ ecodash.App.prototype.cleargraph = function() {
   firstGraph = 0;
   DataArr = [];
   
-  this.map.data.revertStyle();
+  map.data.revertStyle();
   
    
 };
 
-ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
+var initButton = function(map,provinceNames,countryNames) {
 
 	$("input[name='clickme']").change(function(){
 	var myval = $("input[name='clickme']:checked").val();
@@ -309,8 +325,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 			};
 		  });
 	checkbox = 1;
-	CountryorProvince = 0;
-	
+	CountryorProvince = 0;		
 	
 	for (var i=0; i < all_overlays.length; i++)
 	 {
@@ -366,12 +381,15 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 			strokeColor: CSS_COLOR_NAMES[counter]
 		  }
 		});
-
+        
+       
+        
+		
 		// Respond when a new polygon is drawn.
 		google.maps.event.addListener(drawingManager, 'overlaycomplete',
 			function(event) {
 			   
-			   ecodash.App.prototype.ShowProgress();
+			   ShowProgress();
 			   all_overlays.push(event);
 			   counter = counter + 1;
 			   drawingManager.setOptions({
@@ -382,7 +400,7 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 				});
          
           var geom = event.overlay.getPath().getArray();
-          
+          currentShape = new google.maps.Polygon({ paths: geom})
       
 			$.get('/polygon?polygon=' + geom,{mycounter: counter,
 											  refLow : refLow,									 
@@ -397,8 +415,8 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 		
 				
 				myName.push("my area " + counter.toString());
-				ecodash.App.prototype.showChart(data);
-				ecodash.App.prototype.HideProgress();
+				showChart(data);
+				HideProgress();
 			}}).bind(this));
 			
 			
@@ -419,12 +437,12 @@ ecodash.App.prototype.initButton = function(map,provinceNames,countryNames) {
 }
 
 
-ecodash.App.prototype.ShowMap = function() {
+var ShowMap = function() {
 
 
 	$('.panel .updateMap').hide();
 	
-	ecodash.App.prototype.ShowProgress();
+	ShowProgress();
 	
 	// clear the map
 	myMap.overlayMapTypes.clear();
@@ -442,9 +460,9 @@ ecodash.App.prototype.ShowMap = function() {
 	  data: params,
       dataType: "json",
       success: function (data) {
-		 var mapType = ecodash.App.getEeMapType(data.eeMapId, data.eeToken);
+		 var mapType = getEeMapType(data.eeMapId, data.eeToken);
 		 myMap.overlayMapTypes.push(mapType);
-		 ecodash.App.prototype.HideProgress();
+		 HideProgress();
 		
       },
       error: function (data) {
@@ -461,7 +479,7 @@ ecodash.App.prototype.ShowMap = function() {
  * @param {Array<Array<number>>} timeseries The timeseries data
  *     to plot in the chart.
  */
-ecodash.App.prototype.showChart = function(timeseries) {
+var showChart = function(timeseries) {
 
 
   $('.panel .clear').show();
@@ -518,19 +536,19 @@ ecodash.App.prototype.showChart = function(timeseries) {
  *     polygon clicked.
  */
 
-ecodash.App.prototype.handlePolygonClick = function(event) {
+var handlePolygonClick = function(event) {
     
-  //this.clear();
+  //clear();
  
-  this.ShowProgress();
+  ShowProgress();
   var feature = event.feature;
   
   
   
   // Instantly higlight the polygon and show the title of the polygon.
-  this.map.data.overrideStyle(feature, {strokeWeight: 6,
-										fillcolor: CSS_COLOR_NAMES[counter],
-										strokeColor: CSS_COLOR_NAMES[counter]  	
+  map.data.overrideStyle(feature, {strokeWeight: 6,
+								   fillcolor: CSS_COLOR_NAMES[counter],
+								   strokeColor: CSS_COLOR_NAMES[counter]  	
 											});
  
   document.getElementById("counter").value = counter;
@@ -559,8 +577,8 @@ ecodash.App.prototype.handlePolygonClick = function(event) {
       alert("An error! This is embarrassing! Please report to the sys admin. ");
     } else {
 		
-		this.showChart(data['timeSeries']);
-		this.HideProgress();
+		showChart(data['timeSeries']);
+		HideProgress();
     }
   }).bind(this));
   
@@ -570,19 +588,19 @@ ecodash.App.prototype.handlePolygonClick = function(event) {
 };
 
 
-ecodash.App.prototype.opacitySliders = function() {
+var opacitySliders = function() {
 
   // in case of merged permanent and flooded water layers:
   $("#ecoControl").on("slide", function(slideEvt) {
-	ecodash.App.prototype.setLayerOpacity(slideEvt.value);
+	setLayerOpacity(slideEvt.value);
   });
   $("#ecoControl").on("slideStop", function(slideEvt) {
-	ecodash.App.prototype.setLayerOpacity(slideEvt.value);
+	setLayerOpacity(slideEvt.value);
   });
 }
 
 
-ecodash.App.prototype.setLayerOpacity = function(value) {
+var setLayerOpacity = function(value) {
   myMap.overlayMapTypes.forEach((function(mapType, index) {
     console.log(mapType.name)
     if (mapType) {
@@ -605,10 +623,10 @@ ecodash.App.prototype.setLayerOpacity = function(value) {
  * @return {google.maps.ImageMapType} A Google Maps ImageMapType object for the
  *     EE map with the given ID and token.
  */
-ecodash.App.getEeMapType = function(eeMapId, eeToken) {
+var getEeMapType = function(eeMapId, eeToken) {
   var eeMapOptions = {
     getTileUrl: function(tile, zoom) {
-      var url = ecodash.App.EE_URL + '/map/';
+      var url = EE_URL + '/map/';
       url += [eeMapId, zoom, tile.x, tile.y].join('/');
       url += '?token=' + eeToken;
       return url;
@@ -627,7 +645,7 @@ ecodash.App.getEeMapType = function(eeMapId, eeToken) {
  * @return {google.maps.drawing.DrawingManager} A drawing manager for
  *     the given map.
  */
-ecodash.App.createDrawingManager = function(map) {
+var createDrawingManager = function(map) {
   var drawingManager = new google.maps.drawing.DrawingManager({
     drawingControl: false,
     polygonOptions: {
@@ -639,17 +657,91 @@ ecodash.App.createDrawingManager = function(map) {
   return drawingManager;
 };
 
+function CustomControl(controlDiv, map) {
+
+
+    // Set CSS for the control border
+    var saveKmlUI = document.createElement('div');
+    saveKmlUI.id = 'saveKmlUI';
+    saveKmlUI.title = 'Save polygon as KML';
+    controlDiv.appendChild(saveKmlUI);
+
+    // Set CSS for the control interior
+    var saveKmlText = document.createElement('div');
+    saveKmlText.id = 'saveKmlText';
+    //saveKmlText.innerHTML = '  S  ';
+    saveKmlText.innerHTML = '<span><img src="./static/images/save.png" width="24px" height="24px"></img></span>';
+    saveKmlUI.appendChild(saveKmlText);
+
+    // Set CSS for the setCenter control border
+    var loadKmlUI = document.createElement('div');
+    loadKmlUI.id = 'loadKmlUI';
+    loadKmlUI.title = 'Load KML polygon';
+    controlDiv.appendChild(loadKmlUI);
+
+    // Set CSS for the control interior
+    var loadKmlText = document.createElement('div');
+    loadKmlText.id = 'loadKmlText';
+    loadKmlText.innerHTML = '<span><img src="./static/images/load.png" width="24px" height="24px"></img></span>';
+    loadKmlUI.appendChild(loadKmlText);
+
+
+    // Setup the click event listeners
+    google.maps.event.addDomListener(saveKmlUI, 'click', function () {
+        //alert('Save control clicked');
+
+        saveKMLFile();
+    });
+
+    google.maps.event.addDomListener(loadKmlUI, 'click', function () {
+        //alert('Load control clicked');
+        $('#fileOpen').click();
+    });
+}
+
+
+// Extract an array of coordinates for the given polygon.
+var getCoordinates = function (shape) {
+    //Check if drawn shape is rectangle or polygon
+    if (shape.type == google.maps.drawing.OverlayType.RECTANGLE) {
+        var bounds = shape.getBounds();
+        var ne = bounds.getNorthEast();
+        var sw = bounds.getSouthWest();
+        var xmin = sw.lng();
+        var ymin = sw.lat();
+        var xmax = ne.lng();
+        var ymax = ne.lat();
+
+
+        return [[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]];
+
+    }
+    else {
+        var points = shape.getPath().getArray();
+        return points.map(function (point) {
+            return [point.lng(), point.lat()];
+        });
+    }
+};
+
+
+// Sets the current polygon and kicks off an EE analysis.
+var setRectanglePolygon = function (newShape) {
+    currentShape = newShape;
+};
+
+
 /** @type {string} The Earth Engine API URL. */
-ecodash.App.EE_URL = 'https://earthengine.googleapis.com';
+var EE_URL = 'https://earthengine.googleapis.com';
 
 /** @type {number} The default zoom level for the map. */
-ecodash.App.DEFAULT_ZOOM = 5;
+var DEFAULT_ZOOM = 5;
 
 /** @type {number} The max allowed zoom level for the map. */
-ecodash.App.MAX_ZOOM = 12;
+var MAX_ZOOM = 12;
 
 /** @type {Object} The default center of the map. */
-ecodash.App.DEFAULT_CENTER = {lng: 105.8, lat: 11.8};
+var DEFAULT_CENTER = {lng: 105.8, lat: 11.8};
 
 /** @type {string} The default date format. */
-ecodash.App.DATE_FORMAT = 'yyyy-mm-dd';
+var DATE_FORMAT = 'yyyy-mm-dd';
