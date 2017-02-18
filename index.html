@@ -3,6 +3,8 @@
 	<head>
 		
 		<title>EcoDash</title>
+	    
+	    <!-- CSS file. -->
 	    <link href="/static/css/main.css" rel="stylesheet" type="text/css">
 	
 		<!-- Google Web Fonts. -->
@@ -22,6 +24,15 @@
 	
 		<!-- Load jquery -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	
+		<!-- load boostrap -->
+	    <script src="static/js/bootstrap.min.js"></script>
+	
+		<!-- load libraries to download kml -->
+		<script src="/static/js/kml.js"></script>
+		<script src="/static/js/xmlwriter.js"></script>
+        <script src="/static/js/toGeoJSON.js"></script>
+	
 	</head>
 	
 	
@@ -40,14 +51,52 @@
 		<!-- The nav bar. -->
 		<nav>
 		<ul>
-			<li class="highlight">Home</li>
-			<li class="highlight">About</li>
+			<li id="homebutton">Home</li>
+			<li id="aboutbutton">About</li>
 		</ul>
 		</nav>
 		</section>
 
 		<!-- The page content -->
 	    <section id="pagecontent">
+		
+				<!-- The about page -->
+		<div id="about">
+			<h1>About the Sustainable Landscapes Ecosystem Monitoring Tool</h1>
+			<p>Maintaining ecological stability and/or biological productivity over a large area is a common goal of landscape scale policy or management
+			interventions. The development of this tool was prompted by a need expressed by project managers to track the success of their efforts in
+			this context. In the current version, the focus is on the Enhanced Vegetation Index (EVI) calculated using MODIS multispectral data with
+			a pixel resolution of 250 x 250 m. EVI is a measure of relative biomass particularly suited to high-biomass areas of the globe.</p>
+
+			<p>The tool is made possible by connecting the user interface with Google Earth Engine, a cloud computing platform that links extensive data archives with substantial processing power. 
+			This architecture makes formerly heavy analyses time and cost effective for users. The  comparison of broad-scale biological productivity in an area from one period to another has
+			applications beyond projects seeking to monitor the effects of their interventions. This tool can also potentially be used to provide insight
+			into changes related to climate change, urban expansion, infrastructure development, and other impacts.</p>
+
+			<p>Beyond the comparison of EVI, the design of this tool reflects a more general "proof of concept" of an application that is particularly
+			 well-served by large scale remotely sensed data: the comparison of conditions in a large area from one time period with another using
+			 calculations based on remotely sensed gridded data. In its general architecture, the tool can support the analysis of any type of gridded
+			 data and future iterations will allow users to select from a number of possible datasets.</p>
+			 
+			 <hr><h1>Development and Acknowledgment</h1>
+			 <p>This tool was developed by SERVIR-Mekong in close consultation with the Vietnam Forests and Deltas project and their partners in Vietnam, in
+			 particular the Ministry of Agriculture and Rural Development and constituent agencies.</p>
+			 
+			 <p>The Python code for Google Earth Engine was developed by Winrock International in partnership with members of the Google Earth Engine team.</p>
+			 
+			 <p>The user interface was developed by Spatial Informatics Group (SIG) using Clojurescript, Google Closure, and the Google App Engine SDK.</p>
+			 
+			 <div id="about-logos"><img src="/static/images/servir.png">
+				 <img src="/static/images/usaid.png"><img src="/static/images/nasa.png">
+				 <img src="/static/images/adpclogo.jpg">
+				 <img src="/static/images/googlelogo_color_272x92dp.png">
+				 <img src="/static/images/logosig.png">
+				 <img src="/static/images/winrocklogo.jpg">
+				 <img src="/static/images/mardlogo.jpg">
+				 <img src="/static/images/sei_tr.png">
+				 <img src="/static/images/deltares_tr.png">
+			 </div>
+		 </div> <!-- end of about -->
 		
 			<!-- The DOM of the application. -->
 			<div id="ecodash">
@@ -105,18 +154,25 @@
 					<ul>
 					<li><input type="radio" name="polygon-selection-method" value="Province" id="polygon-selection-method"><label>Province</label></li>
 					<li><input type="radio" name="polygon-selection-method" value="Country" id="polygon-selection-method"><label>Country</label></li>
-					<li><input type="radio" name="polygon-selection-method" value="Draw Polygon" id="polygon-selection-method"><label>Draw Polygon</label></li></ul>
+					<li><input type="radio" name="polygon-selection-method" value="Draw Polygon" id="polygon-selection-method"><label>Draw Polygon</label></li>
+					</ul>
 					
-					<h3>Click a polygon on the map or draw your own</h3><p id="polygon">Selection:<em></em></p>
+					<button id="downloadkml">Download Polygon</button>	
+					
+					<h3>Click a polygon on the map or draw your own</h3><p id="polygon">Selection: <em id="name"></em>
 					
 					<h3>Step 6: Review the historical ∆EVI in the selection</h3>
 					<div id="chart" style="display: none;"></div>
+					
+					<!-- file upload button -->
+					<input type="file" id="fileOpen" style="visibility: hidden; width: 2px;" />
 					
 				</div>	
 			</div> <!-- end of ui display block -->
 		</div> 	<!-- end of ecodash -->
 
 	    </section>
+
 
 		
 		<!-- the page footer -->
@@ -141,3 +197,6 @@
 		
 	</body>
 </html>
+
+
+
