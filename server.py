@@ -147,24 +147,6 @@ class DetailsHandler(webapp2.RequestHandler):
 class PolygonHandler(webapp2.RequestHandler):
     def get(self):
 		
-		print "entering.."
-		print "entering.."
-		print "entering.."
-		print "entering.."
-		print "entering.."
-		print "entering.."
-		print "entering.."
-		print "entering.."
-		print "entering.."
-		print "entering.."
-		print "entering.."
-		print "entering.."
-		print "entering.."
-		print "entering.."
-		print "entering.."
-		print "entering.."
-		print "entering.."
-		print "entering.."
 		
 		polygon =  unicode(self.request.get('polygon')) 
 		refLow = self.request.get('refLow')
