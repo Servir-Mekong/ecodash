@@ -28,6 +28,9 @@
 		<!-- load boostrap -->
 	    <script src="static/js/bootstrap.min.js"></script>
 	
+		<!-- custom library to download maps -->
+	    <script src='/_ah/channel/jsapi'></script>
+	
 		<!-- load libraries to download kml -->
 		<script src="/static/js/kml.js"></script>
 		<script src="/static/js/xmlwriter.js"></script>
@@ -117,8 +120,6 @@
 		   </div>
 
 			
-			
-			
 			<!-- The element into which Google Maps is rendered. -->
 			<div id="map"></div>
 			
@@ -166,6 +167,9 @@
 					
 					
 					<button id="clearchart">Clear chart</button>	
+					<button id="export">export map</button>	
+					<a id="link" target="_blank">Download the data</a>
+					
 					
 					<!-- file upload button -->
 					<input type="file" id="fileOpen" style="visibility: hidden; width: 2px;" />

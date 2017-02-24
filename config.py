@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 import ee
 """Required credentials configuration."""
 
