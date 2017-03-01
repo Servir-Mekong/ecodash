@@ -1,5 +1,5 @@
 /**
- * @fileoverview Runs the Surface Water Tool application. The code is executed in the
+ * @fileoverview Runs the Ecodash Tool application. The code is executed in the
  * user's browser. It communicates with the App Engine backend, renders output
  * to the screen, and handles user interactions.
  */
@@ -7,16 +7,18 @@
 
 ecodash = {};  // Our namespace.
 
+
+// define a number of global variabiles
+
 var Country = new google.maps.Data();
 var Province = new google.maps.Data();
-var CSS_COLOR_NAMES = ["Aqua","Black","Blue","BlueViolet","Brown","Aquamarine","BurlyWood","CadetBlue","Chartreuse","Chocolate","Coral","CornflowerBlue","Cornsilk","Crimson","Cyan","DarkBlue","DarkCyan","DarkGoldenRod","DarkGray","DarkGrey","DarkGreen","DarkKhaki","DarkMagenta","DarkOliveGreen","Darkorange","DarkOrchid","DarkRed","DarkSalmon","DarkSeaGreen","DarkSlateBlue","DarkSlateGray","DarkSlateGrey","DarkTurquoise","DarkViolet","DeepPink","DeepSkyBlue","DimGray","DimGrey","DodgerBlue","FireBrick","FloralWhite","ForestGreen","Fuchsia","Gainsboro","GhostWhite","Gold","GoldenRod","Gray","Grey","Green","GreenYellow","HoneyDew","HotPink","IndianRed","Indigo","Ivory","Khaki","Lavender","LavenderBlush","LawnGreen","LemonChiffon","LightBlue","LightCoral","LightCyan","LightGoldenRodYellow","LightGray","LightGrey","LightGreen","LightPink","LightSalmon","LightSeaGreen","LightSkyBlue","LightSlateGray","LightSlateGrey","LightSteelBlue","LightYellow","Lime","LimeGreen","Linen","Magenta","Maroon","MediumAquaMarine","MediumBlue","MediumOrchid","MediumPurple","MediumSeaGreen","MediumSlateBlue","MediumSpringGreen","MediumTurquoise","MediumVioletRed","MidnightBlue","MintCream","MistyRose","Moccasin","NavajoWhite","Navy","OldLace","Olive","OliveDrab","Orange","OrangeRed","Orchid","PaleGoldenRod","PaleGreen","PaleTurquoise","PaleVioletRed","PapayaWhip","PeachPuff","Peru","Pink","Plum","PowderBlue","Purple","Red","RosyBrown","RoyalBlue","SaddleBrown","Salmon","SandyBrown","SeaGreen","SeaShell","Sienna","Silver","SkyBlue","SlateBlue","SlateGray","SlateGrey","Snow","SpringGreen","SteelBlue","Tan","Teal","Thistle","Tomato","Turquoise","Violet","Wheat","White","WhiteSmoke","Yellow","YellowGreen"];
+var CSS_COLOR_NAMES = ["Black","Blue","BlueViolet","Brown","BurlyWood","CadetBlue","Chartreuse","Chocolate","Coral","CornflowerBlue","Cornsilk","Crimson","Cyan","DarkBlue","DarkCyan","DarkGoldenRod","DarkGray","DarkGrey","DarkGreen","DarkKhaki","DarkMagenta","DarkOliveGreen","Darkorange","DarkOrchid","DarkRed","DarkSalmon","DarkSeaGreen","DarkSlateBlue","DarkSlateGray","DarkSlateGrey","DarkTurquoise","DarkViolet","DeepPink","DeepSkyBlue","DimGray","DimGrey","DodgerBlue","FireBrick","FloralWhite","ForestGreen","Fuchsia","Gainsboro","GhostWhite","Gold","GoldenRod","Gray","Grey","Green","GreenYellow","HoneyDew","HotPink","IndianRed","Indigo","Ivory","Khaki","Lavender","LavenderBlush","LawnGreen","LemonChiffon","LightBlue","LightCoral","LightCyan","LightGoldenRodYellow","LightGray","LightGrey","LightGreen","LightPink","LightSalmon","LightSeaGreen","LightSkyBlue","LightSlateGray","LightSlateGrey","LightSteelBlue","LightYellow","Lime","LimeGreen","Linen","Magenta","Maroon","MediumAquaMarine","MediumBlue","MediumOrchid","MediumPurple","MediumSeaGreen","MediumSlateBlue","MediumSpringGreen","MediumTurquoise","MediumVioletRed","MidnightBlue","MintCream","MistyRose","Moccasin","NavajoWhite","Navy","OldLace","Olive","OliveDrab","Orange","OrangeRed","Orchid","PaleGoldenRod","PaleGreen","PaleTurquoise","PaleVioletRed","PapayaWhip","PeachPuff","Peru","Pink","Plum","PowderBlue","Purple","Red","RosyBrown","RoyalBlue","SaddleBrown","Salmon","SandyBrown","SeaGreen","SeaShell","Sienna","Silver","SkyBlue","SlateBlue","SlateGray","SlateGrey","Snow","SpringGreen","SteelBlue","Tan","Teal","Thistle","Tomato","Turquoise","Violet","Wheat","White","WhiteSmoke","Yellow","YellowGreen"];
 var CountryorProvince = 0;
 var myName = [];
 var DataArr = [];
 var all_overlays = [];
 var firstGraph = 0;
 var map;
-
 var currentShape; 
 
  /**
@@ -26,7 +28,6 @@ var currentShape;
  */
 var boot = function(eeMapId, eeToken,serializedPolygonIds_country,serializedPolygonIds_province) {
 	
-	
 	google.load('visualization', '1.0');
 
 	var app = new App(eeMapId, 
@@ -35,10 +36,11 @@ var boot = function(eeMapId, eeToken,serializedPolygonIds_country,serializedPoly
 					  JSON.parse(serializedPolygonIds_province));
 };
 
+
+
 // ---------------------------------------------------------------------------------- //
 // The application
 // ---------------------------------------------------------------------------------- //
-
 /**
  * The main Surface Water Tool application.
  * @param {google.maps.ImageMapType} mapType The map type to render on the map.
@@ -59,9 +61,14 @@ var App = function(eeMapId, eeToken,countryNames,provinceNames) {
     
   // create listeners for buttons and sliders
   setupListeners();
-
-
-};
+  
+  // run the slider function to initialize the dates  
+  slider();
+  
+  // set the mouseover functions for the 
+  infotexts();
+  
+ };
 
 /**
  * Creates a Google Map for the given map type rendered.
@@ -92,38 +99,35 @@ function setupListeners() {
 
   document.getElementById('homebutton').addEventListener("click", homePage);
   document.getElementById('aboutbutton').addEventListener("click", aboutPage);
-
   document.getElementById('info-button').addEventListener("click", showInfo);
   document.getElementById('start-button').addEventListener("click", getStarted);
   document.getElementById('collapse-button').addEventListener("click", collapseMenu);
   document.getElementById('settings-button').addEventListener("click", collapseMenu);
+  
   document.getElementById('updateMap').addEventListener("click", updateButton);
+  
   document.getElementById('clearchart').addEventListener("click", clearChart);
+  
   document.getElementById('export').addEventListener("click", exportMap);
+  
+  document.getElementById('chart').addEventListener("click", showgraph);
+  
+  document.getElementById('chart-info').addEventListener("click", showgraph);
   
   document.getElementById('slider1').addEventListener("change", slider);
   document.getElementById('slider2').addEventListener("change", slider);
   document.getElementById('slider3').addEventListener("change", slider);
   document.getElementById('slider4').addEventListener("change", slider);
+  
+  document.getElementById('opacitySlider').addEventListener("change", opacitySliders);
 
   $("input[name='polygon-selection-method']").change(polygonSelectionMethod)
 
-
   // the polygon click handler
   map.data.addListener('click', handlePolygonClick.bind(this));	
-
-  // set controls for kml upload button
-  var customControlDiv = document.createElement('div');
-  var customControl = new CustomControl(customControlDiv, map);
-    
-  customControlDiv.index = 1;
-  customControlDiv.style['padding-top'] = '25px';
-  customControlDiv.style['padding-right'] = '25px';
-  map.controls[google.maps.ControlPosition.TOP_CENTER].push(customControlDiv);
-    
-  //for browsing and reading the kml file
-  document.getElementById('fileOpen').addEventListener('change', fileOpenDialog, false);
-
+  
+  // kml upload function
+  document.getElementById('files').addEventListener('change', fileOpenDialog, false);
 }
 
 /**
@@ -142,6 +146,25 @@ var showInfo = function() {
       infoscreen.style.display = 'none';
     }
 }
+
+
+/**
+* function to show info screen
+* using the info button
+ */
+var showgraph = function() {
+
+   // get infoscreen by id
+   var graphscreen = document.getElementById('chart-info');
+
+   // open or close screen
+   if  (graphscreen.style.display === 'none') {
+	graphscreen.style.display = 'block';
+	} else {
+      graphscreen.style.display = 'none';
+    }
+}
+
 
 /**
 * function to close info screen
@@ -175,6 +198,7 @@ function collapseMenu() {
 
 /**
 * toggle between the home and about page
+* go to the home page
 **/
 var homePage = function(){
 	showmap = document.getElementById('map');
@@ -185,11 +209,14 @@ var homePage = function(){
 	
 	hideAbout = document.getElementById('about');
 	hideAbout.style.display = "hide";
-	
+
+	showLegend = document.getElementById('legend');
+	showLegend.style.display = "block";
 }
 
 /**
 * toggle between the home and about page
+* go to the about page
 **/
 var aboutPage = function(){
 	hidemap = document.getElementById('map');
@@ -201,10 +228,12 @@ var aboutPage = function(){
 	showAbout = document.getElementById('about');
 	showAbout.style.display = "block";
 
+	hideLegend = document.getElementById('legend');
+	hideLegend.style.display = "none";
 }
 
 /**
-* hide the update button
+* hide the update button and show the map
 **/
 function updateButton() {
 
@@ -226,9 +255,38 @@ var updateKMLButton = function() {
     google.maps.event.addDomListener(update_button, 'click', function () {
         saveKMLFile();
     });
-
-	
 }
+
+/**
+* set the onmouseover events of the info buttons
+**/
+var infotexts = function(){
+	
+   var s1 = document.getElementById('step1');
+	s1.onmouseover = function() {
+	  document.getElementById('info1').style.display = 'block';
+	}
+	s1.onmouseout = function() {
+	  document.getElementById('info1').style.display = 'none';
+	}
+	
+  var s2 = document.getElementById('step2');
+    s2.onmouseover = function() {
+	  document.getElementById('info2').style.display = 'block';
+	}
+	s2.onmouseout = function() {
+	  document.getElementById('info2').style.display = 'none';
+	}
+
+  var s3 = document.getElementById('step3');
+	s3.onmouseover = function() {
+	  document.getElementById('info3').style.display = 'block';
+	}
+	s3.onmouseout = function() {
+	  document.getElementById('info3').style.display = 'none';
+	}
+}
+
 
 /**
 * function to close info screen
@@ -238,9 +296,26 @@ var slider = function() {
 
 	update_button = document.getElementById('updateMap')
 	update_button.style.display = 'block';
+		
+	refStart = $("#slider1").val();
+	refStop = $("#slider2").val();
+
+	studyStart = $("#slider3").val();
+	studyStop = $("#slider4").val();
+	
+	var slider1 = document.getElementById("sliderval1");
+    slider1.innerHTML = refStart;
+
+	var slider2 = document.getElementById("sliderval2");
+    slider2.innerHTML = refStop;	
+
+	var slider3 = document.getElementById("sliderval3");
+    slider3.innerHTML =studyStart;
+
+	var slider4 = document.getElementById("sliderval4");
+    slider4.innerHTML = studyStop;	
 	
 	clearChart();
-
 }
 
 /**
@@ -257,8 +332,6 @@ var GetDates = function() {
 	
 	return [refStart, refStop, studyStart, studyStop]
 }
-
-
 
 /**
 * Display the polygons when the radio button changes
@@ -362,9 +435,7 @@ var createDrawingManager = function(){
 		});
 
           var geom = event.overlay.getPath().getArray();
-          
-          console.log(geom)
-             
+                      
           // fire the analysis
           GEE_call_graph_poly(geom);
           
@@ -407,15 +478,20 @@ var clearChart = function(){
 	
 	$('#ui #chart').empty(); 
 	$('#ui #chart').hide();
+
+	$('#largechart').empty(); 
+	$('#largechart').hide();
 	
 	var chartbutton = document.getElementById('clearchart');
     chartbutton.style.display = 'none';
+    
+    var graphscreen = document.getElementById('chart-info');
+    graphscreen.style.display = 'none';
     
     var myName = [];
 	DataArr = [];
 
 	counter = 0;
-
 }
 
 
@@ -429,8 +505,7 @@ var clearChart = function(){
 var handlePolygonClick = function(event) {
     
   var feature = event.feature;
-  
-  
+    
   var showlink = document.getElementById("link")
   showlink.style.display = 'none';
 		
@@ -445,18 +520,20 @@ var handlePolygonClick = function(event) {
 								   fillcolor: CSS_COLOR_NAMES[counter],
 								   strokeColor: CSS_COLOR_NAMES[counter]  	
 									});
-     
+   
+   // get the name of the polygon  
    var title = feature.getProperty('title');
    
+   // add the name of the polygon to the array
    myName.push(title);
    
    // show selection on panel
    document.getElementById("name").innerHTML = title;
    
+   // Get the data
    var myoutput = GEE_call_graph(feature);
+   
    counter = counter + 1;
-
-
 }
 
 
@@ -464,8 +541,7 @@ var handlePolygonClick = function(event) {
 * ajax call to get data for graph on polygon click
 **/
 var GEE_call_graph = function(feature){
-  
-  
+    
   // get the feature id
   var id = feature.getProperty('id');
 
@@ -534,7 +610,6 @@ var GEE_call_graph_uploaded_poly = function(geom){
     if (data['error']) {
       alert("An error! This is embarrassing! Please report to the sys admin. ");
     } else {
-		console.log(data);
 		showChart(data);
     }
   }).bind(this)); 
@@ -589,30 +664,6 @@ var clearPolygon = function () {
     }
 };
 
-/**
-* upload button for kml
-**/
-function CustomControl(controlDiv, map) {
-
-    // Set CSS for the setCenter control border
-    var loadKmlUI = document.createElement('div');
-    loadKmlUI.id = 'loadKmlUI';
-    loadKmlUI.title = 'Load KML polygon';
-    controlDiv.appendChild(loadKmlUI);
-
-    // Set CSS for the control interior
-    var loadKmlText = document.createElement('div');
-    loadKmlText.id = 'loadKmlText';
-    loadKmlText.innerHTML = '<span><img src="./static/images/load.png" width="24px" height="24px"></img></span>';
-    loadKmlUI.appendChild(loadKmlText);
-
-    google.maps.event.addDomListener(loadKmlUI, 'click', function () {
-        //alert('Load control clicked');
-        $('#fileOpen').click();
-    });
-}
-
-
 
 /**
  * Shows a chart with the given timeseries.
@@ -635,7 +686,87 @@ var showChart = function(timeseries) {
 	  count = count +1;
   });
   
-  console.log(timeseries);
+  var data = new google.visualization.DataTable();
+  data.addColumn('date');
+  for (i = 0; i < counter; i++) { 
+	data.addColumn('number', myName[i]);
+  }
+
+  data.addRows(DataArr);
+  
+  var wrapper = createWrapper(300,200,data);
+ 
+  $('#ui #chart').show();
+  var chartEl = $('#chart').get(0);
+  wrapper.setContainerId(chartEl);
+  wrapper.draw();
+
+  var wrapper = createWrapper(900,500,data);
+ 
+  $('#largechart').show();
+  var chartEl = $('#largechart').get(0);
+  wrapper.setContainerId(chartEl);
+  wrapper.draw();
+
+
+
+  // show the clear chart button
+   var chartbutton = document.getElementById('clearchart');
+   chartbutton.style.display = 'block';
+   
+   var exportButton = document.getElementById('export')
+   exportButton.style.display = 'block';
+
+   var showlink = document.getElementById("link")
+   showlink.style.display = 'none'; 
+
+};
+
+
+/**
+ * Create the wrapper for the chart
+ */
+var createWrapper = function(w,h,data){
+
+  var wrapper = new google.visualization.ChartWrapper({
+    chartType: 'LineChart',
+    dataTable: data,
+    options: {
+	  width: w,
+	  height: h,
+      title: 'Biophyscial health',
+      curveType: 'function',
+      legend: {position: 'right'},
+      titleTextStyle: {fontName: 'Roboto'},
+      chartArea: {width: '50%'},
+      colors: CSS_COLOR_NAMES,
+      vAxis: { format:'0.00'}
+    }
+  });
+  
+  return wrapper;
+}
+
+/**
+ * Shows a chart with the given timeseries.
+ * @param {Array<Array<number>>} timeseries The timeseries data
+ *     to plot in the chart.
+ */
+var showLargeChart = function(timeseries) {
+
+  if (firstGraph == 0){
+	timeseries.forEach(function(point) {
+		point[0] = new Date(parseInt(point[0], 10));
+		DataArr.push([point[0]]);
+	firstGraph = 1
+  });
+  }
+  
+  var count = 0;
+  timeseries.forEach(function(point) {
+	  DataArr[count].push(point[1]);
+	  count = count +1;
+  });
   
   var data = new google.visualization.DataTable();
   data.addColumn('date');
@@ -643,29 +774,8 @@ var showChart = function(timeseries) {
 	data.addColumn('number', myName[i]);
   }
   
-  console.log(DataArr); 
   data.addRows(DataArr);
   
-  var wrapper = new google.visualization.ChartWrapper({
-    chartType: 'LineChart',
-    dataTable: data,
-    options: {
-	  width: 300,
-	  height: 200,
-      title: 'Biophyscial health',
-      curveType: 'function',
-      legend: {position: 'right'},
-      titleTextStyle: {fontName: 'Roboto'},
-      chartArea: {width: '50%'},
-      colors: CSS_COLOR_NAMES
-    }
-  });
- 
-  $('#ui #chart').show();
-  var chartEl = $('#chart').get(0);
-  wrapper.setContainerId(chartEl);
-  wrapper.draw();
-
   // show the clear chart button
    var chartbutton = document.getElementById('clearchart');
    chartbutton.style.display = 'block';
@@ -678,11 +788,9 @@ var showChart = function(timeseries) {
 
 };
 
-
 /**
  * Update map
  */
-
 var ShowMap = function() {
 
 	// clear the map
@@ -757,6 +865,21 @@ var exportMap = function() {
 var refreshImage = function(eeMapId, eeToken) {
   var mapType = getEeMapType(eeMapId, eeToken);
   map.overlayMapTypes.push(mapType);
+};
+
+var opacitySliders = function() {
+
+  setLayerOpacity($("#opacitySlider").val());
+  
+}
+
+var setLayerOpacity = function(value) {
+  map.overlayMapTypes.forEach((function(mapType, index) {
+    if (mapType) {
+	  var overlay = map.overlayMapTypes.getAt(index);
+      overlay.setOpacity(parseFloat(value));
+    }
+  }).bind(this));
 };
 
 // ---------------------------------------------------------------------------------- //

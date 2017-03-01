@@ -107,23 +107,88 @@
 			<!-- block with general info --> 
 			<div id="general-info">
 				<h1>Sustainable Landscapes Ecosystem Monitoring Tool (EcoDash)</h1>
-				<hr><p>This tool might best be thought of as a "landscape calculator" leveraging the extensive MODIS satellite archive and processing power
-				   available via Google Earth Engine to facilitate the comparison of baseline conditions in an area during a reference period with one 
-				   or more contrasting points in time. In its current implementation, the data
-				   focus is the widely used "Enhanced Vegetation Index", a measure of an
-				   area's bioproductivity. The user can specify the reference and study
-				   periods as well as one or more areas of interest and view results</p>
-				   <p>Follow the numbered steps in the right panel to get started.</p>
-				   <p>EcoDash is a collaborative effort between its developers and its community of users. 
+				
+				<h2> What is it?</h2>
+				<p>This tool might best be thought of as a "landscape calculator". With this tool you can explore if the landscape has been degraded in the past years or maybe getting greener.  </p>
+				
+				<h2> Why this tool?</h2>
+				<p>We build this tool for policy makers and project managers. They were looking for simple ways to evaluate the impact of interventions and compare it with other areas that haven't undergone any interventions.  </p>
+				
+				<h2>How to use it?</h2>
+				
+				<p>1. Select a baseline period. This is the period before you started the intervention or project.</p>
+				<p>2. Select the study period. This is the period of the project or intervention.</p>
+				<p>3. Update the map</p>
+				<p>Congratulations! Now you have map with degraded areas in red and greener areas in green.</p>
+				<p>Time to select an area!</p>
+				<p>4. Do you want to compare Countries, provinces or draw your own area of interest?</p>
+				<p>5. Now click a polygon or draw your own polygon.	</p>
+				<p>6. Time to review the result!</p>
+
+				<p>Don't forget to give us feedback!</p>
+
+
+
+				
+				 <p>EcoDash is a collaborative effort between its developers and its community of users. 
 				   We welcome suggestions for improvements on our <a href="https://github.com/Servir-Mekong/ecodash/issues" target="_blank">Github</a>issues page.</p>
 				   <input id="start-button" type="button" name="start-button" value="Get Started!">
 		   </div>
 
+			<div id="chart-info">
+				<div id="largechart" style="display: none;"></div>
+			</div>
+			
 			
 			<!-- The element into which Google Maps is rendered. -->
 			<div id="map"></div>
 			
 			
+			
+			<!-- block with info --> 
+			<div id="info1">
+				<img id="img" src="static/images/about.png" alt="about"></th>
+				<h3>Select the timespan for the baseline here. With the baseline we determine the initial conditions.</h3>				      
+			</div>
+			<div id="info2">
+				<img id="img" src="static/images/about.png" alt="about"></th>
+				<h3>Select the timespan for the study period here. This is the period over which you want to do the analysis.</h3>				      
+			</div>
+			<div id="info3">
+				<img id="img" src="static/images/about.png" alt="about"></th>
+		    	<h3>Do you want to do the analysis for a administrative unit or draw your own polygon?</h3>				 
+		    	<h3>You can upload your own polygon in KML format.</h3>			     
+			</div>
+						
+			
+			
+			<!-- block with legend --> 
+			
+			<div id="legend">
+			<h2><a href="https://en.wikipedia.org/wiki/Enhanced_vegetation_index" target="_blank">&#916 EVI</a></h2>
+			
+			<table>
+			  <tr>
+				<th rowspan="3"><img id="img" src="static/images/mylegend.png" alt="legend"></th>
+				<th><span style="font-weight:normal">Increase</span></th>
+			  </tr>
+			  <tr>
+				<td>Stable</td>
+			  </tr>
+			  <tr>
+				<td>Decrease</td>
+			  </tr>
+			  <tr>
+				<td colspan="2"><h2>opacity</h2></td>
+			  </tr>
+			  <tr>
+				<td colspan="2"><input type="range" min="0" max="1" step="0.1" value="1", name="opacitySlider" id="opacitySlider"></td>
+			  </tr>			  	  
+			</table>
+			
+			</div>
+			
+		
 			<div id="settings-button">☰</div>
 			
 			<!-- The element with all sliders and buttons. -->		
@@ -137,25 +202,64 @@
 
 				<div id="controls">
 															
-					<h3>Select a time period for the baseline EVI</h3>
-					<div class="range-slider"><p>2006 - 2008</p>
+					
+					<table>
+						<colgroup>
+							<col style="width: 291px">
+							<col style="width: 21px">
+						</colgroup>
+					  <tr>
+						<td><h3>Select a time period for the baseline EVI</h3></td>
+						<td><h3 id="step1"> ?</h3></td>
+					  </tr>
+					</table>
+
+
+					<div id="sliderval1"></div>
+					<div id="sliderval2"></div>
+					
+					<div class="range-slider">
 					<input type="range" min="2000" max="2017" step="1" value="2006", name="slider1" id="slider1">
 					<input type="range" min="2000" max="2017" step="1" value="2008", name="slider2" id="slider2">
 					</div>
 					
-					<h3>Select a time period to measure ∆EVI</h3>
-					<div class="range-slider"><p>2009 - 2011</p>
+				
+					
+					<table>
+						<colgroup>
+							<col style="width: 291px">
+							<col style="width: 21px">
+						</colgroup>
+					  <tr>
+						<td><h3>Select a time period to measure ∆EVI</h3></td>
+						<td><h3 id="step2">?</h3></td>
+						</tr>
+					</table>	
+
+					<div id="sliderval3"></div><div id="sliderval4"></div>
+					<div class="range-slider">
 					<input type="range" min="2000" max="2017" step="1" value="2009",name="slider3" id="slider3">
 					<input type="range" min="2000" max="2017" step="1" value="2011",name="slider4" id="slider4">
 					</div>
 					
 					<button id="updateMap">Update map</button>	
 					
-					<h3>Step 4: Choose a polygon selection method</h3>
+					<table>
+						<colgroup>
+							<col style="width: 291px">
+							<col style="width: 21px">
+						</colgroup>						
+						<tr>
+							<td><h3>Choose a polygon selection method</h3></td>
+							<td><h3 id="step3">?</h3></td>
+						</tr>
+					</table>	
+					
 					<ul>
 					<li><input type="radio" name="polygon-selection-method" value="Province" id="polygon-selection-method"><label>Province</label></li>
 					<li><input type="radio" name="polygon-selection-method" value="Country" id="polygon-selection-method"><label>Country</label></li>
 					<li><input type="radio" name="polygon-selection-method" value="Draw Polygon" id="polygon-selection-method"><label>Draw Polygon</label></li>
+					<li><input id="files" type="file" multiple="" name="files1[]"><output id="file_list"></output></li>
 					</ul>
 					
 					<button id="downloadkml">Download Polygon</button>	
@@ -166,15 +270,16 @@
 					<div id="chart" style="display: none;"></div>
 					
 					
-					<button id="clearchart">Clear chart</button>	
+					<button id="clearchart">Clear chart</button>
 					<button id="export">export map</button>	
 					<a id="link" target="_blank">Download the data</a>
 					
 					
 					<!-- file upload button -->
 					<input type="file" id="fileOpen" style="visibility: hidden; width: 2px;" />
+						
 					
-				</div>	
+					</div>	
 			</div> <!-- end of ui display block -->
 		</div> 	<!-- end of ecodash -->
 

@@ -2,6 +2,8 @@
 //document.getElementById('fileOpen').addEventListener('change', fileOpenDialog, false);
 
 function fileOpenDialog(evt ) {
+	
+	console.log(evt);
     var files = evt.target.files; // FileList object
     var file = files[0];   
     var reader = new FileReader();
@@ -44,7 +46,7 @@ function fileOpenDialog(evt ) {
           
             currentShape.setMap(map);
 
-            // ADDED by ATE 23 JAn 2017
+            // ADDED by ATE 23 Jan 2017
             // Instantly higlight the polygon and show the title of the polygon.
 		    
             counter = counter + 1;      

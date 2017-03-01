@@ -237,10 +237,11 @@ footer {
     position:absolute;
     top:0px;
     right:0px;
-    height:96.5%;
+    height:100%;
     width:20rem;
     background-color:white;
     padding:0.5%;
+    overflow:hidden;
 }
 
 #ecodash #settings-button {
@@ -274,6 +275,20 @@ footer {
 }
 
 
+#ecodash #chart-info {
+    display: none;
+	position:absolute;
+    top:10%;
+    left:10%;
+    height:60%;
+    width:56%;
+    padding:2%;
+    border-radius:3px;
+    background-color:white;
+    box-shadow:0px 0px 5px gray;
+    z-index:100;
+}
+
 
 #ecodash #general-info-shown {
     position:absolute;
@@ -287,6 +302,48 @@ footer {
     box-shadow:0px 0px 5px gray;
     z-index:100;
     overflow:scroll;
+}
+
+#ecodash #info1{
+	display: none;
+	position:absolute;
+    top:40%;
+    left:20%;
+    right:30%;
+	bottom:20%;
+    padding:2%;
+    border-radius:0px;
+    background-color:white;
+    font-size:0.8rem;
+    text-align:center;
+}
+
+#ecodash #info2{
+	display: none;
+	position:absolute;
+    top:40%;
+    left:20%;
+    right:30%;
+	bottom:20%;
+    padding:2%;
+    border-radius:0px;
+    background-color:white;
+    font-size:0.8rem;
+    text-align:center;
+}
+
+#ecodash #info3{
+	display: none;
+	position:absolute;
+    top:40%;
+    left:20%;
+    right:30%;
+	bottom:20%;
+    padding:2%;
+    border-radius:0px;
+    background-color:white;
+    font-size:0.8rem;
+    text-align:center;
 }
 
 #ecodash #download-screen {
@@ -327,8 +384,9 @@ footer {
 #ecodash #legend {
     position:absolute;
     left:0px;
-    bottom:55px;
+    bottom:10px;
     width:80px;
+    height:195px;
     background-color:white;
     padding:5px;
     border-top-right-radius:3px;
@@ -342,35 +400,41 @@ footer {
     margin:4px;
 }
 
-#ecodash #legend table td {
+#ecodash #legend table tr {
     font-size:0.8rem;
+    font-weight: normal;  
+    font-family:Arial, sans-serif;
+    font-size:12px;
+    padding:10px 5px;
+    overflow:hidden;
+    word-break:normal
 }
 
 #ecodash #legend table td:last-child {
     padding-left:5px;
 }
 
-#ecodash #legend table td img {
+#ecodash #legend img {
     height:100px;
 }
 
-#ecodash #opacity {
+#ecodash #opacitySlider {
     position:absolute;
     left:0px;
     bottom:0px;
-    height:45px;
-    width:80px;
+    height:25px;
+    width:70px;
     background-color:white;
     padding:5px;
 }
 
-#ecodash #opacity p {
+#ecodash #opacitySlider p {
     font-size:0.8rem;
     color:#333;
     text-align:center;
 }
 
-#ecodash #opacity input {
+#ecodash #opacitySlider input {
     position:absolute;
     left:5;
     top:25px;
@@ -435,6 +499,117 @@ footer {
     line-height:16px;
     text-shadow:rgb(255,255,255) 0px 1px 0px;
     cursor:pointer;
+}
+
+#ecodash #ui #step1 {
+    display:inline;
+    float:right;
+    margin:2px 10px 0px 0px;
+    padding:0px 3px;
+    background-image:linear-gradient(rgb(255,255,255) 0px, rgb(224,224,224) 100%);
+    background-position:0% 0%;
+    background-repeat:repeat-x;
+    border:1.25px solid rgb(204,204,204);
+    border-radius:3px;
+    box-shadow:rgba(255,255,255,0.15) 0px 1px 0px 0px inset,
+               rgba(0,0,0,0.075) 0px 1px 1px 0px;
+    font-size:12px;
+    color:rgb(51,51,51);
+    font-weight:400;
+    line-height:16px;
+    text-shadow:rgb(255,255,255) 0px 1px 0px;
+    cursor:pointer;
+}
+
+#ecodash #ui #step2 {
+    display:inline;
+    float:right;
+    margin:2px 10px 0px 0px;
+    padding:0px 3px;
+    background-image:linear-gradient(rgb(255,255,255) 0px, rgb(224,224,224) 100%);
+    background-position:0% 0%;
+    background-repeat:repeat-x;
+    border:1.25px solid rgb(204,204,204);
+    border-radius:3px;
+    box-shadow:rgba(255,255,255,0.15) 0px 1px 0px 0px inset,
+               rgba(0,0,0,0.075) 0px 1px 1px 0px;
+    font-size:12px;
+    color:rgb(51,51,51);
+    font-weight:400;
+    line-height:16px;
+    text-shadow:rgb(255,255,255) 0px 1px 0px;
+    cursor:pointer;
+}
+
+
+#ecodash #ui #step3 {
+    display:inline;
+    float:right;
+    margin:2px 10px 0px 0px;
+    padding:0px 3px;
+    background-image:linear-gradient(rgb(255,255,255) 0px, rgb(224,224,224) 100%);
+    background-position:0% 0%;
+    background-repeat:repeat-x;
+    border:1.25px solid rgb(204,204,204);
+    border-radius:3px;
+    box-shadow:rgba(255,255,255,0.15) 0px 1px 0px 0px inset,
+               rgba(0,0,0,0.075) 0px 1px 1px 0px;
+    font-size:12px;
+    color:rgb(51,51,51);
+    font-weight:400;
+    line-height:16px;
+    text-shadow:rgb(255,255,255) 0px 1px 0px;
+    cursor:pointer;
+}
+
+
+#ecodash #ui #sliderval1 {
+    position:absolute;
+    left:60px;
+    top:85px;
+    width:10px;
+    height:22px;
+    display:inline;
+    font-size:0.8rem;
+    font-weight:bold;
+  
+}
+
+#ecodash #ui #sliderval2 {
+    position:absolute;
+    left:210px;
+    top:85px;
+    width:10px;
+    height:22px;
+    display:inline;
+    font-size:0.8rem;
+    font-weight:bold;
+  
+}
+
+
+#ecodash #ui #sliderval3{
+    position:absolute;
+    left:60px;
+    top:155px;
+    width:10px;
+    height:22px;
+    display:inline;
+    font-size:0.8rem;
+    font-weight:bold;
+  
+}
+
+#ecodash #ui #sliderval4 {
+    position:absolute;
+    left:210px;
+    top:155px;
+    width:10px;
+    height:22px;
+    display:inline;
+    font-size:0.8rem;
+    font-weight:bold;
+  
 }
 
 /*********************************/
