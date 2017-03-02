@@ -321,8 +321,6 @@ def downloadMap(polygon,coords):
   reference = collection.filterDate(ref_start,ref_end ).sort('system:time_start').select('EVI')
   series = collection.filterDate(series_start, series_end).sort('system:time_start').select('EVI')
   
-  print "1"
-  
   mymean = ee.Image(reference.mean())
 
   # Add a band containing image date as years since 1991.
@@ -330,31 +328,18 @@ def downloadMap(polygon,coords):
     myimg = img.subtract(mymean) 
     return ee.Image(myimg) 
   
-  print "2"
   mycollection = series.map(subtractmean)
 
-  print "3"
-
-  fit = mycollection.mean()
+  fit = mycollection.mean().multiply(0.0001)
   
-  
-  print "4"
   fit = fit.clip(polygon)
-  
-  print "5"  
-  
-  #print "---------------------------------------------------------------------------"
-  #print polygon.geometry()
-  #print "---------------------------------------------------------------------------"
   
   path = fit.getDownloadURL({
 		'scale': 250,
 		'crs': 'EPSG:4326',
 		'region': coords
 		});
-		
-  print path
-  
+
   return path
 
   
@@ -427,25 +412,18 @@ def ComputePolygonTimeSeries(polygon_id,mypath,ref_start,ref_end,series_start,se
       months = range(1,13)
       for y in years:
 		for m in months:
+			# select all months in the reference period
 			refmean = ref.filter(ee.Filter.calendarRange(m,m,'month')).mean().multiply(0.0001)
+			# select all months in the study period
 			studyselection = col.filter(ee.Filter.calendarRange(y, y, 'year')).filter(ee.Filter.calendarRange(m, m, 'month'));
+			# get the time of the first item
 			studytime = studyselection.first().get('system:time_start')
-			studymean = studyselection.mean().multiply(0.0001)
-			result = studymean.subtract(refmean)
+			# multiply the monthly mean map with 0.0001
+			study = studyselection.mean().multiply(0.0001)
+			result = study.subtract(refmean)  
 			mylist = mylist.add(result.set('year', y).set('month',m).set('date',ee.Date.fromYMD(y,m,1)).set('system:time_start',studytime))
       return ee.ImageCollection.fromImages(mylist)
   
-  #referenceMonthlyMean = ee.ImageCollection(calcMonthlyMean(reference))
-  #seriesMonthlyMean = ee.ImageCollection(calcMonthlyMean(series))
-  
-  # Add a band containing image date as years since 1991.
-  #def subtract(img):
-    #myimg = img.float().subtract(mymean) #.subtract(1991)
-   # myimg = img.subtract(mymean) #.set('date', ee.Date(img.get('system:time_start')).format('YYYY-MM-dd')) #.subtract(1991)
-   # return ee.Image(myimg).set({"system:time_start": img.get("system:time_start")}) #.float().addBands(img)
-    
-  
-  #mycollection = series.map(subtract)
   
   mycollection = ee.ImageCollection(calcMonthlyMean(reference,collection))
   

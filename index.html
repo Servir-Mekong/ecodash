@@ -101,6 +101,7 @@
 			 </div>
 		 </div> <!-- end of about -->
 		
+	
 			<!-- The DOM of the application. -->
 			<div id="ecodash">
 			
@@ -143,7 +144,8 @@
 			<!-- The element into which Google Maps is rendered. -->
 			<div id="map"></div>
 			
-			
+			<!-- spinner is shown during calculations -->
+			<div class="spinner"></div>	
 			
 			<!-- block with info --> 
 			<div id="info1">
@@ -156,14 +158,13 @@
 			</div>
 			<div id="info3">
 				<img id="img" src="static/images/about.png" alt="about"></th>
-		    	<h3>Do you want to do the analysis for a administrative unit or draw your own polygon?</h3>				 
-		    	<h3>You can upload your own polygon in KML format.</h3>			     
+		    	<h3>Do you want to do the analysis for a administrative unit or draw your own polygon?</h3>				      
+		    	<h3>You can upload your own polygon in KML format.</h3>				      
 			</div>
 						
 			
 			
 			<!-- block with legend --> 
-			
 			<div id="legend">
 			<h2><a href="https://en.wikipedia.org/wiki/Enhanced_vegetation_index" target="_blank">&#916 EVI</a></h2>
 			
@@ -188,6 +189,9 @@
 			
 			</div>
 			
+			<div id="feedback">
+				 <a href="https://docs.google.com/a/sig-gis.com/forms/d/1c7QP7BqDbURH3bLs9uphtXgFY6AEYKjN8vKsWRS85QI/edit?ts=57ec66c4" target="_blank">Please give us feedback!</a>
+			</div>	
 		
 			<div id="settings-button">☰</div>
 			
@@ -291,8 +295,6 @@
 		 <section id="pagefooter">
 		 <div class="logos">
 		   <a href="http://sig-gis.com/" target="_blank"><img id="sig" src="/static/images/logosig.png" alt="SIG">
-		   <a href="https://www.sei-international.org/" target="_blank"><img id="sei" src="/static/images/sei_tr.png" alt="SEI"></a>
-		   <a href="http://deltares.nl/" target="_blank"><img id="deltares" src="/static/images/deltares_tr.png" alt="Deltares"></a> 	 
 		 </div>
 		 </section>
 

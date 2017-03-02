@@ -418,6 +418,22 @@ footer {
     height:100px;
 }
 
+
+#ecodash #feedback {
+    background-color: white;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    bottom: 0;
+    box-shadow: 0 0 5px gray;
+    font-size: 0.8rem;
+    height: 1.2rem;
+    left: 45%;
+    padding: 5px;
+    position: absolute;
+    text-align: center;
+    width: 10rem;
+}
+
 #ecodash #opacitySlider {
     position:absolute;
     left:0px;
@@ -865,3 +881,47 @@ input[type=range]::-ms-fill-upper {
         -webkit-transform:rotate(360deg);
     }
 }
+
+/******************/
+/* Spinner Widget */
+/******************/
+
+.spinner {
+	display: none;
+    position:absolute;
+    top:35%;
+    left:35%;
+    width:8rem;
+    height:8rem;
+    border-radius:4rem;
+    border-bottom:1rem solid purple;
+    animation:sweep 1s infinite linear;
+    -moz-animation:sweep 1s infinite linear;
+    -webkit-animation:sweep 1s infinite linear;
+}
+
+@keyframes sweep {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}
+
+@-moz-keyframes sweep {
+    from {
+        -moz-transform:rotate(0deg);
+    }
+    to {
+        -moz-transform:rotate(360deg);
+    }
+}
+
+@-webkit-keyframes sweep {
+    from {
+        -webkit-transform:rotate(0deg);
+    }
+    to {
+        -webkit-transform:rotate(360deg);
+    }

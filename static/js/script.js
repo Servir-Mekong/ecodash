@@ -555,10 +555,13 @@ var GEE_call_graph = function(feature){
 			  studyHigh : Dates[3]									 
 			  } 
   
+  $(".spinner").toggle();
+
   $.get('/details?polygon_id=' + id,data).done((function(data) {    
     if (data['error']) {
       alert("An error! This is embarrassing! Please report to the sys admin. ");
     } else {
+		$(".spinner").toggle();
 		showChart(data['timeSeries']);
     }
   }).bind(this));
@@ -580,11 +583,13 @@ var GEE_call_graph_poly = function(geom){
 			  studyHigh : Dates[3]									 
 			  } 
   
+  $(".spinner").toggle();
+  
   $.get('/polygon?polygon=' + geom,data).done((function(data) {    
     if (data['error']) {
       alert("An error! This is embarrassing! Please report to the sys admin. ");
     } else {
-
+		$(".spinner").toggle();
 		showChart(data);
     }
   }).bind(this)); 
@@ -606,10 +611,12 @@ var GEE_call_graph_uploaded_poly = function(geom){
 			  studyHigh : Dates[3]									 
 			  } 
   
+  $(".spinner").toggle();
   $.get('/uploadHandler?polygon=' + JSON.stringify(coords),data).done((function(data) {    
     if (data['error']) {
       alert("An error! This is embarrassing! Please report to the sys admin. ");
     } else {
+		$(".spinner").toggle();
 		showChart(data);
     }
   }).bind(this)); 
@@ -806,6 +813,7 @@ var ShowMap = function() {
 	params['studyLow'] = Dates[2]
 	params['studyHigh'] = Dates[3]
 	
+	$(".spinner").toggle();
 
 	$.ajax({
       url: "/getmap",
@@ -814,6 +822,7 @@ var ShowMap = function() {
       success: function (data) {
 		 var mapType = getEeMapType(data.eeMapId, data.eeToken);
 		 map.overlayMapTypes.push(mapType);
+		 $(".spinner").toggle();
 		
       },
       error: function (data) {
