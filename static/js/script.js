@@ -700,7 +700,7 @@ var showChart = function(timeseries) {
   }
 
   data.addRows(DataArr);
-  
+ 
   var wrapper = createWrapper(300,200,data);
  
   $('#ui #chart').show();
@@ -708,15 +708,13 @@ var showChart = function(timeseries) {
   wrapper.setContainerId(chartEl);
   wrapper.draw();
 
-  var wrapper = createWrapper(900,500,data);
- 
+  var chart = createWrapper(900,500,data);
+
   $('#largechart').show();
   var chartEl = $('#largechart').get(0);
-  wrapper.setContainerId(chartEl);
-  wrapper.draw();
-
-
-
+  chart.setContainerId(chartEl);
+  chart.draw();
+	
   // show the clear chart button
    var chartbutton = document.getElementById('clearchart');
    chartbutton.style.display = 'block';
@@ -727,7 +725,14 @@ var showChart = function(timeseries) {
    var showlink = document.getElementById("link")
    showlink.style.display = 'none'; 
 
+  google.visualization.events.addOneTimeListener(chart, 'ready', function () {
+		document.getElementById('png').outerHTML = '<a href="' + chart.getChart().getImageURI() + '" target="_blank"' + '>Printable version</a>';
+		});
+
+
+
 };
+
 
 
 /**
