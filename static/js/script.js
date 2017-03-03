@@ -679,6 +679,9 @@ var clearPolygon = function () {
  */
 var showChart = function(timeseries) {
 
+  // unwrap the download png outerhtml 	
+  $('png').contents().unwrap();
+
   if (firstGraph == 0){
 	timeseries.forEach(function(point) {
 		point[0] = new Date(parseInt(point[0], 10));
@@ -725,11 +728,19 @@ var showChart = function(timeseries) {
    var showlink = document.getElementById("link")
    showlink.style.display = 'none'; 
 
-  google.visualization.events.addOneTimeListener(chart, 'ready', function () {
-		document.getElementById('png').outerHTML = '<a href="' + chart.getChart().getImageURI() + '" target="_blank"' + '>Printable version</a>';
+   // export as png
+   google.visualization.events.addListener(chart, 'ready', function () {
+		document.getElementById('png').innerHTML = '<a href="' + chart.getChart().getImageURI() + '" target="_blank"' + '>Printable version</a>';
 		});
-
-
+	
+	// export as csv
+    $('#Export').click(function () {
+        var csvFormattedDataTable = google.visualization.dataTableToCsv(data);
+        var encodedUri = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csvFormattedDataTable);
+        this.href = encodedUri;
+        this.download = 'table-data.csv';
+        this.target = '_blank';
+    });
 
 };
 
