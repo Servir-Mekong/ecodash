@@ -30,6 +30,12 @@ var boot = function(eeMapId, eeToken,serializedPolygonIds_country,serializedPoly
 	
 	google.load('visualization', '1.0');
 
+	// Load the Visualization API and the piechart package.
+	google.load('visualization', '1.0', {'packages':['corechart']});
+
+	// Set a callback to run when the Google Visualization API is loaded.
+	google.setOnLoadCallback(drawPieChart);
+
 	var app = new App(eeMapId, 
 					  eeToken,
 					  JSON.parse(serializedPolygonIds_country),
@@ -46,7 +52,7 @@ var boot = function(eeMapId, eeToken,serializedPolygonIds_country,serializedPoly
  * @param {google.maps.ImageMapType} mapType The map type to render on the map.
  */
 var App = function(eeMapId, eeToken,countryNames,provinceNames) {
-  
+	  
   // Create and display the map.
   map = createMap();
  
@@ -114,6 +120,8 @@ function setupListeners() {
   
   document.getElementById('chart-info').addEventListener("click", showgraph);
   
+  document.getElementById('pie-chart-info').addEventListener("click", hidePie);
+  
   document.getElementById('slider1').addEventListener("change", slider);
   document.getElementById('slider2').addEventListener("change", slider);
   document.getElementById('slider3').addEventListener("change", slider);
@@ -165,6 +173,32 @@ var showgraph = function() {
     }
 }
 
+/**
+* function to show info screen
+* using the info button
+ */
+var showPie = function() {
+
+   // get infoscreen by id
+   var graphscreen = document.getElementById('pie-chart-info');
+   
+   if (counter > 0){
+	graphscreen.style.display = 'block';
+	}
+}
+
+/**
+* function to show info screen
+* using the info button
+ */
+var hidePie = function() {
+
+   // get infoscreen by id
+   var graphscreen = document.getElementById('pie-chart-info');
+   
+   graphscreen.style.display = 'none';
+	
+}
 
 /**
 * function to close info screen
@@ -530,9 +564,9 @@ var handlePolygonClick = function(event) {
    // show selection on panel
    document.getElementById("name").innerHTML = title;
    
-   // Get the data
-   var myoutput = GEE_call_graph(feature);
-   
+   // Get the data and draw the graph
+   GEE_call_graph(feature);
+     
    counter = counter + 1;
 }
 
@@ -556,15 +590,30 @@ var GEE_call_graph = function(feature){
 			  } 
   
   $(".spinner").toggle();
+  
+  console.log(data);
 
   $.get('/details?polygon_id=' + id,data).done((function(data) {    
     if (data['error']) {
       alert("An error! This is embarrassing! Please report to the sys admin. ");
     } else {
-		$(".spinner").toggle();
+	//	$(".spinner").toggle();
+		console.log("draw chart1");
 		showChart(data['timeSeries']);
+		
     }
   }).bind(this));
+
+  $.get('/pieChart?polygon_id=' + id,data).done((function(data) {    
+    if (data['error']) {
+      alert("An error! This is embarrassing! Please report to the sys admin. ");
+    } else {
+		$(".spinner").toggle();
+		drawPieChart(data);
+		console.log(data);
+    }
+  }).bind(this));
+
   
 }  
 
@@ -701,6 +750,8 @@ var showChart = function(timeseries) {
   for (i = 0; i < counter; i++) { 
 	data.addColumn('number', myName[i]);
   }
+  
+  console.log("draw chart");
 
   data.addRows(DataArr);
  
@@ -850,6 +901,44 @@ var ShowMap = function() {
 }
 
 
+// Callback that creates and populates a data table,
+// instantiates the pie chart, passes in the data and
+// draws it.
+function drawPieChart(dataArray) {
+
+	showPie();
+
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'catagory');
+    data.addColumn('number', 'area (ha)');
+    data.addRows([      
+      ['Large improvement', dataArray[0]],
+      ['improvement', dataArray[1]],
+      ['No Change', dataArray[2]],
+      ['under stress', dataArray[3]],
+      ['Severe stress', dataArray[4]]
+    ]);
+    
+    var l = myName.length;
+    var title = myName[l-1]
+
+
+    // Set chart options
+    var options = {'title':title,
+                   'width':300,
+                   'height':300,
+                   'chartArea': {'width': '100%', 'height': '80%'},
+                 //  'colors': ['#0fa713','#4bff0f','#fdff42','#ff1b05','#931206']
+                   'colors': ['#0fa713','#4bff0f','#E5E500','#ff1b05','#931206']
+                   };
+
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+    chart.draw(data, options);
+  }
+
+
 // ---------------------------------------------------------------------------------- //
 // export function
 // ---------------------------------------------------------------------------------- //
@@ -862,7 +951,17 @@ var exportMap = function() {
 
 	var coords = getCoordinates(currentShape);
 	
-	data = {}
+	var Dates = GetDates();
+
+	var data = {mycounter: counter,
+			  folder : CountryorProvince,
+			  refLow : Dates[0],									 
+			  refHigh : Dates[1],
+			  studyLow : Dates[2],
+			  studyHigh : Dates[3]									 
+			  } 
+	
+	console.log(data);
 		
 	$.get('/downloadHandler?polygon=' + JSON.stringify(coords),data).done((function(data) {    
     if (data['error']) {
@@ -960,3 +1059,5 @@ var COUNTRIES;
 
 /** The drawing manager	*/
 var drawingManager;
+
+

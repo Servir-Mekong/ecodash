@@ -35,7 +35,7 @@
 		<script src="/static/js/kml.js"></script>
 		<script src="/static/js/xmlwriter.js"></script>
         <script src="/static/js/toGeoJSON.js"></script>
-	
+			
 	</head>
 	
 	
@@ -141,6 +141,13 @@
 				<div id='png'></div>
 				<a id="Export" href="#">Download as csv</a>
 			</div>
+
+			<div id="pie-chart-info">
+				<div id="chart_div"></div>
+				<!--<div id="chart_div"> style="display: none;"></div>
+				<div id='png'></div>
+				<a id="Export" href="#">Download as csv</a>-->
+			</div>
 			
 			
 			<!-- The element into which Google Maps is rendered. -->
@@ -225,8 +232,8 @@
 					<div id="sliderval2"></div>
 					
 					<div class="range-slider">
-					<input type="range" min="2000" max="2017" step="1" value="2006", name="slider1" id="slider1">
-					<input type="range" min="2000" max="2017" step="1" value="2008", name="slider2" id="slider2">
+					<input type="range" min="2000" max="2016" step="1" value="2006", name="slider1" id="slider1">
+					<input type="range" min="2000" max="2016" step="1" value="2008", name="slider2" id="slider2">
 					</div>
 					
 				
@@ -244,8 +251,8 @@
 
 					<div id="sliderval3"></div><div id="sliderval4"></div>
 					<div class="range-slider">
-					<input type="range" min="2000" max="2017" step="1" value="2009",name="slider3" id="slider3">
-					<input type="range" min="2000" max="2017" step="1" value="2011",name="slider4" id="slider4">
+					<input type="range" min="2000" max="2016" step="1" value="2009",name="slider3" id="slider3">
+					<input type="range" min="2000" max="2016" step="1" value="2011",name="slider4" id="slider4">
 					</div>
 					
 					<button id="updateMap">Update map</button>	
@@ -280,10 +287,10 @@
 					<button id="export">export map</button>	
 					<a id="link" target="_blank">Download the data</a>
 					
+					<!--<button id="piechart">Show pie chart</button> -->
 					
 					<!-- file upload button -->
 					<input type="file" id="fileOpen" style="visibility: hidden; width: 2px;" />
-						
 					
 					</div>	
 			</div> <!-- end of ui display block -->
