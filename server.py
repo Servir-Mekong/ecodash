@@ -108,7 +108,7 @@ class DetailsHandler(webapp2.RequestHandler):
   
   def get(self):
     """Returns details about a polygon."""
-    polygon_id = self.request.get('polygon_id') 
+    polygon = self.request.get('polygon_id') 
     counter = self.request.get('mycounter')
     refLow = self.request.get('refLow')
     refHigh = self.request.get('refHigh')
@@ -120,33 +120,47 @@ class DetailsHandler(webapp2.RequestHandler):
     series_start = studyLow + '-01-01'
     series_end = studyHigh + '-12-31'
 
-    CountryorProvince = int(self.request.get('folder'))
+    mode = int(self.request.get('folder'))
+    
+    if mode < 2:
    
-    print "entering handler"
-   
-    if CountryorProvince == 0 :
-		POLYGON_IDS = POLYGON_IDS_PROVINCE
-		POLYGON_PATH = POLYGON_PATH_PROVINCE  
+		if mode == 0 :
+			POLYGON_IDS = POLYGON_IDS_PROVINCE
+			POLYGON_PATH = POLYGON_PATH_PROVINCE  
+		
+		
+		if mode == 1 :
+			POLYGON_IDS = POLYGON_IDS_COUNTRY
+			POLYGON_PATH = POLYGON_PATH_COUNTRY
     
-    print "1"
+		id_list.append(polygon)
+		    
+		if polygon in POLYGON_IDS:
+		  feature = ee.FeatureCollection(GetFeature(polygon,POLYGON_PATH))	
+		  content = GetPolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end)
+		else:
+		  content = json.dumps({'error': 'Unrecognized polygon ID: ' + polygon})
     
-    if CountryorProvince == 1 :
-		POLYGON_IDS = POLYGON_IDS_COUNTRY
-		POLYGON_PATH = POLYGON_PATH_COUNTRY
-    
-    print "2"
-    
-    id_list.append(polygon_id)
-    
-    
-    print "3"
-    
-    if polygon_id in POLYGON_IDS:
-      content = GetPolygonTimeSeries(polygon_id,POLYGON_PATH,ref_start,ref_end,series_start,series_end)
-    else:
-      content = json.dumps({'error': 'Unrecognized polygon ID: ' + polygon_id})
-    
-    print "exit handler"
+    if mode == 2:
+		coords = []
+						
+		for items in eval(polygon):
+			coords.append([items[1],items[0]])
+		
+		feature =  ee.FeatureCollection(ee.Geometry.Polygon(coords))
+		
+		content = GetPolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end)
+
+    if mode ==  3:
+		polygon = json.loads(unicode(self.request.get('polygon_id')))
+		coords = []
+			
+		for items in polygon:
+			coords.append([items[0],items[1]])
+		
+		mypoly =  ee.FeatureCollection(ee.Geometry.Polygon(coords))
+		
+		content = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
     
     self.response.headers['Content-Type'] = 'application/json'
     self.response.out.write(content)
@@ -159,7 +173,7 @@ class PieChartHandler(webapp2.RequestHandler):
   
   def get(self):
     """Returns details about a polygon."""
-    polygon_id = self.request.get('polygon_id') 
+    polygon = self.request.get('polygon_id') 
     counter = self.request.get('mycounter')
     refLow = self.request.get('refLow')
     refHigh = self.request.get('refHigh')
@@ -171,63 +185,54 @@ class PieChartHandler(webapp2.RequestHandler):
     series_start = studyLow + '-01-01'
     series_end = studyHigh + '-12-31'
 
-    CountryorProvince = int(self.request.get('folder'))
+    mode = int(self.request.get('folder'))
+    
+    # 
+    if mode < 2:
    
-    if CountryorProvince == 0 :
-		POLYGON_IDS = POLYGON_IDS_PROVINCE
-		POLYGON_PATH = POLYGON_PATH_PROVINCE  
+		if mode == 0 :
+			POLYGON_IDS = POLYGON_IDS_PROVINCE
+			POLYGON_PATH = POLYGON_PATH_PROVINCE  
+		
+		if mode == 1 :
+			POLYGON_IDS = POLYGON_IDS_COUNTRY
+			POLYGON_PATH = POLYGON_PATH_COUNTRY
     
-    if CountryorProvince == 1 :
-		POLYGON_IDS = POLYGON_IDS_COUNTRY
-		POLYGON_PATH = POLYGON_PATH_COUNTRY
+		id_list.append(polygon)
+		    
+		if polygon in POLYGON_IDS:
+		  feature = ee.FeatureCollection(GetFeature(polygon,POLYGON_PATH))	
+		  content = calcPie(feature,ref_start,ref_end,series_start,series_end)
+		else:
+		  content = json.dumps({'error': 'Unrecognized polygon ID: ' + polygon})
     
-    id_list.append(polygon_id)
-    
-    if polygon_id in POLYGON_IDS:
-	  content = calcPie(polygon_id,POLYGON_PATH,ref_start,ref_end,series_start,series_end)
-    else:
-      content = json.dumps({'error': 'Unrecognized polygon ID: ' + polygon_id})
-    
-    print content
+    # drawing mode
+    if mode ==  2:
+		coords = []
+			
+		for items in eval(polygon):
+			coords.append([items[1],items[0]])
+		
+		feature =  ee.FeatureCollection(ee.Geometry.Polygon(coords))
+		content = calcPie(feature,ref_start,ref_end,series_start,series_end)
+	
+	# upload mode
+    if mode ==  3:
+		polygon = json.loads(unicode(self.request.get('polygon_id')))
+		coords = []
+			
+		for items in polygon:
+			coords.append([items[0],items[1]])
+		
+		mypoly =  ee.FeatureCollection(ee.Geometry.Polygon(coords))
+
+		content = calcPie(mypoly,ref_start,ref_end,series_start,series_end)
+		
     self.response.headers['Content-Type'] = 'application/json'
     self.response.out.write(content)
 
 
-# PolygonHandler is called when the user draws a polygon
-# return a list with 5 values for the piechart
-class PolygonHandler(webapp2.RequestHandler):
-    def get(self):
-				
-		polygon =  unicode(self.request.get('polygon')) 
-		refLow = self.request.get('refLow')
-		refHigh = self.request.get('refHigh')
-		studyLow = self.request.get('studyLow')
-		studyHigh = self.request.get('studyHigh')
-    
-		ref_start = refLow + '-01-01'
-		ref_end = refHigh + '-12-31'
-		series_start = studyLow + '-01-01'
-		series_end = studyHigh + '-12-31'
-			
-		coords = []
-				
-		for items in eval(polygon):
-			coords.append([items[1],items[0]])
-		
-		mypoly =  ee.FeatureCollection(ee.Geometry.Polygon(coords))
-		
-		#details = memcache.get(str(counter))
-		
-		details = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
-		
-		#memcache.add(str(counter), json.dumps(details), MEMCACHE_EXPIRATION)	
-		content = json.dumps(details) # ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
-		
-
-		self.response.headers['Content-Type'] = 'application/json'   
-	
-		self.response.out.write(content)
-
+'''
 # PolygonuploadHandler is called when the user uploads a polygon
 # return a list with dates and values to populate the chart
 class PolygonUploadHandler(webapp2.RequestHandler):
@@ -253,11 +258,12 @@ class PolygonUploadHandler(webapp2.RequestHandler):
 		
 		details = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
 	
-		content = json.dumps(details) # ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
+		content = json.dumps(details) 
 		
 		self.response.headers['Content-Type'] = 'application/json'   
 	
 		self.response.out.write(content)
+'''
 
 # Getmap is called when the user updates the map
 # returns a map
@@ -288,8 +294,6 @@ class DownloadHandler(webapp2.RequestHandler):
     
     def get(self):
 		
-		print "entering!!!"
-		
 		poly = json.loads(unicode(self.request.get('polygon')))
 		
 		coords = []
@@ -298,31 +302,23 @@ class DownloadHandler(webapp2.RequestHandler):
 		refHigh = self.request.get('refHigh')
 		studyLow = self.request.get('studyLow')
 		studyHigh = self.request.get('studyHigh')
-		
-				
+			
 		for items in poly:
-			#print items
 			coords.append([items[0],items[1]])
 		
-		print coords	
 		polygon = ee.FeatureCollection(ee.Geometry.Polygon(coords))
 		downloadURL = downloadMap(polygon,coords,refLow,refHigh,studyLow,studyHigh)
-		
-		
-		print "returning"
+
 		content = json.dumps(downloadURL) 
 		self.response.headers['Content-Type'] = 'application/json'
 		self.response.out.write(content)
-		
-		print "!!"
+	
 	
 	
 # Define webapp2 routing from URL paths to web request handlers. See:
 # http://webapp-improved.appspot.com/tutorials/quickstart.html
 app = webapp2.WSGIApplication([
     ('/details', DetailsHandler),
-    ('/polygon', PolygonHandler),
-    ('/uploadHandler',PolygonUploadHandler),
     ('/downloadHandler', DownloadHandler),
     ('/pieChart', PieChartHandler),
     ('/getmap', GetMapHandler),
@@ -336,9 +332,7 @@ app = webapp2.WSGIApplication([
 # function to download the map
 # returns a download url
 def downloadMap(polygon,coords,ref_start,ref_end,series_start,series_end):
-  
-  print "======================================"
-  print ref_start,ref_end,series_start,series_end
+
   cumulative = Calculation(ref_start,ref_end,series_start,series_end)
     
   myList = cumulative.toList(500)
@@ -369,9 +363,8 @@ def updateMap(ref_start,ref_end,series_start,series_end):
    
   fit = ee.Image(myList.get(-1)).clip(mekongCountries)
   
-  print "======", series_start, series_end
+
   months = ee.Date(series_end).difference(ee.Date(series_start),"month").getInfo()
-  print "months", months
   
   Threshold1 = months * 0.06
   Threshold2 = months * -0.06
@@ -383,7 +376,7 @@ def updateMap(ref_start,ref_end,series_start,series_end):
       'palette' : '931206,ff1b05,fdff42,4bff0f,0fa713'
   })
 	  
-def calcPie(polygon_id,mypath,ref_start,ref_end,series_start,series_end):
+def calcPie(feature,ref_start,ref_end,series_start,series_end):
 
 
   cumulative = Calculation(ref_start,ref_end,series_start,series_end)
@@ -392,28 +385,17 @@ def calcPie(polygon_id,mypath,ref_start,ref_end,series_start,series_end):
   country_names = ['Myanmar (Burma)','Thailand','Laos','Vietnam','Cambodia']; # Specify name of country. Ignored if "use_uploaded_fusion_table" == y
   mekongCountries = countries.filter(ee.Filter.inList('Country', country_names));
   
-  feature = ee.Feature(GetFeature(polygon_id,mypath))
-  
   myList = cumulative.toList(500)
   
   fit = ee.Image(myList.get(-1))
   
-  #fit = ee.Image(mycollection.mean().multiply(0.0001))
-  
-  
-  print "======", series_start, series_end
   months = ee.Date(series_end).difference(ee.Date(series_start),"month").getInfo()
-  print "months", months
   
   Threshold1 = months * 0.030
   Threshold2 = months * 0.015
 
   Threshold3 = months * -0.015
   Threshold4 = months * -0.030
-  
-  print Threshold1, Threshold2, Threshold3, Threshold4
-  
-  #totalArea = feature.geometry().area().Dissolve().getInfo()
   
   T1 = fit.where(fit.lt(Threshold1),0)
   T1 = T1.where(T1.gt(0),1).reduceRegion(ee.Reducer.sum(), feature.geometry(), REDUCTION_SCALE_METERS).getInfo()['EVI']
@@ -428,9 +410,7 @@ def calcPie(polygon_id,mypath,ref_start,ref_end,series_start,series_end):
   T4 = T4.where(T4.lt(0),1).reduceRegion(ee.Reducer.sum(), feature.geometry(), REDUCTION_SCALE_METERS).getInfo()['EVI']
   
   T5 = fit.where(fit.gt(-9999),1).reduceRegion(ee.Reducer.sum(), feature.geometry(), REDUCTION_SCALE_METERS).getInfo()['EVI']
-  
-  print T1, T2, T3, T4, T5
-  
+
   p1 = T1*0.5*0.5 
   p2 = (T2 - T1)*0.5*0.5
   
@@ -445,7 +425,7 @@ def calcPie(polygon_id,mypath,ref_start,ref_end,series_start,series_end):
   
    
 	
-def GetPolygonTimeSeries(polygon_id,mypath,ref_start,ref_end,series_start,series_end):
+def GetPolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end):
   """Returns details about the polygon with the passed-in ID."""
   #details = memcache.get(polygon_id)
 
@@ -456,7 +436,7 @@ def GetPolygonTimeSeries(polygon_id,mypath,ref_start,ref_end,series_start,series
   details = {}
 
   try:
-    details['timeSeries'] = ComputePolygonTimeSeries(polygon_id,mypath,ref_start,ref_end,series_start,series_end)
+    details['timeSeries'] = ComputePolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end)
     # Store the results in memcache.
     #memcache.add(polygon_id, json.dumps(details), MEMCACHE_EXPIRATION)
   except ee.EEException as e:
@@ -467,65 +447,10 @@ def GetPolygonTimeSeries(polygon_id,mypath,ref_start,ref_end,series_start,series
   return json.dumps(details)
 
 
-def ComputePolygonTimeSeries(polygon_id,mypath,ref_start,ref_end,series_start,series_end):
+def ComputePolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end):
+  
   """Returns a series of brightness over time for the polygon."""
-  
-  collection = ee.ImageCollection(IMAGE_COLLECTION_ID) #.filterDate('2008-01-01', '2010-12-31').sort('system:time_start')
-  reference = collection.filterDate(ref_start,ref_end ).sort('system:time_start').select('EVI')
-  series = collection.filterDate(series_start, series_end).sort('system:time_start').select('EVI')
-  
-  print "1"
-
-  def calcMonthlyMean(ref,col):
-	  
-      mylist = ee.List([])
-      years = range(int(series_start[0:4]),int(series_end[0:4])+1)
-      months = range(1,13)
-      for y in years:
-		for m in months:
-			# select all months in the reference period
-			refmean = ref.filter(ee.Filter.calendarRange(m,m,'month')).mean().multiply(0.0001)
-			# select all months in the study period
-			studyselection = col.filter(ee.Filter.calendarRange(y, y, 'year')).filter(ee.Filter.calendarRange(m, m, 'month'));
-			# get the time of the first item
-			studytime = studyselection.first().get('system:time_start')
-			# multiply the monthly mean map with 0.0001
-			study = studyselection.mean().multiply(0.0001)
-			result = study.subtract(refmean)  
-			mylist = mylist.add(result.set('year', y).set('month',m).set('date',ee.Date.fromYMD(y,m,1)).set('system:time_start',studytime))
-      return ee.ImageCollection.fromImages(mylist)
-  
-  print "2"
-  
-  mycollection = ee.ImageCollection(calcMonthlyMean(reference,collection))
-  
-  print "3"
-  
-  time0 = series.first().get('system:time_start')
-  first = ee.List([ee.Image(0).set('system:time_start', time0).select([0], ['EVI'])])
-  
-  print "4"
- 
-  ## This is a function to pass to Iterate().
-  ## As anomaly images are computed, add them to the list.
-  def accumulate(image, mylist): 
-    ## Get the latest cumulative anomaly image from the end of the list with
-    ## get(-1).  Since the type of the list argument to the function is unknown,
-    ## it needs to be cast to a List.  Since the return type of get() is unknown,
-    ## cast it to Image.
-    previous = ee.Image(ee.List(mylist).get(-1))
-    ## Add the current anomaly to make a new cumulative anomaly image.
-    added = image.add(previous).set('system:time_start', image.get('system:time_start'))
-    ## Propagate metadata to the new image.
-    #
-    ## Return the list with the cumulative anomaly inserted.
-    return ee.List(mylist).add(added)
-  
-  print "5"
-  
-  ## Create an ImageCollection of cumulative anomaly images by iterating.
-  ## Since the return type of iterate is unknown, it needs to be cast to a List.
-  cumulative = ee.ImageCollection(ee.List(mycollection.iterate(accumulate, first)))
+  cumulative = Calculation(ref_start,ref_end,series_start,series_end)
   
   # Compute the mean brightness in the region in each image.
   def ComputeMean(img):
@@ -536,8 +461,6 @@ def ComputePolygonTimeSeries(polygon_id,mypath,ref_start,ref_end,series_start,se
         'system:time_start': img.get('system:time_start')
     })
 
-    print "6"
-  
   # Extract the results as a list of lists.
   def ExtractMean(feature):
     return [
@@ -545,9 +468,6 @@ def ComputePolygonTimeSeries(polygon_id,mypath,ref_start,ref_end,series_start,se
         feature['properties']['EVI']
     ]
 
-
-  myfeat = GetFeature(polygon_id,mypath)
-  feature = ee.FeatureCollection(GetFeature(polygon_id,mypath))
   chart_data = cumulative.map(ComputeMean).getInfo()
 
   mymap = map(ExtractMean, chart_data['features'])
@@ -591,9 +511,7 @@ def Calculation(ref_start,ref_end,series_start,series_end):
   collection = ee.ImageCollection(IMAGE_COLLECTION_ID) #.filterDate('2008-01-01', '2010-12-31').sort('system:time_start')
   reference = collection.filterDate(ref_start,ref_end ).sort('system:time_start').select('EVI')
   series = collection.filterDate(series_start, series_end).sort('system:time_start').select('EVI')
-  
-  print "1"
-
+ 
   def calcMonthlyMean(ref,col):
 	  
       mylist = ee.List([])
@@ -612,18 +530,12 @@ def Calculation(ref_start,ref_end,series_start,series_end):
 			result = study.subtract(refmean)  
 			mylist = mylist.add(result.set('year', y).set('month',m).set('date',ee.Date.fromYMD(y,m,1)).set('system:time_start',studytime))
       return ee.ImageCollection.fromImages(mylist)
-  
-  print "2"
-  
+
   mycollection = ee.ImageCollection(calcMonthlyMean(reference,collection))
-  
-  print "3"
   
   time0 = series.first().get('system:time_start')
   first = ee.List([ee.Image(0).set('system:time_start', time0).select([0], ['EVI'])])
   
-  print "4"
- 
   ## This is a function to pass to Iterate().
   ## As anomaly images are computed, add them to the list.
   def accumulate(image, mylist): 
@@ -638,8 +550,6 @@ def Calculation(ref_start,ref_end,series_start,series_end):
     #
     ## Return the list with the cumulative anomaly inserted.
     return ee.List(mylist).add(added)
-  
-  print "5"
   
   ## Create an ImageCollection of cumulative anomaly images by iterating.
   ## Since the return type of iterate is unknown, it needs to be cast to a List.

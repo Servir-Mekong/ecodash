@@ -13,7 +13,7 @@ ecodash = {};  // Our namespace.
 var Country = new google.maps.Data();
 var Province = new google.maps.Data();
 var CSS_COLOR_NAMES = ["Black","Blue","BlueViolet","Brown","BurlyWood","CadetBlue","Chartreuse","Chocolate","Coral","CornflowerBlue","Cornsilk","Crimson","Cyan","DarkBlue","DarkCyan","DarkGoldenRod","DarkGray","DarkGrey","DarkGreen","DarkKhaki","DarkMagenta","DarkOliveGreen","Darkorange","DarkOrchid","DarkRed","DarkSalmon","DarkSeaGreen","DarkSlateBlue","DarkSlateGray","DarkSlateGrey","DarkTurquoise","DarkViolet","DeepPink","DeepSkyBlue","DimGray","DimGrey","DodgerBlue","FireBrick","FloralWhite","ForestGreen","Fuchsia","Gainsboro","GhostWhite","Gold","GoldenRod","Gray","Grey","Green","GreenYellow","HoneyDew","HotPink","IndianRed","Indigo","Ivory","Khaki","Lavender","LavenderBlush","LawnGreen","LemonChiffon","LightBlue","LightCoral","LightCyan","LightGoldenRodYellow","LightGray","LightGrey","LightGreen","LightPink","LightSalmon","LightSeaGreen","LightSkyBlue","LightSlateGray","LightSlateGrey","LightSteelBlue","LightYellow","Lime","LimeGreen","Linen","Magenta","Maroon","MediumAquaMarine","MediumBlue","MediumOrchid","MediumPurple","MediumSeaGreen","MediumSlateBlue","MediumSpringGreen","MediumTurquoise","MediumVioletRed","MidnightBlue","MintCream","MistyRose","Moccasin","NavajoWhite","Navy","OldLace","Olive","OliveDrab","Orange","OrangeRed","Orchid","PaleGoldenRod","PaleGreen","PaleTurquoise","PaleVioletRed","PapayaWhip","PeachPuff","Peru","Pink","Plum","PowderBlue","Purple","Red","RosyBrown","RoyalBlue","SaddleBrown","Salmon","SandyBrown","SeaGreen","SeaShell","Sienna","Silver","SkyBlue","SlateBlue","SlateGray","SlateGrey","Snow","SpringGreen","SteelBlue","Tan","Teal","Thistle","Tomato","Turquoise","Violet","Wheat","White","WhiteSmoke","Yellow","YellowGreen"];
-var CountryorProvince = 0;
+var mode = 0; //  0 = province 1 = country 2 = draw 3 = upload
 var myName = [];
 var DataArr = [];
 var all_overlays = [];
@@ -381,7 +381,7 @@ function polygonSelectionMethod(){
 	
 	if (selection == "Province"){
 
-		CountryorProvince = 0;
+		mode = 0;
 
 		// remove the drawing manager
 		if (drawingManager){
@@ -404,7 +404,7 @@ function polygonSelectionMethod(){
 
 	if (selection == "Country"){
 		
-		CountryorProvince = 1;
+		mode = 1;
 
 		// remove the drawing manager
 		if (drawingManager){
@@ -427,7 +427,7 @@ function polygonSelectionMethod(){
 
 	if (selection == "Draw Polygon"){	
 		
-		CountryorProvince = 0;
+		mode = 2;
 	
 		// clear existing overlays
 		clearMap();
@@ -471,7 +471,7 @@ var createDrawingManager = function(){
           var geom = event.overlay.getPath().getArray();
                       
           // fire the analysis
-          GEE_call_graph_poly(geom);
+          GEE_call_graph(geom);
           
           currentShape = new google.maps.Polygon({ paths: geom})       
         });
@@ -564,8 +564,11 @@ var handlePolygonClick = function(event) {
    // show selection on panel
    document.getElementById("name").innerHTML = title;
    
+   // get the feature id
+   var id = feature.getProperty('id');
+   
    // Get the data and draw the graph
-   GEE_call_graph(feature);
+   GEE_call_graph(id);
      
    counter = counter + 1;
 }
@@ -575,14 +578,11 @@ var handlePolygonClick = function(event) {
 * ajax call to get data for graph on polygon click
 **/
 var GEE_call_graph = function(feature){
-    
-  // get the feature id
-  var id = feature.getProperty('id');
 
   var Dates = GetDates();
 
   var data = {mycounter: counter,
-			  folder : CountryorProvince,
+			  folder : mode,
 			  refLow : Dates[0],									 
 			  refHigh : Dates[1],
 			  studyLow : Dates[2],
@@ -591,58 +591,27 @@ var GEE_call_graph = function(feature){
   
   $(".spinner").toggle();
   
-  console.log(data);
-
-  $.get('/details?polygon_id=' + id,data).done((function(data) {    
+  $.get('/details?polygon_id=' + feature,data).done((function(data) {    
     if (data['error']) {
       alert("An error! This is embarrassing! Please report to the sys admin. ");
     } else {
-	//	$(".spinner").toggle();
-		console.log("draw chart1");
 		showChart(data['timeSeries']);
 		
     }
   }).bind(this));
 
-  $.get('/pieChart?polygon_id=' + id,data).done((function(data) {    
+  $.get('/pieChart?polygon_id=' + feature,data).done((function(data) {    
     if (data['error']) {
       alert("An error! This is embarrassing! Please report to the sys admin. ");
     } else {
-		$(".spinner").toggle();
 		drawPieChart(data);
-		console.log(data);
+		$(".spinner").toggle();
     }
   }).bind(this));
 
   
 }  
 
-
-/**
-* ajax call to get data for graph for custom polygon
-**/
-var GEE_call_graph_poly = function(geom){
-  
-    var Dates = GetDates();
-  
-    var data = {mycounter: counter,
-			  refLow : Dates[0],									 
-			  refHigh : Dates[1],
-			  studyLow : Dates[2],
-			  studyHigh : Dates[3]									 
-			  } 
-  
-  $(".spinner").toggle();
-  
-  $.get('/polygon?polygon=' + geom,data).done((function(data) {    
-    if (data['error']) {
-      alert("An error! This is embarrassing! Please report to the sys admin. ");
-    } else {
-		$(".spinner").toggle();
-		showChart(data);
-    }
-  }).bind(this)); 
-}  
 
 /**
 * ajax call to get data for graph for uploaded
@@ -651,9 +620,12 @@ var GEE_call_graph_uploaded_poly = function(geom){
   
     var Dates = GetDates();
     
+    mode = 3;
+    
     var coords = getCoordinates(currentShape);
 
-    var data = {mycounter: counter,
+	var data = {mycounter: counter,
+			  folder : mode,
 			  refLow : Dates[0],									 
 			  refHigh : Dates[1],
 			  studyLow : Dates[2],
@@ -661,14 +633,26 @@ var GEE_call_graph_uploaded_poly = function(geom){
 			  } 
   
   $(".spinner").toggle();
-  $.get('/uploadHandler?polygon=' + JSON.stringify(coords),data).done((function(data) {    
+  
+  $.get('/details?polygon_id=' + JSON.stringify(coords),data).done((function(data) {    
     if (data['error']) {
       alert("An error! This is embarrassing! Please report to the sys admin. ");
     } else {
-		$(".spinner").toggle();
 		showChart(data);
     }
   }).bind(this)); 
+ 
+
+  $.get('/pieChart?polygon_id=' + JSON.stringify(coords),data).done((function(data) {    
+    if (data['error']) {
+      alert("An error! This is embarrassing! Please report to the sys admin. ");
+    } else {
+		drawPieChart(data);
+        $(".spinner").toggle();
+    }
+  }).bind(this)); 
+
+
 }  
 
 /**
@@ -677,7 +661,6 @@ var GEE_call_graph_uploaded_poly = function(geom){
 // Extract an array of coordinates for the given polygon.
 var getCoordinates = function (shape) {
     
-   
     //Check if drawn shape is rectangle or polygon
     if (shape.type == google.maps.drawing.OverlayType.RECTANGLE) {
         var bounds = shape.getBounds();
@@ -750,8 +733,6 @@ var showChart = function(timeseries) {
   for (i = 0; i < counter; i++) { 
 	data.addColumn('number', myName[i]);
   }
-  
-  console.log("draw chart");
 
   data.addRows(DataArr);
  
@@ -954,15 +935,14 @@ var exportMap = function() {
 	var Dates = GetDates();
 
 	var data = {mycounter: counter,
-			  folder : CountryorProvince,
+			  folder : mode,
 			  refLow : Dates[0],									 
 			  refHigh : Dates[1],
 			  studyLow : Dates[2],
 			  studyHigh : Dates[3]									 
 			  } 
 	
-	console.log(data);
-		
+
 	$.get('/downloadHandler?polygon=' + JSON.stringify(coords),data).done((function(data) {    
     if (data['error']) {
        alert("An error! This is embarrassing! Please report to the sys admin. ");
