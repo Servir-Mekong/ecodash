@@ -294,13 +294,14 @@ footer {
 	position:absolute;
     top:15%;
     left:1%;
-    height:35%;
+    height:40%;
     width:20%;
     padding:2%;
     border-radius:3px;
     background-color:white;
     box-shadow:0px 0px 5px gray;
     z-index:100;
+    border: 2px solid black
 }
 
 #ecodash #general-info-shown {
@@ -593,7 +594,7 @@ footer {
 
 
 #ecodash #ui #sliderval1 {
-    position:absolute;
+    
     left:60px;
     top:85px;
     width:10px;
@@ -605,8 +606,8 @@ footer {
 }
 
 #ecodash #ui #sliderval2 {
-    position:absolute;
-    left:210px;
+    
+    left:410px;
     top:85px;
     width:10px;
     height:22px;
@@ -618,7 +619,7 @@ footer {
 
 
 #ecodash #ui #sliderval3{
-    position:absolute;
+   
     left:60px;
     top:155px;
     width:10px;
@@ -630,7 +631,7 @@ footer {
 }
 
 #ecodash #ui #sliderval4 {
-    position:absolute;
+    
     left:210px;
     top:155px;
     width:10px;

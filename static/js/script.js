@@ -122,6 +122,8 @@ function setupListeners() {
   
   document.getElementById('pie-chart-info').addEventListener("click", hidePie);
   
+  document.getElementById('piechart').addEventListener("click", showPie);
+  
   document.getElementById('slider1').addEventListener("change", slider);
   document.getElementById('slider2').addEventListener("change", slider);
   document.getElementById('slider3').addEventListener("change", slider);
@@ -157,7 +159,7 @@ var showInfo = function() {
 
 
 /**
-* function to show info screen
+* function to show  graph
 * using the info button
  */
 var showgraph = function() {
@@ -174,7 +176,7 @@ var showgraph = function() {
 }
 
 /**
-* function to show info screen
+* function to show pie chart
 * using the info button
  */
 var showPie = function() {
@@ -185,6 +187,10 @@ var showPie = function() {
    if (counter > 0){
 	graphscreen.style.display = 'block';
 	}
+   
+   var pieButton = document.getElementById('piechart');
+   pieButton.style.display = 'none';
+
 }
 
 /**
@@ -197,6 +203,9 @@ var hidePie = function() {
    var graphscreen = document.getElementById('pie-chart-info');
    
    graphscreen.style.display = 'none';
+   
+   var pieButton = document.getElementById('piechart');
+   pieButton.style.display = 'block';
 	
 }
 
@@ -909,14 +918,26 @@ function drawPieChart(dataArray) {
     var options = {'title':title,
                    'width':300,
                    'height':300,
-                   'chartArea': {'width': '100%', 'height': '80%'},
-                 //  'colors': ['#0fa713','#4bff0f','#fdff42','#ff1b05','#931206']
+                   'chartArea': {'width': '90%', 'height': '80%'},
                    'colors': ['#0fa713','#4bff0f','#E5E500','#ff1b05','#931206']
                    };
 
     // Instantiate and draw our chart, passing in some options.
     var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
     chart.draw(data, options);
+    
+   // show link to download the piechart
+   document.getElementById('PieLink').innerHTML = '<a href="' + chart.getImageURI() + '" target="_blank"' + '>Printable version</a>';
+
+ 	// export as csv
+    $('#csvPie').click(function () {
+        var csvFormattedDataTable = google.visualization.dataTableToCsv(data);
+        var encodedUri = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csvFormattedDataTable);
+        this.href = encodedUri;
+        this.download = 'table-data.csv';
+        this.target = '_blank';
+    });	
+    
   }
 
 

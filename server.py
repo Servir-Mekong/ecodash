@@ -11,7 +11,6 @@ import config
 import ee
 import jinja2
 import webapp2
-import drive
 import oauth2client.appengine
 
 import socket
