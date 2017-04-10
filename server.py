@@ -50,7 +50,10 @@ socket.setdefaulttimeout(URL_FETCH_TIMEOUT)
 urlfetch.set_default_fetch_deadline(URL_FETCH_TIMEOUT)
 
 # set the collection ID
-IMAGE_COLLECTION_ID = 'MODIS/MYD13A1'
+IMAGE_COLLECTION_ID1 = ee.ImageCollection('MODIS/MYD13A1')
+IMAGE_COLLECTION_ID2 = ee.ImageCollection('MODIS/MOD13A1')
+
+IMAGE_COLLECTION_ID =  IMAGE_COLLECTION_ID1.merge(IMAGE_COLLECTION_ID2);
 
 ref_start = '2006-01-01'
 ref_end = '2008-12-31'
@@ -229,40 +232,6 @@ class PieChartHandler(webapp2.RequestHandler):
 		
     self.response.headers['Content-Type'] = 'application/json'
     self.response.out.write(content)
-
-
-'''
-# PolygonuploadHandler is called when the user uploads a polygon
-# return a list with dates and values to populate the chart
-class PolygonUploadHandler(webapp2.RequestHandler):
-    def get(self):
-		
-		polygon = json.loads(unicode(self.request.get('polygon')))
-		refLow = self.request.get('refLow')
-		refHigh = self.request.get('refHigh')
-		studyLow = self.request.get('studyLow')
-		studyHigh = self.request.get('studyHigh')
-    
-		ref_start = refLow + '-01-01'
-		ref_end = refHigh + '-12-31'
-		series_start = studyLow + '-01-01'
-		series_end = studyHigh + '-12-31'
-
-		coords = []
-				
-		for items in polygon:
-			coords.append([items[0],items[1]])
-		
-		mypoly =  ee.FeatureCollection(ee.Geometry.Polygon(coords))
-		
-		details = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
-	
-		content = json.dumps(details) 
-		
-		self.response.headers['Content-Type'] = 'application/json'   
-	
-		self.response.out.write(content)
-'''
 
 # Getmap is called when the user updates the map
 # returns a map
