@@ -49,6 +49,13 @@ header {
     width:150px;
 }
 
+.logos img#gee {
+    position:absolute;
+    top:5px;
+    right:50px;
+    width:230px;
+}
+
 .logos img#nasa {
     position:absolute;
     top:0px;

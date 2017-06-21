@@ -329,7 +329,7 @@ def updateMap(ref_start,ref_end,series_start,series_end):
   
   myList = cumulative.toList(500)
    
-  fit = ee.Image(myList.get(-1)).clip(mekongCountries)
+  fit = ee.Image(myList.get(-1)) #.clip(mekongCountries)
   
 
   months = ee.Date(series_end).difference(ee.Date(series_start),"month").getInfo()
