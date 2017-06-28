@@ -50,15 +50,18 @@ socket.setdefaulttimeout(URL_FETCH_TIMEOUT)
 urlfetch.set_default_fetch_deadline(URL_FETCH_TIMEOUT)
 
 # set the collection ID
-IMAGE_COLLECTION_ID1 = ee.ImageCollection('MODIS/MYD13A1')
-IMAGE_COLLECTION_ID2 = ee.ImageCollection('MODIS/MOD13A1')
+#IMAGE_COLLECTION_ID1 = ee.ImageCollection('MODIS/MYD13A1')
+#IMAGE_COLLECTION_ID2 = ee.ImageCollection('MODIS/MOD13A1')
 
-IMAGE_COLLECTION_ID =  IMAGE_COLLECTION_ID1.merge(IMAGE_COLLECTION_ID2);
+#IMAGE_COLLECTION_ID =  IMAGE_COLLECTION_ID1.merge(IMAGE_COLLECTION_ID2);
 
-ref_start = '2006-01-01'
+# work only with Image collection 1 to speed up
+IMAGE_COLLECTION_ID = ee.ImageCollection('MODIS/MYD13A1')
+
+ref_start = '2002-01-01'
 ref_end = '2008-12-31'
 series_start = '2009-01-01'
-series_end = '2011-12-31'
+series_end = '2014-12-31'
 
 counter = 0
 CountryorProvince = 0
@@ -77,7 +80,7 @@ POLYGON_IDS_PROVINCE = [name.replace('.json', '') for name in os.listdir(POLYGON
 mylist = []
 
 # The scale at which to reduce the polygons for the brightness time series.
-REDUCTION_SCALE_METERS = 2500
+REDUCTION_SCALE_METERS = 10000
 
 
 # ------------------------------------------------------------------------------------ #
@@ -100,10 +103,11 @@ class MainHandler(webapp2.RequestHandler):
             'serializedPolygonIds_province': json.dumps(POLYGON_IDS_PROVINCE)
         }
         template = JINJA2_ENVIRONMENT.get_template('index.html')
+        
         self.response.out.write(template.render(template_values))
 
 
-# detail handler is called when the user clicks a polyhgon
+# detail handler is called when the user clicks a polygon
 # return a list with dates and values to populate the chart
 class DetailsHandler(webapp2.RequestHandler):
   """A servlet to handle requests for details about a Polygon."""
@@ -124,7 +128,9 @@ class DetailsHandler(webapp2.RequestHandler):
 
     mode = int(self.request.get('folder'))
     
+    
     if mode < 2:
+		
    
 		if mode == 0 :
 			POLYGON_IDS = POLYGON_IDS_PROVINCE
@@ -138,12 +144,13 @@ class DetailsHandler(webapp2.RequestHandler):
 		id_list.append(polygon)
 		    
 		if polygon in POLYGON_IDS:
-		  feature = ee.FeatureCollection(GetFeature(polygon,POLYGON_PATH))	
+		  feature = ee.FeatureCollection(GetFeature(polygon,POLYGON_PATH))
 		  content = GetPolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end)
 		else:
 		  content = json.dumps({'error': 'Unrecognized polygon ID: ' + polygon})
     
     if mode == 2:
+		
 		coords = []
 						
 		for items in eval(polygon):
@@ -154,6 +161,7 @@ class DetailsHandler(webapp2.RequestHandler):
 		content = GetPolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end)
 
     if mode ==  3:
+		
 		polygon = json.loads(unicode(self.request.get('polygon_id')))
 		coords = []
 			
@@ -172,6 +180,7 @@ class DetailsHandler(webapp2.RequestHandler):
 # return a list with 5 values for the piechart
 class PieChartHandler(webapp2.RequestHandler):
   """A servlet to handle requests for details about a Polygon."""
+  
   
   def get(self):
     """Returns details about a polygon."""
@@ -237,14 +246,20 @@ class PieChartHandler(webapp2.RequestHandler):
 # returns a map
 class GetMapHandler(webapp2.RequestHandler):
     
+    
     def get(self):
 
 		refLow = self.request.get('refLow')
 		refHigh = self.request.get('refHigh')
 		studyLow = self.request.get('studyLow')
 		studyHigh = self.request.get('studyHigh')
+		
+		ref_start = refLow + '-01-01'
+		ref_end = refHigh + '-12-31'
+		series_start = studyLow + '-01-01'
+		series_end = studyHigh + '-12-31'
 	 
-		mapid = updateMap(refLow,refHigh,studyLow,studyHigh) 
+		mapid = updateMap(ref_start,ref_end,series_start,series_end) 
 		 
 		template_values = {
 			'eeMapId': mapid['mapid'],
@@ -320,6 +335,8 @@ def downloadMap(polygon,coords,ref_start,ref_end,series_start,series_end):
   
 
 def updateMap(ref_start,ref_end,series_start,series_end):
+	
+  "entering update map"
 
   cumulative = Calculation(ref_start,ref_end,series_start,series_end)
   
@@ -334,8 +351,8 @@ def updateMap(ref_start,ref_end,series_start,series_end):
 
   months = ee.Date(series_end).difference(ee.Date(series_start),"month").getInfo()
   
-  Threshold1 = months * 0.06
-  Threshold2 = months * -0.06
+  Threshold1 = months * 0.1
+  Threshold2 = months * -0.1
   
   return fit.getMapId({
       'min': Threshold2,
@@ -345,7 +362,6 @@ def updateMap(ref_start,ref_end,series_start,series_end):
   })
 	  
 def calcPie(feature,ref_start,ref_end,series_start,series_end):
-
 
   cumulative = Calculation(ref_start,ref_end,series_start,series_end)
   
@@ -359,11 +375,11 @@ def calcPie(feature,ref_start,ref_end,series_start,series_end):
   
   months = ee.Date(series_end).difference(ee.Date(series_start),"month").getInfo()
   
-  Threshold1 = months * 0.030
-  Threshold2 = months * 0.015
+  Threshold1 = months * 0.04
+  Threshold2 = months * 0.02
 
-  Threshold3 = months * -0.015
-  Threshold4 = months * -0.030
+  Threshold3 = months * -0.02
+  Threshold4 = months * -0.04
   
   T1 = fit.where(fit.lt(Threshold1),0)
   T1 = T1.where(T1.gt(0),1).reduceRegion(ee.Reducer.sum(), feature.geometry(), REDUCTION_SCALE_METERS).getInfo()['EVI']
@@ -416,11 +432,11 @@ def GetPolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end):
 
 
 def ComputePolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end):
-  
+   
   """Returns a series of brightness over time for the polygon."""
   cumulative = Calculation(ref_start,ref_end,series_start,series_end)
   
-  # Compute the mean brightness in the region in each image.
+    # Compute the mean brightness in the region in each image.
   def ComputeMean(img):
     reduction = img.reduceRegion(
         ee.Reducer.mean(), feature.geometry(), REDUCTION_SCALE_METERS)
@@ -434,12 +450,13 @@ def ComputePolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end):
     return [
         feature['properties']['system:time_start'],
         feature['properties']['EVI']
-    ]
+	]
+    
 
   chart_data = cumulative.map(ComputeMean).getInfo()
 
   mymap = map(ExtractMean, chart_data['features'])
-  
+    
   return mymap
 
 
@@ -479,31 +496,36 @@ def Calculation(ref_start,ref_end,series_start,series_end):
   collection = ee.ImageCollection(IMAGE_COLLECTION_ID) #.filterDate('2008-01-01', '2010-12-31').sort('system:time_start')
   reference = collection.filterDate(ref_start,ref_end ).sort('system:time_start').select('EVI')
   series = collection.filterDate(series_start, series_end).sort('system:time_start').select('EVI')
- 
-  def calcMonthlyMean(ref,col):
-	  
-      mylist = ee.List([])
-      years = range(int(series_start[0:4]),int(series_end[0:4])+1)
-      months = range(1,13)
-      for y in years:
-		for m in months:
-			# select all months in the reference period
-			refmean = ref.filter(ee.Filter.calendarRange(m,m,'month')).mean().multiply(0.0001)
-			# select all months in the study period
-			studyselection = col.filter(ee.Filter.calendarRange(y, y, 'year')).filter(ee.Filter.calendarRange(m, m, 'month'));
-			# get the time of the first item
-			studytime = studyselection.first().get('system:time_start')
-			# multiply the monthly mean map with 0.0001
-			study = studyselection.mean().multiply(0.0001)
-			result = study.subtract(refmean)  
-			mylist = mylist.add(result.set('year', y).set('month',m).set('date',ee.Date.fromYMD(y,m,1)).set('system:time_start',studytime))
-      return ee.ImageCollection.fromImages(mylist)
+    
+  def calcMonthlyMean(img):
 
-  mycollection = ee.ImageCollection(calcMonthlyMean(reference,collection))
-  
+	  # get the month of the map
+      month = ee.Number.parse(ee.Date(img.get("system:time_start")).format("M"))
+	  # get the day in month
+      day = ee.Number.parse(ee.Date(img.get("system:time_start")).format("d"))
+            
+      # select image in reference period
+      refmaps = reference.filter(ee.Filter.calendarRange(month,month,"Month"))
+      refmaps = refmaps.filter(ee.Filter.calendarRange(day,day,"day_of_month"))
+	  # get the mean of the reference
+      refmean = ee.Image(refmaps.mean()).multiply(0.0001)
+	  
+	  # get date
+      time = img.get('system:time_start')
+	  
+	  # multiply image by scaling factor
+      study = img.multiply(0.0001)
+	  
+	  # subtract mean from study
+      result = ee.Image(study.subtract(refmean).set('system:time_start',time))
+      
+      return result
+ 
+  mycollection = series.map(calcMonthlyMean)
+    
   time0 = series.first().get('system:time_start')
   first = ee.List([ee.Image(0).set('system:time_start', time0).select([0], ['EVI'])])
-  
+    
   ## This is a function to pass to Iterate().
   ## As anomaly images are computed, add them to the list.
   def accumulate(image, mylist): 
@@ -522,7 +544,7 @@ def Calculation(ref_start,ref_end,series_start,series_end):
   ## Create an ImageCollection of cumulative anomaly images by iterating.
   ## Since the return type of iterate is unknown, it needs to be cast to a List.
   cumulative = ee.ImageCollection(ee.List(mycollection.iterate(accumulate, first)))
-  
+    
   return cumulative
 
 
