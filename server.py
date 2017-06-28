@@ -51,7 +51,7 @@ urlfetch.set_default_fetch_deadline(URL_FETCH_TIMEOUT)
 
 # set the collection ID
 #IMAGE_COLLECTION_ID1 = ee.ImageCollection('MODIS/MYD13A1')
-#IMAGE_COLLECTION_ID2 = ee.ImageCollection('MODIS/MOD13A1')
+IMAGE_COLLECTION_ID2 = ee.ImageCollection('MODIS/MOD13A1')
 
 #IMAGE_COLLECTION_ID =  IMAGE_COLLECTION_ID1.merge(IMAGE_COLLECTION_ID2);
 
@@ -111,7 +111,7 @@ class MainHandler(webapp2.RequestHandler):
 # return a list with dates and values to populate the chart
 class DetailsHandler(webapp2.RequestHandler):
   """A servlet to handle requests for details about a Polygon."""
-  
+    
   def get(self):
     """Returns details about a polygon."""
     polygon = self.request.get('polygon_id') 
@@ -127,7 +127,6 @@ class DetailsHandler(webapp2.RequestHandler):
     series_end = studyHigh + '-12-31'
 
     mode = int(self.request.get('folder'))
-    
     
     if mode < 2:
 		
@@ -164,13 +163,15 @@ class DetailsHandler(webapp2.RequestHandler):
 		
 		polygon = json.loads(unicode(self.request.get('polygon_id')))
 		coords = []
-			
+		
+		
 		for items in polygon:
 			coords.append([items[0],items[1]])
 		
-		mypoly =  ee.FeatureCollection(ee.Geometry.Polygon(coords))
+		feature =  ee.FeatureCollection(ee.Geometry.Polygon(coords))
 		
-		content = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
+		#content = ComputePolygonDrawTimeSeries(mypoly,ref_start,ref_end,series_start,series_end)
+		content = GetPolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end)
     
     self.response.headers['Content-Type'] = 'application/json'
     self.response.out.write(content)
@@ -460,7 +461,7 @@ def ComputePolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end):
   return mymap
 
 
-def ComputePolygonDrawTimeSeries(polygon,ref_start,ref_end,series_start,series_end):
+def ComputePolygonDrawTimeSeries(feature,ref_start,ref_end,series_start,series_end):
   
   """Returns a series of brightness over time for the polygon."""
   cumulative = Calculation(ref_start,ref_end,series_start,series_end)
@@ -482,9 +483,7 @@ def ComputePolygonDrawTimeSeries(polygon,ref_start,ref_end,series_start,series_e
         feature['properties']['system:time_start'],
         feature['properties']['EVI']
     ]
-  
-  feature = ee.FeatureCollection(polygon)
-  
+    
   chart_data = cumulative.map(ComputeMean).getInfo()
 
   mymap = map(ExtractMean, chart_data['features'])

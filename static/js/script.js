@@ -638,17 +638,18 @@ var GEE_call_graph_uploaded_poly = function(geom){
     mode = 3;
     
     var coords = getCoordinates(currentShape);
-    
-    var stepSize = Math.round(coords.length / 100);   
-    if (coords.length > 100) {
+
+
+    if (coords.length > 200) {
+		var stepSize = Math.round(coords.length / 200);   
 		var myshapefile = []
 		for (var i = 0; i < coords.length; i += stepSize ) {
 				myshapefile.push(coords[i]);
 			}
+		coords = myshapefile;
 	}
 	
-	var coords = myshapefile;
-    
+
 	var data = {mycounter: counter,
 			  folder : mode,
 			  refLow : Dates[0],									 
@@ -663,7 +664,7 @@ var GEE_call_graph_uploaded_poly = function(geom){
     if (data['error']) {
       alert("An error! This is embarrassing! Please report to the sys admin. ");
     } else {
-		showChart(data);
+		showChart(data['timeSeries']);
     }
   }).bind(this)); 
  
