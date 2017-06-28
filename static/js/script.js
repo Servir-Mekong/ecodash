@@ -89,8 +89,14 @@ var createMap = function() {
     center: DEFAULT_CENTER,
     zoom: DEFAULT_ZOOM,
 	maxZoom: MAX_ZOOM,
-	streetViewControl: false
-  };
+	streetViewControl: false,
+	zoomControlOptions: {
+          style: google.maps.ZoomControlStyle.SMALL,
+          position:google.maps.ControlPosition.LEFT_CENTER
+               }
+	};
+
+
 
   var map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
