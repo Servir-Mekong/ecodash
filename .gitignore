@@ -1,5 +1,25 @@
+# python compile files
+# ===========
 *.pyc
-.nrepl*
-cljs/out/
-cljs/
-static/compiled_js/
+
+# private
+# ===========
+credentials/
+
+# Eclipse project files
+# ======================
+.project
+.pydevproject
+*.pyproj
+
+# Visual Studio project files
+# ======================
+.settings/
+.vs/
+*.sln
+
+# Node and related environment
+# ======================
+.npmignore
+node_modules/
+

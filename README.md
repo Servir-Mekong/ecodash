@@ -1,37 +1,17 @@
-# EcoDash
-
-A web application for the EVI change detection algorithm of SERVIR-Mekong using
-Google Earth Engine and App Engine. The application itself can be found at
-[http://ecodash-beta.appspot.com](http://ecodash-beta.appspot.com). The Python
-and JavaScript client libraries for calling the Earth Engine API can be found
-[here](https://github.com/google/earthengine-api). More information about Google
-Earth Engine is listed [here](https://developers.google.com/earth-engine).
+# SurfaceWaterTool
+A web application for the water detection algorithm of SERVIR-Mekong using Google Earth Engine and App Engine. The application itself can be found at <a href="http://surface-water-servir.adpc.net/">http://surface-water-servir.adpc.net/</a>.
 
 ![Screenshot](static/images/screenshot.png)
 
-## Installation
+This tool is still in development. The two most important additions will be:
+- Update the Export functionality to allow exports to Google Drive
+- Demo to help users understand the application
 
-1. Clone this repository
-2. Install Python 2.7
-3. Install the [Google Cloud SDK for Python](https://cloud.google.com/appengine/docs/python/download)
-4. Install Java Development Kit 1.8+
-5. Install [Boot](http://boot-clj.com)
+Dependencies are:
+- ee
+- httplib2
+- oauth2client 
 
-## Running
+The Python and JavaScript client libraries for calling the Earth Engine API can be found here: <a  href="https://github.com/google/earthengine-api/">https://github.com/google/earthengine-api</a>. More information about Google Earth Engine is listed here: <a href="https://developers.google.com/earth-engine/">https://developers.google.com/earth-engine</a>.
 
-First, you need to build ecodash.js from the Clojurescript files in cljs:
-
-```bash
-$ cd cljs
-$ boot production
-```
-
-Now return to the toplevel directory and launch the Google App Engine
-development server:
-
-```bash
-$ cd ..
-$ dev_appserver.py .
-```
-
-Your application is now live at: [http://localhost:8080](http://localhost:8080)
+The SurfaceWaterTool was developed, in part, by checking out the code of one of the Earth Engine application demos at <a href="https://github.com/google/earthengine-api/tree/master/demos/export-to-drive">https://github.com/google/earthengine-api/tree/master/demos/export-to-drive</a>.
