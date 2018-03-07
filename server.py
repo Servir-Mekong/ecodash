@@ -56,6 +56,8 @@ IMAGE_COLLECTION_ID2 = ee.ImageCollection('MODIS/MOD13A1')
 
 IMAGE_COLLECTION_ID =  IMAGE_COLLECTION_ID1.merge(IMAGE_COLLECTION_ID2);
 
+Adm_bounds = ee.FeatureCollection('ft:1tdSwUL7MVpOauSgRzqVTOwdfy17KDbw-1d9omPw')#ee.FeatureCollection('USDOS/LSIB/2013')
+
 ref_start = '2005-01-01'
 ref_end = '2010-12-31'
 series_start = '2011-01-01'
@@ -180,12 +182,113 @@ class GetMapHandler(webapp2.RequestHandler):
 		self.response.headers['Content-Type'] = 'application/json'
 		self.response.out.write(json.dumps(template_values))
 
+class GetAdmBoundsMapHandler(webapp2.RequestHandler):
+    """A servlet to handle requests to load the administrative boundaries fusion table."""
+
+    def get(self):
+        #mapid = Adm_bounds.getMapId({'color':'lightgrey'})
+        mapid = ee.Image().byte().paint(Adm_bounds, 0, 2).getMapId({'color':'FFFFFF'})
+        #'a5a5a5'
+        content = {
+            'eeMapId': mapid['mapid'],
+            'eeToken': mapid['token']
+        }
+        print(content)
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(json.dumps(content))
+
+
+class GetTilesMapHandler(webapp2.RequestHandler):
+    """A servlet to handle requests to load the tiles fusion table."""
+
+    def get(self):
+        #mapid = Tiles.getMapId({'color':'lightgrey'})
+        zoom = self.request.param.get('zoom')
+        mapid = ee.Image().byte().paint(Tiles, 0, 2).getMapId()
+        content = {
+            'eeMapId': mapid['mapid'],
+            'eeToken': mapid['token']
+        }
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(json.dumps(content))
+
+
+class GetSelectedAdmBoundsHandler(webapp2.RequestHandler):
+    """A servlet to handle requests to select an administrative boundary from the fusion table."""
+
+    def get(self):
+        lat   = ee.Number(float(self.request.params.get('lat')))
+        lng   = ee.Number(float(self.request.params.get('lng')))
+        point = ee.Geometry.Point([lng, lat])
+        area  = ee.Feature(Adm_bounds.filterBounds(point).first())
+        size  = area.geometry().area().divide(1e6).getInfo()
+        mapid = area.getMapId({'color':'grey'})
+        content = {
+            'eeMapId': mapid['mapid'],
+            'eeToken': mapid['token'],
+            'size': size
+        }
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(json.dumps(content))
+
+
+class GetSelectedTileHandler(webapp2.RequestHandler):
+    """A servlet to handle requests to select a tile from the fusion table."""
+
+    def get(self):
+        lat   = ee.Number(float(self.request.params.get('lat')))
+        lng   = ee.Number(float(self.request.params.get('lng')))
+        point = ee.Geometry.Point([lng, lat])
+        area  = ee.Feature(Tiles.filterBounds(point).first())
+        mapid = area.getMapId({'color':'grey'})
+        content = {
+            'eeMapId': mapid['mapid'],
+            'eeToken': mapid['token']
+        }
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(json.dumps(content))
+
+class GetTimeSeriesHandler(webapp2.RequestHandler):
+
+    def get(self):
+
+        def coords2poly(points):
+            coords = []
+            for items in eval(points):
+    			coords.append([items[1],items[0]])
+
+    	    return ee.FeatureCollection(ee.Geometry.Polygon(coords))
+
+        control =  unicode(self.request.get('control'))
+        intervention = unicode(self.request.get('intervention'))
+        beforeIni = self.request.get('before')[0]
+        beforeEnd = self.request.get('before')[1]
+        afterIni = self.request.get('after')[0]
+        afterEnd = self.request.get('after')[1]
+
+        controlPoly = coords2poly(control)
+        interventionPoly = coords2poly(intervention)
+
+        cDetails = ComputePolygonDrawTimeSeries(controlPoly,beforeIni,beforeEnd,afterIni,afterEnd)
+        iDetails = ComputePolygonDrawTimeSeries(interventionPoly,beforeIni,beforeEnd,afterIni,afterEnd)
+
+        details = {'control':cDetails,'intervention':iDetails}
+		#memcache.add(str(counter), json.dumps(details), MEMCACHE_EXPIRATION)
+        content = json.dumps(details)
+
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(content)
 
 
 # Define webapp2 routing from URL paths to web request handlers. See:
 # http://webapp-improved.appspot.com/tutorials/quickstart.html
 app = webapp2.WSGIApplication([
     ('/details', DetailsHandler),
+    ('/select_tile', GetSelectedTileHandler),
+    ('/select_adm_bounds', GetSelectedAdmBoundsHandler),
+    ('/get_adm_bounds_map', GetAdmBoundsMapHandler),
+    ('/get_tiles_map', GetTilesMapHandler),
+    ('/timeHandler', GetTimeSeriesHandler),
     ('/', MainHandler),
 ])
 

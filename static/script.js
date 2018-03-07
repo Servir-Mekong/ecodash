@@ -37,11 +37,12 @@ water.App = function(eeMapId, eeToken) {
 
    // Initialize the UI components.
   this.initDatePickers();
-  this.initRegionPicker();
+  this.initControlRegionPicker();
   this.toggleBoxes();
   this.opacitySliders();
   this.climatologySlider();
   this.initExport();
+	this.initPlot();
 
   // Load the basic background maps.
   this.loadBasicMaps(eeMapId, eeToken);
@@ -273,22 +274,6 @@ water.App.prototype.refreshImage = function() {
 	  $("#monthsControlSlider").hide();
 	};
 
-	// query new map
-	$.ajax({
-		url: "/get_water_map",
-		data: params,
-		dataType: "json",
-		success: function (data) {
-			water.instance.waterParams = {'mapId': data.eeMapId, 'token': data.eeToken};
-			water.instance.setWaterMap(data.eeMapId, data.eeToken, name, 2)
-			//water.instance.setWaterMap(data.eeMapId_temporary, data.eeToken_temporary, name1, 2)
-			//water.instance.setWaterMap(data.eeMapId_permanent, data.eeToken_permanent, name2, 3)
-		},
-		error: function (data) {
-			console.log(data.responseText);
-		}
-	});
-
 	// update current layer check
 	this.currentLayer = params;
   }
@@ -447,10 +432,10 @@ water.App.prototype.removeLoadingAlert = function(name) {
 // ---------------------------------------------------------------------------------- //
 
 // Initializes the region picker.
-water.App.prototype.initRegionPicker = function() {
+water.App.prototype.initControlRegionPicker = function() {
 
 	// Respond when the user changes the selection
-	$("input[name='polygon-selection-method']").change(polygonSelectionMethod);
+	$("input[name='control-selection-method']").change(polygonSelectionMethod);
 
 	// initialize keydown storage variable
 	var ctrl_key_is_down = false;
@@ -466,7 +451,7 @@ water.App.prototype.initRegionPicker = function() {
 		// reset keydown storage
 		ctrl_key_is_down = false;
 		// get the selected variable name
-		var selection  = $("input[name='polygon-selection-method']:checked").val();
+		var selection  = $("input[name='control-selection-method']:checked").val();
 		// clear previously selected polygons
 		for (var i=0; i<nr_selected; i++) {
 			water.instance.removeLayer('selected_polygon');
@@ -478,18 +463,18 @@ water.App.prototype.initRegionPicker = function() {
 		// carry out action based on selection
 		if (selection == "Tiles"){
 			// cancel drawing
-			$('.region .cancel').click();
+			$('.control-region .control-cancel').click();
 			// clear existing overlays
 			water.instance.removeLayer('adm_bounds');
-			$('.region .clear').click();
+			$('.control-region .control-clear').click();
 			// show overlay on map
 			water.App.prototype.loadTilesMap();
 		} else if (selection == "Adm. bounds"){
 			// cancel drawing
-			$('.region .cancel').click();
+			$('.control-region .control-cancel').click();
 			// clear existing overlays
 			water.instance.removeLayer('tiles');
-			$('.region .clear').click();
+			$('.control-region .control-clear').click();
 			// show overlay on map
 			water.App.prototype.loadAdmBoundsMap();
 		} else if (selection == "Draw polygon"){
@@ -497,12 +482,12 @@ water.App.prototype.initRegionPicker = function() {
 			water.instance.removeLayer('adm_bounds');
 			water.instance.removeLayer('tiles');
 			// setup drawing
-			$('.region .draw').click();
+			$('.control-region .control-draw').click();
 		}
 	}
 
 	this.map.addListener('click', function(event) {
-		var selection = $("input[name='polygon-selection-method']:checked").val();
+		var selection = $("input[name='control-selection-method']:checked").val();
 		if (selection == 'Tiles' || selection == 'Adm. bounds') {
 			var coords = event.latLng;
 			var lat = coords.lat();
@@ -573,13 +558,13 @@ water.App.prototype.initRegionPicker = function() {
 	});
 
 	// Respond when the user chooses to draw a polygon.
-  $('.region .draw').click(this.setDrawingModeEnabled.bind(this, true));
+  $('.control-region .control-draw').click(this.setControlDrawingModeEnabled.bind(this, true));
 
   // Respond when the user draws a polygon on the map.
   google.maps.event.addListener(
       this.drawingManager, 'overlaycomplete',
       (function(event) {
-        if (this.getDrawingModeEnabled()) {
+        if (this.getControlDrawingModeEnabled()) {
           this.handleNewPolygon(event.overlay);
         } else {
           event.overlay.setMap(null);
@@ -591,9 +576,9 @@ water.App.prototype.initRegionPicker = function() {
 		// Cancel region selection and related items if the user presses escape.
     if (event.which == 27) {
 			// remove drawing mode
-			this.setDrawingModeEnabled(false);
+			this.setControlDrawingModeEnabled(false);
 			// remove region selection
-			$("input[name='polygon-selection-method']:checked").attr('checked', false);
+			$("input[name='control-selection-method']:checked").attr('checked', false);
 			// clear map overlays
 			water.instance.removeLayer('adm_bounds');
 			water.instance.removeLayer('tiles');
@@ -623,7 +608,7 @@ water.App.prototype.initRegionPicker = function() {
 		}
 		// Allow multiple selection if the user presses and holds down ctrl.  // WORK IN PROGRESS
 		if (event.which == 17) {
-			var selection = $("input[name='polygon-selection-method']:checked").val();
+			var selection = $("input[name='control-selection-method']:checked").val();
 			if (selection == 'Tiles' || selection == 'Adm. bounds') {
 				if (ctrl_key_is_down) {
 					return;
@@ -642,37 +627,266 @@ water.App.prototype.initRegionPicker = function() {
 
   // Respond when the user cancels polygon drawing.
   //$('.region .cancel').click(this.setDrawingModeEnabled.bind(this, false));  // original function
-	$('.region .cancel').click((function() {
-		this.setDrawingModeEnabled(false);
-		if ($("input[name='polygon-selection-method']:checked").val() == 'Draw polygon') {
-			$("input[name='polygon-selection-method']:checked").attr('checked', false);
+	$('.control-region .control-cancel').click((function() {
+		this.setControlDrawingModeEnabled(false);
+		if ($("input[name='control-selection-method']:checked").val() == 'Draw polygon') {
+			$("input[name='control-selection-method']:checked").attr('checked', false);
 		}
 	}).bind(this));
 
   // Respond when the user clears the polygon.
   //$('.region .clear').click(this.clearPolygon.bind(this));  // original function
-	$('.region .clear').click((function() {
+	$('.control-region .control-clear').click((function() {
 		// try to clear polygon (won't work if no polygon was drawn, try/catch to make it work)
 		try {
-			this.clearPolygon();
+			this.clearControlPolygon();
 		} catch(err) {
 			//console.log('Trying to remove a drawn polygon from map, but results in error:')
 			//console.log(err);
 		}
-		if ($("input[name='polygon-selection-method']:checked").val() == 'Draw polygon') {
-			$("input[name='polygon-selection-method']:checked").attr('checked', false);
+		if ($("input[name='control-selection-method']:checked").val() == 'Draw polygon') {
+			$("input[name='control-selection-method']:checked").attr('checked', false);
 		}
 		$('.warnings span').text('');
 		$('.warnings').hide();
 	}).bind(this));
 };
 
+// Initializes the region picker.
+water.App.prototype.initInterventionRegionPicker = function() {
+
+	// Respond when the user changes the selection
+	$("input[name='intervention-selection-method']").change(polygonSelectionMethod);
+
+	// initialize keydown storage variable
+	var ctrl_key_is_down = false;
+	// initialize number of selected polygons storage variable
+	var nr_selected = 0;
+
+	function polygonSelectionMethod() {
+		// clear warnings
+		$('.warnings span').text('');
+		$('.warnings').hide();
+		// reset Export button
+		$('.export').attr('disabled', true);
+		// reset keydown storage
+		ctrl_key_is_down = false;
+		// get the selected variable name
+		var selection  = $("input[name='intervention-selection-method']:checked").val();
+		// clear previously selected polygons
+		for (var i=0; i<nr_selected; i++) {
+			water.instance.removeLayer('selected_polygon');
+		}
+		// reset number of selected polygons
+		nr_selected = 0;
+		// reset clicked points
+		water.instance.points = [];
+		// carry out action based on selection
+		if (selection == "Tiles"){
+			// cancel drawing
+			$('.intervention-region .intervention-cancel').click();
+			// clear existing overlays
+			water.instance.removeLayer('adm_bounds');
+			$('.intervention-region .intervention-clear').click();
+			// show overlay on map
+			water.App.prototype.loadTilesMap();
+		} else if (selection == "Adm. bounds"){
+			// cancel drawing
+			$('.intervention-region .intervention-cancel').click();
+			// clear existing overlays
+			water.instance.removeLayer('tiles');
+			$('.intervention-region .intervention-clear').click();
+			// show overlay on map
+			water.App.prototype.loadAdmBoundsMap();
+		} else if (selection == "Draw polygon"){
+			// clear existing overlays
+			water.instance.removeLayer('adm_bounds');
+			water.instance.removeLayer('tiles');
+			// setup drawing
+			$('.intervention-region .intervention-draw').click();
+		}
+	}
+
+	this.map.addListener('click', function(event) {
+		var selection = $("input[name='intervention-selection-method']:checked").val();
+		if (selection == 'Tiles' || selection == 'Adm. bounds') {
+			var coords = event.latLng;
+			var lat = coords.lat();
+			var lng = coords.lng();
+			var params = {lat: lat, lng: lng};
+			var name = 'selected_polygon';
+			if (ctrl_key_is_down) {
+				// check if current selection doesn't exceed allowed maximum
+				if (nr_selected < water.App.MAX_SELECTION) {
+					nr_selected += 1;
+				} else {
+					return;
+				}
+			} else {
+				for (var i=0; i<nr_selected; i++) {
+					water.instance.removeLayer(name);
+				}
+				nr_selected = 1;
+				water.instance.points = [];
+			}
+		}
+		if (selection == 'Tiles') {
+			$.ajax({
+				url: "/select_tile",
+				data: params,
+				dataType: "json",
+				success: function (data) {
+					water.instance.showMap(data.eeMapId, data.eeToken, name, 4);
+					$('.export').attr('disabled', false);
+					//water.instance.point = params;
+					water.instance.points.push(params);
+				},
+				error: function (data) {
+					console.log(data.responseText);
+				}
+			});
+		} else if (selection == 'Adm. bounds') {
+			$('.warnings span').text('')
+			$('.warnings').hide();
+			$.ajax({
+				url: "/select_adm_bounds",
+				data: params,
+				dataType: "json",
+				success: function (data) {
+					water.instance.showMap(data.eeMapId, data.eeToken, name, 4);
+					//console.log(data.size);
+					if (data.size > water.App.AREA_LIMIT_2) {
+						$('.export').attr('disabled', true);
+						$('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_2 + ' km2. This exceeds the current limitations for downloading data. ' +
+																		 'Please use one of the other region selection options to download data for this area.')
+						$('.warnings').show();
+					} else if (data.size > water.App.AREA_LIMIT_1) {
+						$('.export').attr('disabled', false);
+						$('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_1 + ' km2. This is near the current limitation for downloading data. '+
+																		 'Please be warned that the download might result in a corrupted zip file. You can give it a try or use  one of the other region selection options to download data for this area.')
+						$('.warnings').show();
+					} else {
+						$('.export').attr('disabled', false);
+					}
+					//water.instance.point = params;
+					water.instance.points.push(params);
+				},
+				error: function (data) {
+					console.log(data.responseText);
+				}
+			});
+		}
+	});
+
+	// Respond when the user chooses to draw a polygon.
+  $('.intervention-region .intervention-draw').click(this.setInterventionDrawingModeEnabled.bind(this, true));
+
+  // Respond when the user draws a polygon on the map.
+  google.maps.event.addListener(
+      this.drawingManager, 'overlaycomplete',
+      (function(event) {
+        if (this.getInterventionDrawingModeEnabled()) {
+          this.handleNewPolygon(event.overlay);
+        } else {
+          event.overlay.setMap(null);
+        }
+      }).bind(this));
+
+  // handle actions when user presses certain keys
+  $(document).keydown((function(event) {
+		// Cancel region selection and related items if the user presses escape.
+    if (event.which == 27) {
+			// remove drawing mode
+			this.setInterventionDrawingModeEnabled(false);
+			// remove region selection
+			$("input[name='intervention-selection-method']:checked").attr('checked', false);
+			// clear map overlays
+			water.instance.removeLayer('adm_bounds');
+			water.instance.removeLayer('tiles');
+			for (var i=0; i<nr_selected; i++) {
+				water.instance.removeLayer('selected_polygon');
+			}
+			// clear any existing download links
+			$('#link1').removeAttr('href');
+			$('#link2').removeAttr('href');
+			$('#link3').removeAttr('href');
+			$('#link4').removeAttr('href');
+			$('#link_metadata').removeAttr('href');
+			$('#link_metadata').removeAttr('download');
+			// remove download link(s) message
+			$('#link1').css('display', 'none');
+			$('#link2').css('display', 'none');
+			$('#link3').css('display', 'none');
+			$('#link4').css('display', 'none');
+			$('#link_metadata').css('display', 'none');
+			// reset variables
+			water.instance.points = [];
+			nr_selected = 0;
+			// disable export button
+			$('.export').attr('disabled', true);
+			// hide export panel
+			$('.download_panel').css('display', 'none');
+		}
+		// Allow multiple selection if the user presses and holds down ctrl.  // WORK IN PROGRESS
+		if (event.which == 17) {
+			var selection = $("input[name='intervention-selection-method']:checked").val();
+			if (selection == 'Tiles' || selection == 'Adm. bounds') {
+				if (ctrl_key_is_down) {
+					return;
+				}
+				ctrl_key_is_down = true;
+			}
+		}
+
+  }).bind(this));
+	// clear ctrl key event if key is released
+	$(document).keyup((function(event) {
+		if (event.which == 17) {
+			ctrl_key_is_down = false;
+		}
+	}).bind(this));
+
+  // Respond when the user cancels polygon drawing.
+  //$('.region .cancel').click(this.setDrawingModeEnabled.bind(this, false));  // original function
+	$('.intervention-region .intervention-cancel').click((function() {
+		this.setInterventionDrawingModeEnabled(false);
+		if ($("input[name='intervention-selection-method']:checked").val() == 'Draw polygon') {
+			$("input[name='intervention-selection-method']:checked").attr('checked', false);
+		}
+	}).bind(this));
+
+  // Respond when the user clears the polygon.
+  //$('.region .clear').click(this.clearPolygon.bind(this));  // original function
+	$('.intervention-region .intervention-clear').click((function() {
+		// try to clear polygon (won't work if no polygon was drawn, try/catch to make it work)
+		try {
+			this.clearInterventionPolygon();
+		} catch(err) {
+			//console.log('Trying to remove a drawn polygon from map, but results in error:')
+			//console.log(err);
+		}
+		if ($("input[name='intervention-selection-method']:checked").val() == 'Draw polygon') {
+			$("input[name='intervention-selection-method']:checked").attr('checked', false);
+		}
+		$('.warnings span').text('');
+		$('.warnings').hide();
+	}).bind(this));
+};
+
+
+
 /**
  * Sets whether drawing on the map is enabled.
  * @param {boolean} enabled Whether drawing mode is enabled.
  */
-water.App.prototype.setDrawingModeEnabled = function(enabled) {
-  $('.region').toggleClass('drawing', enabled);
+water.App.prototype.setControlDrawingModeEnabled = function(enabled) {
+  $('.control-region').toggleClass('drawing', enabled);
+  var mode = enabled ? google.maps.drawing.OverlayType.POLYGON : null;
+  this.drawingManager.setOptions({drawingMode: mode});
+};
+
+water.App.prototype.setInterventionDrawingModeEnabled = function(enabled) {
+  $('.intervention-region').toggleClass('drawing', enabled);
   var mode = enabled ? google.maps.drawing.OverlayType.POLYGON : null;
   this.drawingManager.setOptions({drawingMode: mode});
 };
@@ -681,14 +895,25 @@ water.App.prototype.setDrawingModeEnabled = function(enabled) {
  * Sets whether drawing on the map is enabled.
  * @return {boolean} Whether drawing mode is enabled.
  */
-water.App.prototype.getDrawingModeEnabled = function() {
-  return $('.region').hasClass('drawing');
+water.App.prototype.getControlDrawingModeEnabled = function() {
+  return $('.control-region').hasClass('drawing');
+};
+
+water.App.prototype.getInterventionDrawingModeEnabled = function() {
+  return $('.intervention-region').hasClass('drawing');
 };
 
 // Clears the current polygon from the map and enables drawing.
-water.App.prototype.clearPolygon = function() {
+water.App.prototype.clearControlPolygon = function() {
   this.currentPolygon.setMap(null);
-  $('.region').removeClass('selected');
+  $('.control-region').removeClass('selected');
+  $('.export').attr('disabled', true);
+};
+
+// Clears the current polygon from the map and enables drawing.
+water.App.prototype.clearInterventionPolygon = function() {
+  this.currentPolygon.setMap(null);
+  $('.intervention-region').removeClass('selected');
   $('.export').attr('disabled', true);
 };
 
@@ -715,8 +940,103 @@ water.App.prototype.handleNewPolygon = function(opt_overlay) {
 		$('.export').attr('disabled', false);
 	}
   this.currentPolygon = opt_overlay;
-  $('.region').addClass('selected');
-  this.setDrawingModeEnabled(false);
+  $('.control-region').addClass('selected');
+  this.setControlDrawingModeEnabled(false);
+};
+
+water.App.prototype.getDates = function() {
+	var controlIni = $('#date-picker-1').data('date-picker-1').getFormattedDate('yyyy-mm-dd');
+	var controlEnd = $('#date-picker-2').data('date-picker-2').getFormattedDate('yyyy-mm-dd');
+	var interventionIni = $('#date-picker-3').data('date-picker-3').getFormattedDate('yyyy-mm-dd');
+	var interventionEnd = $('#date-picker-4').data('date-picker-4').getFormattedDate('yyyy-mm-dd');
+  return [[controlIni,controlEnd],[interventionIni,interventionEnd]];
+};
+
+// water.App.prototype.getCoordinates = function() {
+// 	this..getPath().getArray()
+//   return $('.intervention-region').hasClass('drawing');
+// };
+
+water.App.prototype.initPlot = function(){
+	$('.submit').click(function(){
+		$(".loader").toggle();
+		var dates = this.getDates()
+		var coords = this.getCoordinates();
+		var params = {before:dates[0],
+									after: dates[1],
+									control: coords[0],
+									intervention: coords[1]
+		}
+		$.ajax({
+			url: "/timeHandler",
+			data: params,
+			dataType: "json",
+			success: function (data) {
+				showChart(data)
+			},
+			error: function (data) {
+				alert("Uh-oh, an error occured! This is embarrassing! Here is the problem: "+data['error']+". Please try again.");
+			}
+		})
+	})
+};
+
+
+var showChart = function(timeseries) {
+	document.getElementById('chart-window').style.display = "block";
+	document.getElementById('chart-info').style.display = "block";
+	var DataArr = []
+	timeseries.forEach(function(point) {
+		point[0] = new Date(parseInt(point[0], 10));
+		DataArr.push([point[0]]);
+	firstGraph = 1
+  });
+
+
+  var count = 0;
+  timeseries.forEach(function(point) {
+	  DataArr[count].push(point[1]);
+	  count = count +1;
+  });
+
+  chartData = new google.visualization.DataTable();
+  chartData.addColumn('date','Date');
+	chartData.addColumn('number','TSS');
+
+  chartData.addRows(DataArr);
+
+	// var data = google.visualization.arrayToDataTable([
+	// 				timeseries
+  //         // ['Year', 'Sales', 'Expenses'],
+  //         // ['2004',  1000,      400],
+  //         // ['2005',  1170,      460],
+  //         // ['2006',  660,       1120],
+  //         // ['2007',  1030,      540]
+  //       ]);
+
+  chartOptions = {
+    title: 'TSS over time',
+    // curveType: 'function',
+    legend: { position: 'bottom' },
+		vAxis: {title: 'TSS [mg/L]',minValue: 0},
+		lineWidth: 1.5,
+		pointSize: 3,
+  };
+
+  chart = new google.visualization.ScatterChart(document.getElementById('chart-info'));
+
+  chart.draw(chartData,chartOptions);
+
+	$('#Export').click(function () {
+        var csvFormattedDataTable = google.visualization.dataTableToCsv(data);
+        var encodedUri = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csvFormattedDataTable);
+        this.href = encodedUri;
+        this.download = 'table-data.csv';
+        this.target = '_blank';
+    });
+
+	$(".loader").toggle();
+
 };
 
 /**
@@ -747,9 +1067,12 @@ water.App.prototype.loadAdmBoundsMap = function() {
 // Load tiles maps
 water.App.prototype.loadTilesMap = function() {
   var name = 'tiles';
+	var zoom = this.map.getZoom()
+	var params = {'zoom':zoom}
   $.ajax({
     url: "/get_tiles_map",
-    dataType: "json",
+		data: params,
+		dataType: "json",
     success: function (data) {
 			water.instance.showMap(data.eeMapId, data.eeToken, name, 3);
     },
@@ -761,7 +1084,8 @@ water.App.prototype.loadTilesMap = function() {
 
 // Show map
 water.App.prototype.showMap = function(eeMapId, eeToken, name, index) {
-  var mapType = new ee.MapLayerOverlay(water.App.EE_URL + '/map', eeMapId, eeToken, {name: name});
+	var EE_URL = 'https://earthengine.googleapis.com';
+  var mapType = new ee.MapLayerOverlay(EE_URL + '/map', eeMapId, eeToken, {name: name});
   //this.map.overlayMapTypes.push(mapType);        // old, just push to array, will always show latest layer on top
 	this.map.overlayMapTypes.setAt(index, mapType);  // new, use index to keep correct zIndex when adding/removing layers
 };
@@ -793,10 +1117,10 @@ water.App.prototype.initExport = function() {
 		var base_params = water.App.prototype.getAllParams();
 		var export_name = $("input[name='filename']").val();
 		if (export_name == "") {
-			export_name = 'SurfaceWaterTool_' + base_params.time_start + '_' + base_params.time_end;
+			export_name = 'Ecodash_BACI_' + base_params.time_start + '_' + base_params.time_end;
 		}
 		// get download link(s)
-		var region_selection = $("input[name='polygon-selection-method']:checked").val();
+		var region_selection = $("input[name='control-selection-method']:checked").val();
 		if (region_selection == 'Draw polygon') {
 			var coords_array = water.instance.currentPolygon.latLngs.b[0].b;
 			var coords_list  = []
@@ -954,7 +1278,7 @@ water.App.MINIMUM_TIME_PERIOD_CLIMATOLOGY = 1095;
 water.App.MAX_SELECTION = 4;
 
 /** @type {number} Soft limit on download area size. */
-water.App.AREA_LIMIT_1 = 15000;
+water.App.AREA_LIMIT_1 = 1E9;
 
 /** @type {number} Hard limit on download area size. */
-water.App.AREA_LIMIT_2 = 20000;
+water.App.AREA_LIMIT_2 = 1E9;

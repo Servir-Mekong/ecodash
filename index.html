@@ -242,42 +242,42 @@
 
 							<!-- The region selection control. -->
 							<div class="input-block control-region">
-								<div class="input-block-label"><b>C</b>ontrol Region:</div>
+								<div class="control-input-block-label"><b>C</b>ontrol Region:</div>
 								<ul>
 									<li><input type="radio" name="control-selection-method" value="Adm. bounds" id="control-selection-method"><label>Adm. bounds</label></li>
-									<li><input type="radio" name="control-selection-method" value="Tiles" id="control-selection-method"><label>Tiles</label></li>
+									<!-- <li><input type="radio" name="control-selection-method" value="Tiles" id="control-selection-method"><label>Tiles</label></li> -->
 									<li><input type="radio" name="control-selection-method" value="Draw polygon" id="control-selection-method"><label>Draw polygon</label></li>
 								</ul>
 								<span class="message">
-									<a class="draw" href="#"></a>
+									<a class="control-draw" href="#"></a>
 								</span>
 								<span class="message-drawing">
 									<!--Draw a polygon... -->
-									<button class="cancel btn btn-default btn-xs">Cancel</button>
+									<button class="control-cancel btn btn-default btn-xs">Cancel</button>
 								</span>
 								<span class="message-selected">
 									<!--Selected-->
-									<button class="clear btn btn-default btn-xs">Clear</button>
+									<button class="control-clear btn btn-default btn-xs">Clear</button>
 								</span>
 							</div>
 
 							<div class="input-block intervention-region">
-								<div class="input-block-label"><b>I</b>ntervention Region:</div>
+								<div class="intervention-input-block-label"><b>I</b>ntervention Region:</div>
 								<ul>
 									<li><input type="radio" name="intervention-selection-method" value="Adm. bounds" id="intervention-selection-method"><label>Adm. bounds</label></li>
-									<li><input type="radio" name="intervention-selection-method" value="Tiles" id="intervention-selection-method"><label>Tiles</label></li>
+									<!-- <li><input type="radio" name="intervention-selection-method" value="Tiles" id="intervention-selection-method"><label>Tiles</label></li> -->
 									<li><input type="radio" name="intervention-selection-method" value="Draw polygon" id="intervention-selection-method"><label>Draw polygon</label></li>
 								</ul>
 								<span class="message">
-									<a class="draw" href="#"></a>
+									<a class="-intervention-draw" href="#"></a>
 								</span>
 								<span class="message-drawing">
 									<!--Draw a polygon... -->
-									<button class="cancel btn btn-default btn-xs">Cancel</button>
+									<button class="intervention-cancel btn btn-default btn-xs">Cancel</button>
 								</span>
 								<span class="message-selected">
 									<!--Selected-->
-									<button class="clear btn btn-default btn-xs">Clear</button>
+									<button class="intervention-clear btn btn-default btn-xs">Clear</button>
 								</span>
 							</div>
 
@@ -288,6 +288,12 @@
 
 							<!-- The export controls. -->
 							<div class="input-block">
+								<div class="input-block-label">Export Region:</div>
+									<ul>
+										<li><input type="radio" name="export-selection" value="control" id="export-selection"><label>Control</label></li>
+										<li><input type="radio" name="export-selection" value="intervention" id="export-selection"><label>Intervention</label></li>
+									</ul>
+								<br>
 								<span class="input-block-label">Filename:</span>
 								<input type="text" name="filename" class="filename form-control"
 									   placeholder="default: Ecodash_BACI_<period>">
@@ -361,20 +367,6 @@
 				});
 				</script>
 
-			</div>
-
-			<!-- Slider for climatology -->
-			<div class="months-slider" align="right">
-				<input id="monthsControl" data-slider-id='monthsControlSlider' type="text"/>
-				<script>
-				var monthsDict = {1:'jan', 2:'feb', 3:'mar', 4:'apr', 5:'may', 6:'jun', 7:'jul', 8:'aug', 9:'sep', 10:'oct', 11:'nov', 12:'dec'};
-				$('#monthsControl').slider({
-					min: 1, max: 12, value: 1, step: 1, orientation: 'vertical', tooltip_position: 'left',
-					formatter: function(value) {
-						return monthsDict[value];
-					}
-				});
-				</script>
 			</div>
 
 			<!-- Warning messages placeholder -->
