@@ -34,7 +34,9 @@ isindex {
   top: 20px;
   left: 10px;
   width: 470px;
+  height: 600px;
   z-index: 1;
+  overflow: scroll;
 }
 
 .water .panel {
@@ -302,24 +304,48 @@ isindex {
   margin-bottom: 10px;
 }
 
-.water .input-block.region {
-  height: 28px;
+.water .input-block.control-region {
+  height: 50px;
 }
 
-.water .input-block.region ul {
+.water .input-block.control-region ul {
   display: inline-block;
   list-style-type: none;
   margin-left: -48px;
 }
 
-.water .input-block.region ul li{
+.water .input-block.control-region ul li{
   display: inline-block;
   margin-left: 8px;
   padding: 2px;
   vertical-align: middle;
 }
 
-.water .input-block.region ul li label {
+.water .input-block.control-region ul li label {
+  font-size: 12px;
+  font-weight: normal;
+  vertical-align: middle;
+  margin-left: 5px;
+}
+
+.water .input-block.intervention-region {
+  height: 50px;
+}
+
+.water .input-block.intervention-region ul {
+  display: inline-block;
+  list-style-type: none;
+  margin-left: -48px;
+}
+
+.water .input-block.intervention-region ul li{
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px;
+  vertical-align: middle;
+}
+
+.water .input-block.intervention-region ul li label {
   font-size: 12px;
   font-weight: normal;
   vertical-align: middle;
@@ -352,7 +378,13 @@ isindex {
 }
 
 .water .submit {
-  margin-left: 10px;
+  width: 80%;
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-bottom: 30px;
+  margin-top: 10px;
+
+  align: center;
 }
 
 .water .range-picker,
@@ -365,12 +397,22 @@ isindex {
   display: inline;
 }
 
-.water .date-picker {
+.water .date-picker-1 {
   display: inline-block;
   width: 26%;
 }
 
 .water .date-picker-2 {
+  display: inline-block;
+  width: 26%;
+}
+
+.water .date-picker-3 {
+  display: inline-block;
+  width: 26%;
+}
+
+.water .date-picker-4 {
   display: inline-block;
   width: 26%;
 }

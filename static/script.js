@@ -9,10 +9,10 @@ water = {};
 
 // Starts the Surface Water Tool application. The main entry point for the app.
 water.boot = function(eeMapId, eeToken) {
-	
+
 	// create the app
 	var app = new water.App(eeMapId, eeToken);
-	
+
 	// save app to instance
 	water.instance = app;
 };
@@ -25,16 +25,16 @@ water.boot = function(eeMapId, eeToken) {
 water.App = function(eeMapId, eeToken) {
   // Create and display the map.
   this.map = water.App.createMap();
-  
+
   // The drawing manager, for drawing on the Google Map.
   this.drawingManager = water.App.createDrawingManager(this.map);
-  
+
   // The currently active layer
   //(used to prevent reloading when requested layer is the same).
   this.currentLayer = {};
 	this.aoiParams = {};
 	this.waterParams = {};
-  
+
    // Initialize the UI components.
   this.initDatePickers();
   this.initRegionPicker();
@@ -42,10 +42,10 @@ water.App = function(eeMapId, eeToken) {
   this.opacitySliders();
   this.climatologySlider();
   this.initExport();
-  
+
   // Load the basic background maps.
   this.loadBasicMaps(eeMapId, eeToken);
-  
+
    // Load the default image.
   this.refreshImage();
 };
@@ -126,7 +126,7 @@ water.App.prototype.showBasicMap = function(eeMapId, eeToken, name, index) {
 // Initializes the date pickers.
 water.App.prototype.initDatePickers = function() {
   // Create the date pickers.
-  $('.date-picker').datepicker({
+  $('.date-picker-1').datepicker({
     format: 'yyyy-mm-dd',
     viewMode: 'days',
     minViewMode: 'days',
@@ -142,14 +142,34 @@ water.App.prototype.initDatePickers = function() {
     startDate: new Date('1988-01-01'),
     endDate: new Date()
   });
+	$('.date-picker-3').datepicker({
+		format: 'yyyy-mm-dd',
+		viewMode: 'days',
+		minViewMode: 'days',
+		autoclose: true,
+		startDate: new Date('1988-01-01'),
+		endDate: new Date()
+	});
+	$('.date-picker-4').datepicker({
+		format: 'yyyy-mm-dd',
+		viewMode: 'days',
+		minViewMode: 'days',
+		autoclose: true,
+		startDate: new Date('1988-01-01'),
+		endDate: new Date()
+	});
 
   // Set default dates.
-  $('.date-picker').datepicker('update', '2016-01-01');
-  $('.date-picker-2').datepicker('update', '2016-12-31');
+  $('.date-picker-1').datepicker('update', '2010-01-01');
+  $('.date-picker-2').datepicker('update', '2010-12-31');
+	$('.date-picker-3').datepicker('update', '2016-01-01');
+	$('.date-picker-4').datepicker('update', '2016-12-31');
+
+
 
   // Respond when the user updates the dates.
   //$('.date-picker').on('changeDate', this.refreshImage.bind(this));
-  
+
   // Respond when the user clicks the 'submit' button.
   $('.submit').on('click', this.refreshImage.bind(this));
 };
@@ -202,27 +222,27 @@ water.App.prototype.getAllParams = function() {
 
 // Updates the image based on the current control panel config.
 water.App.prototype.refreshImage = function() {
-  
+
   var name = 'water';
   //var name1 = 'water_temporary';
   //var name2 = 'water_permanent';
-  
+
   // obtain params
   var params = this.getAllParams();
-    
+
   // check if map is already active (if so, return early)
   // or if time period is too short (if so, return early and give warning)
   // or, otherwise, update the map
-  if (this.currentLayer['time_start'] === params['time_start'] && 
-	  this.currentLayer['time_end'] === params['time_end'] && 
-	  this.currentLayer['climatology'] === params['climatology'] && 
-	  this.currentLayer['month_index'] === params['month_index'] && 
-	  this.currentLayer['defringe'] === params['defringe'] && 
-	  this.currentLayer['pcnt_perm'] === params['pcnt_perm'] && 
+  if (this.currentLayer['time_start'] === params['time_start'] &&
+	  this.currentLayer['time_end'] === params['time_end'] &&
+	  this.currentLayer['climatology'] === params['climatology'] &&
+	  this.currentLayer['month_index'] === params['month_index'] &&
+	  this.currentLayer['defringe'] === params['defringe'] &&
+	  this.currentLayer['pcnt_perm'] === params['pcnt_perm'] &&
 	  this.currentLayer['pcnt_temp'] === params['pcnt_temp'] &&
-	  this.currentLayer['water_thresh'] === params['water_thresh'] && 
-	  this.currentLayer['veg_thresh'] === params['veg_thresh'] && 
-	  this.currentLayer['hand_thresh'] === params['hand_thresh'] && 
+	  this.currentLayer['water_thresh'] === params['water_thresh'] &&
+	  this.currentLayer['veg_thresh'] === params['veg_thresh'] &&
+	  this.currentLayer['hand_thresh'] === params['hand_thresh'] &&
 	  this.currentLayer['cloud_thresh'] === params['cloud_thresh']) {
 	$('.warnings span').text('')
 	$('.warnings').hide();
@@ -236,23 +256,23 @@ water.App.prototype.refreshImage = function() {
 	$('.warnings').show();
     return;
   } else {
-    
+
     //remove warnings
 	$('.warnings span').text('')
 	$('.warnings').hide();
-	
+
     // remove map layers
 	this.removeLayer(name);
 	//this.removeLayer(name1);
 	//this.removeLayer(name2);
-	
+
 	// add climatology slider if required
 	if (params['climatology'] == true) {
 	  $("#monthsControlSlider").show();
 	} else {
 	  $("#monthsControlSlider").hide();
 	};
-	
+
 	// query new map
 	$.ajax({
 		url: "/get_water_map",
@@ -268,7 +288,7 @@ water.App.prototype.refreshImage = function() {
 			console.log(data.responseText);
 		}
 	});
-	
+
 	// update current layer check
 	this.currentLayer = params;
   }
@@ -428,15 +448,15 @@ water.App.prototype.removeLoadingAlert = function(name) {
 
 // Initializes the region picker.
 water.App.prototype.initRegionPicker = function() {
-	
+
 	// Respond when the user changes the selection
 	$("input[name='polygon-selection-method']").change(polygonSelectionMethod);
-	
+
 	// initialize keydown storage variable
 	var ctrl_key_is_down = false;
 	// initialize number of selected polygons storage variable
 	var nr_selected = 0;
-	
+
 	function polygonSelectionMethod() {
 		// clear warnings
 		$('.warnings span').text('');
@@ -472,15 +492,15 @@ water.App.prototype.initRegionPicker = function() {
 			$('.region .clear').click();
 			// show overlay on map
 			water.App.prototype.loadAdmBoundsMap();
-		} else if (selection == "Draw polygon"){	
+		} else if (selection == "Draw polygon"){
 			// clear existing overlays
 			water.instance.removeLayer('adm_bounds');
 			water.instance.removeLayer('tiles');
-			// setup drawing 
+			// setup drawing
 			$('.region .draw').click();
 		}
 	}
-	
+
 	this.map.addListener('click', function(event) {
 		var selection = $("input[name='polygon-selection-method']:checked").val();
 		if (selection == 'Tiles' || selection == 'Adm. bounds') {
@@ -536,7 +556,7 @@ water.App.prototype.initRegionPicker = function() {
 						$('.warnings').show();
 					} else if (data.size > water.App.AREA_LIMIT_1) {
 						$('.export').attr('disabled', false);
-						$('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_1 + ' km2. This is near the current limitation for downloading data. '+ 
+						$('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_1 + ' km2. This is near the current limitation for downloading data. '+
 																		 'Please be warned that the download might result in a corrupted zip file. You can give it a try or use  one of the other region selection options to download data for this area.')
 						$('.warnings').show();
 					} else {
@@ -551,10 +571,10 @@ water.App.prototype.initRegionPicker = function() {
 			});
 		}
 	});
-	
+
 	// Respond when the user chooses to draw a polygon.
   $('.region .draw').click(this.setDrawingModeEnabled.bind(this, true));
-	
+
   // Respond when the user draws a polygon on the map.
   google.maps.event.addListener(
       this.drawingManager, 'overlaycomplete',
@@ -566,7 +586,7 @@ water.App.prototype.initRegionPicker = function() {
         }
       }).bind(this));
 
-  // handle actions when user presses certain keys 
+  // handle actions when user presses certain keys
   $(document).keydown((function(event) {
 		// Cancel region selection and related items if the user presses escape.
     if (event.which == 27) {
@@ -611,7 +631,7 @@ water.App.prototype.initRegionPicker = function() {
 				ctrl_key_is_down = true;
 			}
 		}
-		
+
   }).bind(this));
 	// clear ctrl key event if key is released
 	$(document).keyup((function(event) {
@@ -687,7 +707,7 @@ water.App.prototype.handleNewPolygon = function(opt_overlay) {
 		$('.warnings').show();
 	} else if (drawn_polygon_size > water.App.AREA_LIMIT_1) {
 		$('.export').attr('disabled', false);
-		$('.warnings span').text('The drawn polygon is larger than ' + water.App.AREA_LIMIT_1 + ' km2. This is near the current limitation for downloading data. ' + 
+		$('.warnings span').text('The drawn polygon is larger than ' + water.App.AREA_LIMIT_1 + ' km2. This is near the current limitation for downloading data. ' +
 														 'Please be warned that the download might result in a corrupted zip file. You can give it a try, or draw a smaller polygon, or ' +
 														 'use  one of the other region selection options to download data for this area.')
 		$('.warnings').show();
@@ -703,7 +723,7 @@ water.App.prototype.handleNewPolygon = function(opt_overlay) {
 * Clear polygons from the map when changing region selection modes
 **/
 var clearMap = function(){
-	// remove all polygons 
+	// remove all polygons
 	this.map.data.forEach(function (feature) {
 	  this.map.data.remove(feature);
 	});
