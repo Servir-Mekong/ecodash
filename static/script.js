@@ -160,10 +160,10 @@ water.App.prototype.initDatePickers = function() {
 	});
 
   // Set default dates.
-  $('.date-picker-1').datepicker('update', '2010-01-01');
+  $('.date-picker-1').datepicker('update', '2005-01-01');
   $('.date-picker-2').datepicker('update', '2010-12-31');
-	$('.date-picker-3').datepicker('update', '2016-01-01');
-	$('.date-picker-4').datepicker('update', '2016-12-31');
+	$('.date-picker-3').datepicker('update', '2011-01-01');
+	$('.date-picker-4').datepicker('update', '2015-12-31');
 
 
 
