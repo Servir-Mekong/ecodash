@@ -217,12 +217,17 @@ class GetSelectedAdmBoundsHandler(webapp2.RequestHandler):
     """A servlet to handle requests to select an administrative boundary from the fusion table."""
 
     def get(self):
+        mode = self.request.params.get('mode')
+        if mode == 'control':
+            color = 'grey'
+        else:
+            color = 'magenta'
         lat   = ee.Number(float(self.request.params.get('lat')))
         lng   = ee.Number(float(self.request.params.get('lng')))
         point = ee.Geometry.Point([lng, lat])
         area  = ee.Feature(Adm_bounds.filterBounds(point).first())
         size  = area.geometry().area().divide(1e6).getInfo()
-        mapid = area.getMapId({'color':'grey'})
+        mapid = area.getMapId({'color':color})
         content = {
             'eeMapId': mapid['mapid'],
             'eeToken': mapid['token'],

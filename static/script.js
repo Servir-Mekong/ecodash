@@ -38,6 +38,7 @@ water.App = function(eeMapId, eeToken) {
    // Initialize the UI components.
   this.initDatePickers();
   this.initControlRegionPicker();
+	this.initInterventionRegionPicker();
   this.toggleBoxes();
   this.opacitySliders();
   this.climatologySlider();
@@ -492,7 +493,7 @@ water.App.prototype.initControlRegionPicker = function() {
 			var coords = event.latLng;
 			var lat = coords.lat();
 			var lng = coords.lng();
-			var params = {lat: lat, lng: lng};
+			var params = {lat: lat, lng: lng,mode:'control'};
 			var name = 'selected_polygon';
 			if (ctrl_key_is_down) {
 				// check if current selection doesn't exceed allowed maximum
@@ -566,6 +567,7 @@ water.App.prototype.initControlRegionPicker = function() {
       (function(event) {
         if (this.getControlDrawingModeEnabled()) {
           this.handleNewPolygon(event.overlay);
+					// this.controlAOI = event.overlay
         } else {
           event.overlay.setMap(null);
         }
@@ -713,7 +715,7 @@ water.App.prototype.initInterventionRegionPicker = function() {
 			var coords = event.latLng;
 			var lat = coords.lat();
 			var lng = coords.lng();
-			var params = {lat: lat, lng: lng};
+			var params = {lat: lat, lng: lng, mode:'intervention'};
 			var name = 'selected_polygon';
 			if (ctrl_key_is_down) {
 				// check if current selection doesn't exceed allowed maximum
@@ -787,6 +789,7 @@ water.App.prototype.initInterventionRegionPicker = function() {
       (function(event) {
         if (this.getInterventionDrawingModeEnabled()) {
           this.handleNewPolygon(event.overlay);
+					this.interventionAOI = event.overlay
         } else {
           event.overlay.setMap(null);
         }
@@ -944,29 +947,33 @@ water.App.prototype.handleNewPolygon = function(opt_overlay) {
   this.setControlDrawingModeEnabled(false);
 };
 
-water.App.prototype.getDates = function() {
-	var controlIni = $('#date-picker-1').data('date-picker-1').getFormattedDate('yyyy-mm-dd');
-	var controlEnd = $('#date-picker-2').data('date-picker-2').getFormattedDate('yyyy-mm-dd');
-	var interventionIni = $('#date-picker-3').data('date-picker-3').getFormattedDate('yyyy-mm-dd');
-	var interventionEnd = $('#date-picker-4').data('date-picker-4').getFormattedDate('yyyy-mm-dd');
+getDates = function() {
+	var controlIni = $('.date-picker-1').datepicker({ dateFormat: 'yyyy-mm-dd' }).val()
+	var controlEnd = $('.date-picker-2').datepicker({ dateFormat: 'yyyy-mm-dd' }).val()
+	var interventionIni = $('.date-picker-3').datepicker({ dateFormat: 'yyyy-mm-dd' }).val()
+	var interventionEnd = $('.date-picker-4').datepicker({ dateFormat: 'yyyy-mm-dd' }).val()
   return [[controlIni,controlEnd],[interventionIni,interventionEnd]];
 };
 
-// water.App.prototype.getCoordinates = function() {
-// 	this..getPath().getArray()
-//   return $('.intervention-region').hasClass('drawing');
-// };
+getCoordinates = function() {
+ 	var cAoi = this.controlAOI.getPath().getArray()
+	var iAoi = this.interventionAOI.getPath().getArray()
+  return [cAoi, iAoi];
+};
 
 water.App.prototype.initPlot = function(){
 	$('.submit').click(function(){
 		$(".loader").toggle();
-		var dates = this.getDates()
-		var coords = this.getCoordinates();
+		var dates = getDates()
+		var coords = getCoordinates();
 		var params = {before:dates[0],
 									after: dates[1],
 									control: coords[0],
 									intervention: coords[1]
+
 		}
+		console.log(coords)
+
 		$.ajax({
 			url: "/timeHandler",
 			data: params,
@@ -978,7 +985,7 @@ water.App.prototype.initPlot = function(){
 				alert("Uh-oh, an error occured! This is embarrassing! Here is the problem: "+data['error']+". Please try again.");
 			}
 		})
-	})
+	}).bind(this)
 };
 
 
@@ -1245,8 +1252,8 @@ water.App.createDrawingManager = function(map) {
   var drawingManager = new google.maps.drawing.DrawingManager({
     drawingControl: false,
     polygonOptions: {
-      fillColor: '#ff0000',
-      strokeColor: '#ff0000'
+      fillColor: '#2c3e50',
+      strokeColor: '#2c3e50'
     }
   });
   drawingManager.setMap(map);
