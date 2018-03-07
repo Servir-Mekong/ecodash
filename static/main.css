@@ -191,10 +191,28 @@ isindex {
   margin-bottom: 5px;
 }
 
+.water .legend-labels {
+  margin-left: 15%;
+  font-weight: normal;
+  font-style: italic;
+}
+
 .water .legend-value {
   margin-bottom:15px;
   display:flex;
   align-items:center;
+}
+
+.water .legend-img {
+  position: relative;
+  top: 0px;
+  margin: -50%;
+  margin-left: 40%;
+  transform: rotate(90deg);
+  width: 20px;
+  height: 300px;
+  float: none;
+  /* display: inline-block; */
 }
 
 .water .legend-block {
