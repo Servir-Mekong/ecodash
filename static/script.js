@@ -44,6 +44,7 @@ water.App = function(eeMapId, eeToken) {
   this.climatologySlider();
   this.initExport();
 	this.initPlot();
+	this.updateMap();
 
   // Load the basic background maps.
   this.loadBasicMaps(eeMapId, eeToken);
@@ -166,8 +167,6 @@ water.App.prototype.initDatePickers = function() {
   $('.date-picker-2').datepicker('update', '2010-12-31');
 	$('.date-picker-3').datepicker('update', '2011-01-01');
 	$('.date-picker-4').datepicker('update', '2015-12-31');
-
-
 
   // Respond when the user updates the dates.
   //$('.date-picker').on('changeDate', this.refreshImage.bind(this));
@@ -536,17 +535,17 @@ water.App.prototype.initControlRegionPicker = function() {
 					water.instance.showMap(data.eeMapId, data.eeToken, name, 4);
 					//console.log(data.size);
 					if (data.size > water.App.AREA_LIMIT_2) {
-						$('.export').attr('disabled', true);
+						// $('.export').attr('disabled', true);
 						$('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_2 + ' km2. This exceeds the current limitations for downloading data. ' +
 																		 'Please use one of the other region selection options to download data for this area.')
 						$('.warnings').show();
 					} else if (data.size > water.App.AREA_LIMIT_1) {
-						$('.export').attr('disabled', false);
+						// $('.export').attr('disabled', false);
 						$('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_1 + ' km2. This is near the current limitation for downloading data. '+
 																		 'Please be warned that the download might result in a corrupted zip file. You can give it a try or use  one of the other region selection options to download data for this area.')
 						$('.warnings').show();
 					} else {
-						$('.export').attr('disabled', false);
+						// $('.export').attr('disabled', false);
 					}
 					//water.instance.point = params;
 					water.instance.points.push(params);
@@ -711,6 +710,18 @@ water.App.prototype.initInterventionRegionPicker = function() {
 
 	this.map.addListener('click', function(event) {
 		var selection = $("input[name='intervention-selection-method']:checked").val();
+		var exportation = $("input[name='intervention-selection-method']:checked").val();
+
+		if (exportation == 'control' || exportation == 'intervention') {
+			$('.export').attr('disabled', false);
+		}
+		// if (exportation == 'control') {
+		//
+		// }
+		// if (exportation == 'intervention') {
+		//
+		// }
+
 		if (selection == 'Tiles' || selection == 'Adm. bounds') {
 			var coords = event.latLng;
 			var lat = coords.lat();
@@ -739,7 +750,7 @@ water.App.prototype.initInterventionRegionPicker = function() {
 				dataType: "json",
 				success: function (data) {
 					water.instance.showMap(data.eeMapId, data.eeToken, name, 4);
-					$('.export').attr('disabled', false);
+					// $('.export').attr('disabled', false);
 					//water.instance.point = params;
 					water.instance.points.push(params);
 				},
@@ -758,17 +769,17 @@ water.App.prototype.initInterventionRegionPicker = function() {
 					water.instance.showMap(data.eeMapId, data.eeToken, name, 4);
 					//console.log(data.size);
 					if (data.size > water.App.AREA_LIMIT_2) {
-						$('.export').attr('disabled', true);
+						// $('.export').attr('disabled', true);
 						$('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_2 + ' km2. This exceeds the current limitations for downloading data. ' +
 																		 'Please use one of the other region selection options to download data for this area.')
 						$('.warnings').show();
 					} else if (data.size > water.App.AREA_LIMIT_1) {
-						$('.export').attr('disabled', false);
+						// $('.export').attr('disabled', false);
 						$('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_1 + ' km2. This is near the current limitation for downloading data. '+
 																		 'Please be warned that the download might result in a corrupted zip file. You can give it a try or use  one of the other region selection options to download data for this area.')
 						$('.warnings').show();
 					} else {
-						$('.export').attr('disabled', false);
+						// $('.export').attr('disabled', false);
 					}
 					//water.instance.point = params;
 					water.instance.points.push(params);
@@ -956,8 +967,8 @@ getDates = function() {
 };
 
 getCoordinates = function() {
- 	var cAoi = this.controlAOI.getPath().getArray()
-	var iAoi = this.interventionAOI.getPath().getArray()
+ 	var cAoi = this.controlPoly.getPath().getArray()
+	var iAoi = this.interventionPoly.getPath().getArray()
   return [cAoi, iAoi];
 };
 
@@ -1046,10 +1057,37 @@ var showChart = function(timeseries) {
 
 };
 
+water.App.prototype.updateMap= function(){
+	$('.update').click(function(){
+		var dates = getDates()
+		params = {beforeLow:dates[0][0],
+							beforeHigh:dates[0][1],
+							afterLow: dates[1][0],
+							afterHigh: dates[1][1]
+		}
+
+		$('.loader').toggle()
+
+		$.ajax({
+			url: "/mapHandler",
+			data: params,
+			dataType: "json",
+			success: function (data) {
+				water.instance.showMap(data.eeMapId, data.eeToken, name, 0);
+	    },
+	    error: function (data) {
+	      console.log(data.responseText);
+	    }
+		})
+	}).bind(this)
+
+	$('.loader').toggle()
+}
+
 /**
 * Clear polygons from the map when changing region selection modes
 **/
-var clearMap = function(){
+water.App.prototype.clearMap = function(){
 	// remove all polygons
 	this.map.data.forEach(function (feature) {
 	  this.map.data.remove(feature);
@@ -1289,3 +1327,9 @@ water.App.AREA_LIMIT_1 = 1E9;
 
 /** @type {number} Hard limit on download area size. */
 water.App.AREA_LIMIT_2 = 1E9;
+
+/** @type {Object} Control Polygon */
+water.App.ControlPoly = new google.maps.Polygon();
+
+/** @type {Object} Control Polygon */
+water.App.InterventionPoly = new google.maps.Polygon();

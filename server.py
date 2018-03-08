@@ -166,21 +166,22 @@ class GetMapHandler(webapp2.RequestHandler):
 
     def get(self):
 
-		refLow = self.request.get('refLow')
-		refHigh = self.request.get('refHigh')
-		studyLow = self.request.get('studyLow')
-		studyHigh = self.request.get('studyHigh')
+        refLow = str(self.request.get('beforeLow'))
+        refHigh = str(self.request.get('beforeHigh'))
+        studyLow = str(self.request.get('afterLow'))
+        studyHigh = str(self.request.get('afterHigh'))
 
-		mapid = updateMap(refLow,refHigh,studyLow,studyHigh)
+        mapid = updateMap(refLow,refHigh,studyLow,studyHigh)
+        print(mapid)
+        counter = self.request.get('mycounter')
 
-		template_values = {
-			'eeMapId': mapid['mapid'],
-			'eeToken': mapid['token']
+        template_values = {
+            'eeMapId': mapid['mapid'],
+            'eeToken': mapid['token']
         }
 
-		template = JINJA2_ENVIRONMENT.get_template('index.html')
-		self.response.headers['Content-Type'] = 'application/json'
-		self.response.out.write(json.dumps(template_values))
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(json.dumps(template_values))
 
 class GetAdmBoundsMapHandler(webapp2.RequestHandler):
     """A servlet to handle requests to load the administrative boundaries fusion table."""
@@ -294,6 +295,7 @@ app = webapp2.WSGIApplication([
     ('/get_adm_bounds_map', GetAdmBoundsMapHandler),
     ('/get_tiles_map', GetTilesMapHandler),
     ('/timeHandler', GetTimeSeriesHandler),
+    ('/mapHandler',GetMapHandler),
     ('/', MainHandler),
 ])
 
@@ -302,23 +304,15 @@ app = webapp2.WSGIApplication([
 # ------------------------------------------------------------------------------------ #
 
 
+def updateMap(before_start,before_end,after_start,after_end):
 
-
-
-def updateMap(ref_start,ref_end,series_start,series_end):
-
-  cumulative = Calculation(ref_start,ref_end,series_start,series_end)
-
-  countries = ee.FeatureCollection('ft:1tdSwUL7MVpOauSgRzqVTOwdfy17KDbw-1d9omPw');
-  country_names = ['Myanmar (Burma)','Thailand','Laos','Vietnam','Cambodia']; # Specify name of country. Ignored if "use_uploaded_fusion_table" == y
-  mekongCountries = countries.filter(ee.Filter.inList('Country', country_names));
+  cumulative = Calculation(before_start,before_end,after_start,after_end)
 
   myList = cumulative.toList(500)
 
   fit = ee.Image(myList.get(-1)) #.clip(mekongCountries)
 
-
-  months = ee.Date(series_end).difference(ee.Date(series_start),"month").getInfo()
+  months = ee.Date(after_end).difference(ee.Date(after_start),"month").getInfo()
 
   Threshold1 = months * 0.06
   Threshold2 = months * -0.06
@@ -413,7 +407,7 @@ def ComputePolygonDrawTimeSeries(polygon,ref_start,ref_end,series_start,series_e
 
   return mymap
 
-def Calculation(ref_start,ref_end,series_start,series_end):
+def Calculation(before_start,before_end,after_start,after_end):
 
   def getQABits(image, start, end, newName):
     #Compute the bits we need to extract.
@@ -437,10 +431,12 @@ def Calculation(ref_start,ref_end,series_start,series_end):
       # Return an image masking out cloudy areas.
       return img.updateMask(mask);
 
+  print ref_start,ref_end
+  print series_start, series_end
 
   collection = ee.ImageCollection(IMAGE_COLLECTION_ID).map(maskPoorQuality)
-  reference = collection.filterDate(ref_start,ref_end ).sort('system:time_start').select('EVI')
-  series = collection.filterDate(series_start, series_end).sort('system:time_start').select('EVI')
+  reference = collection.filterDate(before_start,before_end).sort('system:time_start').select('EVI')
+  series = collection.filterDate(after_start, after_end).sort('system:time_start').select('EVI')
 
   def calcMonthlyMean(ref,col):
 
@@ -463,7 +459,7 @@ def Calculation(ref_start,ref_end,series_start,series_end):
 
   mycollection = ee.ImageCollection(calcMonthlyMean(reference,collection))
 
-  time0 = series.first().get('system:time_start')
+  time0 = ee.Image(series.first()).get('system:time_start')
   first = ee.List([ee.Image(0).set('system:time_start', time0).select([0], ['EVI'])])
 
   ## This is a function to pass to Iterate().
