@@ -14,6 +14,7 @@ import jinja2
 import webapp2
 import oauth2client.appengine
 
+
 import socket
 
 from google.appengine.api import urlfetch
@@ -291,8 +292,18 @@ class GetTimeSeriesHandler(webapp2.RequestHandler):
 
         cDetails = ComputePolygonDrawTimeSeries(controlPoly,beforeIni,beforeEnd,afterIni,afterEnd)
         iDetails = ComputePolygonDrawTimeSeries(interventionPoly,beforeIni,beforeEnd,afterIni,afterEnd)
+        
+        print(cDetails)
+        diff = []
+        itv = zip(*iDetails)[1] 
+        ctr = zip(*cDetails)[1]
+        timing = zip(*iDetails)[0]
 
-        details = {'control':cDetails,'intervention':iDetails}
+        for i in range(len(itv)):
+            d = ctr[i] - itv[i]
+            diff.append([timing[i],d])
+        
+        details = {'control':cDetails,'intervention':iDetails,'difference':diff}
 		#memcache.add(str(counter), json.dumps(details), MEMCACHE_EXPIRATION)
         content = json.dumps(details)
 

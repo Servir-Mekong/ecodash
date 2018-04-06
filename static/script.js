@@ -1134,11 +1134,15 @@ var showChart = function (data) {
 
   var control_line = [];
   var intervention_line = [];
+  var diff_line = [];
   data.control.forEach(function (point) {
     control_line.push(point[1]);
   });
   data.intervention.forEach(function (point) {
     intervention_line.push(point[1]);
+  });
+  data.difference.forEach(function (point) {
+    diff_line.push(point[1]);
   });
 
   $('.modal-body').highcharts({
@@ -1156,7 +1160,7 @@ var showChart = function (data) {
     },
     yAxis: {
         title: {
-            text: 'Unit'
+            text: 'Change in EVI'
         }
     },
     plotOptions: {
@@ -1173,6 +1177,9 @@ var showChart = function (data) {
     }, {
         name: 'Intervention',
         data: intervention_line
+    }, {
+      name: 'Difference',
+      data: diff_line
     }],
     credits: {
       enabled: false
