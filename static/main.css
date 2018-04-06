@@ -19,6 +19,70 @@ isindex {
   font-size: 14px;
 }
 
+.box {
+  height: 20px;
+  width: 20px;
+  display: inline-block;
+}
+
+/* Chart Modal */
+/*.chart {
+  min-width: 310px;
+  height: 400px;
+  margin: 0 auto;
+}*/
+
+.modal {
+  position: fixed;
+  z-index: 1030;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: #000;
+  background-color: rgba(0,0,0,.4);
+  display: block !important;
+}
+
+.display-none-imp {
+  display: none !important;
+}
+
+.modal-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: 7% auto auto;
+  padding: 0;
+  border: 1px solid #888;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,.2), 0 6px 20px 0 rgba(0,0,0,.19);
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: .4s;
+  animation-name: animatetop;
+  animation-duration: .4s;
+  width: 800px;
+  height: 500px;
+}
+
+.modal-header {
+  background-color: rgba(66,103,178,1);
+  color: #fff;
+  height: 50px;
+}
+
+.modal-close {
+  cursor: pointer;
+  color: #fff;
+  float: right;
+  font-size: 28px;
+  font-weight: 700;
+  margin-top: -10px;
+}
+
+.modal-body {
+  padding: 2px 16px;
+}
+
 .water .banner {
   margin: 10px;
   right:0;
@@ -34,9 +98,9 @@ isindex {
   top: 20px;
   left: 10px;
   width: 470px;
-  height: 600px;
+  /*height: 600px;*/
   z-index: 1;
-  overflow: scroll;
+  /*overflow: scroll;*/
 }
 
 .water .panel {
@@ -46,6 +110,7 @@ isindex {
   box-shadow: 0px 0px 5px gray;
   overflow: auto;
   margin-bottom: 0;
+  height: calc(100vh - 100px);
 }
 
 .water header {

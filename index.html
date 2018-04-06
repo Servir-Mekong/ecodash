@@ -25,6 +25,8 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.1.5/bootstrap-slider.min.js"></script>
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+		<script src="https://code.highcharts.com/modules/exporting.js"></script>
 
 		<!-- Third-party CSS. -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
@@ -247,13 +249,14 @@
 									<li><input type="radio" name="control-selection-method" value="Adm. bounds" id="control-selection-method"><label>Adm. bounds</label></li>
 									<!-- <li><input type="radio" name="control-selection-method" value="Tiles" id="control-selection-method"><label>Tiles</label></li> -->
 									<li><input type="radio" name="control-selection-method" value="Draw polygon" id="control-selection-method"><label>Draw polygon</label></li>
+									<li><span class="box" id="controlRegionColorBox" style="background-color: #e8370b" /></li>
 								</ul>
 								<span class="message">
 									<a class="control-draw" href="#"></a>
 								</span>
 								<span class="message-drawing">
 									<!--Draw a polygon... -->
-									<button class="control-cancel btn btn-default btn-xs">Cancel</button>
+									<!--<button class="control-cancel btn btn-default btn-xs">Cancel</button>-->
 								</span>
 								<span class="message-selected">
 									<!--Selected-->
@@ -267,13 +270,14 @@
 									<li><input type="radio" name="intervention-selection-method" value="Adm. bounds" id="intervention-selection-method"><label>Adm. bounds</label></li>
 									<!-- <li><input type="radio" name="intervention-selection-method" value="Tiles" id="intervention-selection-method"><label>Tiles</label></li> -->
 									<li><input type="radio" name="intervention-selection-method" value="Draw polygon" id="intervention-selection-method"><label>Draw polygon</label></li>
+									<li><span class="box" id="interventionRegionColorBox" style="background-color: #16e5b1" /></li>
 								</ul>
 								<span class="message">
-									<a class="-intervention-draw" href="#"></a>
+									<a class="intervention-draw" href="#"></a>
 								</span>
 								<span class="message-drawing">
 									<!--Draw a polygon... -->
-									<button class="intervention-cancel btn btn-default btn-xs">Cancel</button>
+									<!--<button class="intervention-cancel btn btn-default btn-xs">Cancel</button>-->
 								</span>
 								<span class="message-selected">
 									<!--Selected-->
@@ -388,6 +392,18 @@
 				<a id="link3" target="_blank">Click here to download water layer (3)</a>
 				<a id="link4" target="_blank">Click here to download water layer (4)</a>
 				<a id="link_metadata" target="_blank">Click here to download metadata</a>
+			</div>
+
+		</div>
+
+		<div id="chartModal" class="modal display-none-imp">
+
+			<!-- Modal content -->
+			<div class="modal-content">
+				<div class="modal-header">
+					<span class="modal-close">&times;</span>
+				</div>
+				<div class="modal-body"></div>
 			</div>
 
 		</div>
