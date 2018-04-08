@@ -190,12 +190,6 @@ water.App.prototype.initDatePickers = function() {
 		pickerPosition: 'top-right',
 		startDate: '2000-01-01',
 		endDate: date,
-  }).on(show() function() {
-		var popup =$(this).offset();
-		var popupTop = popup.left - 40;
-		$('.ui-datepicker').css({
-			'left' : popupTop
-		 });
   });
 	$('.date-picker-3').datepicker({
 		format: 'yyyy-mm-dd',
