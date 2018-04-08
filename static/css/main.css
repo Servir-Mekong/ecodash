@@ -232,10 +232,10 @@ footer {
     position:absolute;
     top:0px;
     right:0px;
-    height:96.5%;
+    height:100%;
     width:20rem;
     background-color:white;
-    padding:0.5%;
+    padding:0%;
 }
 
 #ecodash #settings-button {
@@ -592,7 +592,8 @@ input[type=range]::-ms-fill-upper {
 /* Spinner Widget */
 /******************/
 
-.spinner {
+.loader {
+    display: none;
     position:absolute;
     top:35%;
     left:35%;

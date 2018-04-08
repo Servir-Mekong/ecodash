@@ -52,8 +52,8 @@ socket.setdefaulttimeout(URL_FETCH_TIMEOUT)
 urlfetch.set_default_fetch_deadline(URL_FETCH_TIMEOUT)
 
 # set the collection ID
-IMAGE_COLLECTION_ID1 = ee.ImageCollection('MODIS/MYD13A1')
-IMAGE_COLLECTION_ID2 = ee.ImageCollection('MODIS/MOD13A1')
+IMAGE_COLLECTION_ID1 = ee.ImageCollection('MODIS/006/MYD13Q1')
+IMAGE_COLLECTION_ID2 = ee.ImageCollection('MODIS/006/MOD13A1')
 
 IMAGE_COLLECTION_ID =  IMAGE_COLLECTION_ID1.merge(IMAGE_COLLECTION_ID2);
 
@@ -195,7 +195,6 @@ class GetAdmBoundsMapHandler(webapp2.RequestHandler):
             'eeMapId': mapid['mapid'],
             'eeToken': mapid['token']
         }
-        print(content)
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(content))
 
@@ -221,9 +220,9 @@ class GetSelectedAdmBoundsHandler(webapp2.RequestHandler):
     def get(self):
         mode = self.request.params.get('mode')
         if mode == 'control':
-            color = 'e8370b'
+            color = '2c3e50'
         else:
-            color = '16e5b1'
+            color = '95a5a6'
         lat   = ee.Number(float(self.request.params.get('lat')))
         lng   = ee.Number(float(self.request.params.get('lng')))
         point = ee.Geometry.Point([lng, lat])
@@ -292,17 +291,16 @@ class GetTimeSeriesHandler(webapp2.RequestHandler):
 
         cDetails = ComputePolygonDrawTimeSeries(controlPoly,beforeIni,beforeEnd,afterIni,afterEnd)
         iDetails = ComputePolygonDrawTimeSeries(interventionPoly,beforeIni,beforeEnd,afterIni,afterEnd)
-        
-        print(cDetails)
+
         diff = []
-        itv = zip(*iDetails)[1] 
+        itv = zip(*iDetails)[1]
         ctr = zip(*cDetails)[1]
         timing = zip(*iDetails)[0]
 
         for i in range(len(itv)):
-            d = ctr[i] - itv[i]
+            d = itv[i]-ctr[i]
             diff.append([timing[i],d])
-        
+
         details = {'control':cDetails,'intervention':iDetails,'difference':diff}
 		#memcache.add(str(counter), json.dumps(details), MEMCACHE_EXPIRATION)
         content = json.dumps(details)
@@ -375,13 +373,20 @@ def GetPolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end):
 
 def ComputePolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end):
 
+  featureArea = feature.geometry().area().getInfo()
+
+  print(featureArea)
+
+  if featureArea > 50000*1E6:
+      REDUCTION_SCALE_METERS = 10000
+
   """Returns a series of brightness over time for the polygon."""
   cumulative = Calculation(ref_start,ref_end,series_start,series_end)
 
   # Compute the mean brightness in the region in each image.
   def ComputeMean(img):
     reduction = img.reduceRegion(
-        ee.Reducer.mean(), feature.geometry(), REDUCTION_SCALE_METERS)
+        ee.Reducer.mean(), feature.geometry(), REDUCTION_SCALE_METERS,None,None,True)
     return ee.Feature(None, {
         'EVI': reduction.get('EVI'),
         'system:time_start': img.get('system:time_start')
@@ -452,9 +457,10 @@ def Calculation(before_start,before_end,after_start,after_end):
       # Get the internal_cloud_algorithm_flag bit.
       clouds = getQABits(QA,10, 10, 'cloud_flag');
       land = getQABits(QA,11, 13, 'land_flag');
+      qual = getQABits(QA,2, 5, 'quality_flag');
       mask = clouds.eq(0).And(land.eq(1))
       # Return an image masking out cloudy areas.
-      return img.updateMask(mask);
+      return img.updateMask(mask.And(qual.lt(12)));
 
   collection = ee.ImageCollection(IMAGE_COLLECTION_ID).map(maskPoorQuality)
   reference = collection.filterDate(before_start,before_end).sort('system:time_start').select('EVI')

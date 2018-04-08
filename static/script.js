@@ -37,7 +37,6 @@ water.App = function(eeMapId, eeToken) {
 	this.waterParams = {};
 
    // Initialize the UI components.
-  this.initDatePickers();
   this.initControlRegionPicker();
 	this.initInterventionRegionPicker();
   this.toggleBoxes();
@@ -51,6 +50,38 @@ water.App = function(eeMapId, eeToken) {
   $('span.modal-close').click(function () {
     closeModal();
   });
+
+	// Add Google Maps resize listener
+	$("#open-menu").click(function () {
+		// $(".map").css("left", "500px");
+		$(".map").css("width", "calc(100% - 9.6em)");
+
+		// listen for the window resize event & trigger Google Maps to update too
+	  $(window).resize(function() {
+	    // (the 'map' here is the result of the created 'var map = ...' above)
+	    google.maps.event.trigger(this.map, "resize");
+	  });
+		$("#close-menu").toggle();
+		$("#open-menu").toggle();
+		$(".ui").toggle();
+	});
+
+	$("#close-menu").click(function () {
+		// $(".map").css("left", "0px");
+		$(".map").css("width", "calc(100% + 26em)");
+
+
+		// listen for the window resize event & trigger Google Maps to update too
+		$(window).resize(function() {
+			// (the 'map' here is the result of the created 'var map = ...' above)
+			google.maps.event.trigger(this.map, "resize");
+		});
+		$("#close-menu").toggle();
+		$("#open-menu").toggle();
+		$(".ui").toggle();
+	});
+
+	this.initDatePickers();
 
   // Load the basic background maps.
   this.loadBasicMaps(eeMapId, eeToken);
@@ -88,25 +119,25 @@ water.App.createMap = function() {
  * @return {google.maps.ImageMapType} A Google Maps ImageMapType object for the
  *     EE map with the given ID and token.
  */
-var getEeMapType = function(eeMapId, eeToken) {
-  var eeMapOptions = {
-    getTileUrl: function(tile, zoom) {
-      var url = EE_URL + '/map/';
-      url += [eeMapId, zoom, tile.x, tile.y].join('/');
-      url += '?token=' + eeToken;
-      return url;
-    },
-    tileSize: new google.maps.Size(256, 256),
-    name: 'ecomap',
-	opacity: 1.0
-  };
-  return new google.maps.ImageMapType(eeMapOptions);
-};
+// var getEeMapType = function(eeMapId, eeToken) {
+//   var eeMapOptions = {
+//     getTileUrl: function(tile, zoom) {
+//       var url = EE_URL + '/map/';
+//       url += [eeMapId, zoom, tile.x, tile.y].join('/');
+//       url += '?token=' + eeToken;
+//       return url;
+//     },
+//     tileSize: new google.maps.Size(256, 256),
+//     name: 'ecomap',
+// 	opacity: 1.0
+//   };
+//   return new google.maps.ImageMapType(eeMapOptions);
+// };
 
 
 // Load basic maps upon loading the main web page
 water.App.prototype.loadBasicMaps = function(eeMapId, eeToken) {
-	var mapType = getEeMapType(eeMapId, eeToken);
+	var mapType = this.getEeMapType(eeMapId, eeToken,'ecomap');
 	console.log(eeMapId)
 	this.map.overlayMapTypes.push(mapType);
 }
@@ -134,38 +165,61 @@ water.App.prototype.showBasicMap = function(eeMapId, eeToken, name, index) {
 
 // Initializes the date pickers.
 water.App.prototype.initDatePickers = function() {
+	var date = new Date();
   // Create the date pickers.
   $('.date-picker-1').datepicker({
     format: 'yyyy-mm-dd',
     viewMode: 'days',
     minViewMode: 'days',
     autoclose: true,
-    startDate: new Date('1988-01-01'),
-    endDate: new Date()
+		orientation: 'top right',
+		pickerPosition: 'top-right',
+		startDate: '2000-01-01',
+		endDate: date,
+		beforeShow: function(input, inst)
+    {
+        inst.dpDiv.css({marginLeft: '500px'});
+    }
   });
   $('.date-picker-2').datepicker({
     format: 'yyyy-mm-dd',
     viewMode: 'days',
     minViewMode: 'days',
     autoclose: true,
-    startDate: new Date('1988-01-01'),
-    endDate: new Date()
+		orientation: 'top right',
+		pickerPosition: 'top-right',
+		startDate: '2000-01-01',
+		endDate: date,
+  }).on(show() function() {
+		var popup =$(this).offset();
+		var popupTop = popup.left - 40;
+		$('.ui-datepicker').css({
+			'left' : popupTop
+		 });
   });
 	$('.date-picker-3').datepicker({
 		format: 'yyyy-mm-dd',
 		viewMode: 'days',
 		minViewMode: 'days',
 		autoclose: true,
-		startDate: new Date('1988-01-01'),
-		endDate: new Date()
+		orientation: 'top right',
+		pickerPosition: 'top-right',
+		startDate: '2000-01-01',
+		endDate: date
 	});
 	$('.date-picker-4').datepicker({
 		format: 'yyyy-mm-dd',
 		viewMode: 'days',
 		minViewMode: 'days',
 		autoclose: true,
-		startDate: new Date('1988-01-01'),
-		endDate: new Date()
+		orientation: 'top right',
+		pickerPosition: 'top-right',
+		startDate: '2000-01-01',
+		endDate: date,
+		beforeShow: function(input, inst)
+		{
+				inst.dpDiv.css({marginLeft: '500px'});
+		}
 	});
 
   // Set default dates.
@@ -313,7 +367,7 @@ water.App.prototype.setWaterMap = function(eeMapId, eeToken, name, index) {
 water.App.prototype.removeLayer = function(name) {
   this.map.overlayMapTypes.forEach((function(mapType, index) {
     if (mapType && mapType.name == name) {
-      //this.map.overlayMapTypes.removeAt(index);   // old, hard removal
+      // this.map.overlayMapTypes.removeAt(index);   // old, hard removal
 			this.map.overlayMapTypes.setAt(index, null);  // new, instead set null at the same index (to keep length of array intact, used for adding/removing layers and keep their zIndex intact)
     }
   }).bind(this));
@@ -538,6 +592,7 @@ water.App.prototype.initControlRegionPicker = function() {
 			});
 		} else if (selection == 'Adm. bounds') {
       this.overlayMapTypes.forEach(function (layer, index) {
+				$('.loader').toggle();
         if (layer && layer.name === 'adm_bounds' && $('span#controlRegionColorBox').is(':hidden')) {
           $('.warnings span').text('');
           $('.warnings').hide();
@@ -568,9 +623,11 @@ water.App.prototype.initControlRegionPicker = function() {
               water.instance.points.push(params);
               $('span#controlRegionColorBox').show();
               $('.intervention-region').show();
+							$('.loader').toggle()
             },
             error: function (data) {
               console.log(data.responseText);
+							$('.loader').toggle()
             }
           });
         }
@@ -746,6 +803,7 @@ water.App.prototype.initInterventionRegionPicker = function() {
 	}
 
 	this.map.addListener('click', function(event) {
+		$('.loader').toggle()
 		var selection = $("input[name='intervention-selection-method']:checked").val();
 		var exportation = $("input[name='intervention-selection-method']:checked").val();
 
@@ -767,7 +825,7 @@ water.App.prototype.initInterventionRegionPicker = function() {
 				}
 			} else {
 				for (var i=0; i<nr_selected; i++) {
-					//water.instance.removeLayer(name);
+					water.instance.removeLayer(name);
 				}
 				nr_selected = 1;
 				water.instance.points = [];
@@ -791,7 +849,7 @@ water.App.prototype.initInterventionRegionPicker = function() {
 		} else if (selection == 'Adm. bounds') {
       this.overlayMapTypes.forEach(function (layer, index) {
         if (layer && layer.name === 'adm_bounds' && $('span#interventionRegionColorBox').is(':hidden')) {
-    			$('.warnings span').text('');
+					$('.warnings span').text('');
     			$('.warnings').hide();
           water.App.interventionLat = lat;
           water.App.interventionLon = lng;
@@ -819,9 +877,11 @@ water.App.prototype.initInterventionRegionPicker = function() {
     					//water.instance.point = params;
     					water.instance.points.push(params);
               $('span#interventionRegionColorBox').show();
+							$('.loader').toggle()
     				},
     				error: function (data) {
     					console.log(data.responseText);
+							$('.loader').toggle()
     				}
     			});
         }
@@ -969,7 +1029,7 @@ water.App.prototype.clearControlPolygon = function() {
     this.controlRegionPolygon.setMap(null);
   }
   water.instance.removeLayer('selected_control_polygon');
-  //$('input#control-selection-method').each(function () { 
+  //$('input#control-selection-method').each(function () {
     //$(this).removeClass('selected');
   //  $(this).prop('checked', false);
   //});
@@ -983,7 +1043,7 @@ water.App.prototype.clearInterventionPolygon = function() {
     this.interventionRegionPolygon.setMap(null);
   }
   water.instance.removeLayer('selected_intervention_polygon');
-  //$('input#intervention-selection-method').each(function () { 
+  //$('input#intervention-selection-method').each(function () {
   //  $(this).prop('checked', false);
   //});
   $('.intervention-region').removeClass('selected');
@@ -1043,9 +1103,11 @@ getCoordinates = function() {
   var cAoi = iAoi = [];
   if (water.instance.controlRegionPolygon) {
     cAoi = getPolygonArray(water.instance.controlRegionPolygon.getPath().getArray());
+		console.log(cAoi)
   }
   if (water.instance.interventionRegionPolygon) {
     iAoi = getPolygonArray(water.instance.interventionRegionPolygon.getPath().getArray());
+		console.log(iAoi)
   }
   return [cAoi, iAoi];
 };
@@ -1083,14 +1145,6 @@ water.App.prototype.initPlot = function() {
       params.intervention = coords[1].toString();
     }
 
-		/*var coords = getCoordinates();
-		var params = {
-      before:dates[0].toString(),
-			after: dates[1].toString(),
-			control: coords[0].toString(),
-			intervention: coords[1].toString()
-		}*/
-
 		$.ajax({
 			url: "/timeHandler",
 			data: params,
@@ -1100,6 +1154,7 @@ water.App.prototype.initPlot = function() {
 			},
 			error: function (data) {
 				alert("Uh-oh, an error occured! This is embarrassing! Here is the problem: "+data['error']+". Please try again.");
+				$('.loader').toggle()
 			}
 		})
 	}).bind(this)
@@ -1183,68 +1238,14 @@ var showChart = function (data) {
     }],
     credits: {
       enabled: false
-    }
+    },
+		exporting: {
+			enabled: true
+		}
   });
   showModal();
+	$(".loader").toggle()
 };
-/*var showChart = function(timeseries) {
-	//document.getElementById('chart-window').style.display = "block";
-	//document.getElementById('chart-info').style.display = "block";
-  document.getElementById('chart').style.display = 'block';
-	var DataArr = []
-	timeseries.control.forEach(function(point) {
-		point[0] = new Date(parseInt(point[0], 10));
-		DataArr.push([point[0]]);
-	firstGraph = 1
-  });
-
-
-  var count = 0;
-  timeseries.intervention.forEach(function(point) {
-	  DataArr[count].push(point[1]);
-	  count = count +1;
-  });
-
-  chartData = new google.visualization.DataTable();
-  chartData.addColumn('date','Date');
-	chartData.addColumn('number','TSS');
-
-  chartData.addRows(DataArr);
-
-	// var data = google.visualization.arrayToDataTable([
-	// 				timeseries
-  //         // ['Year', 'Sales', 'Expenses'],
-  //         // ['2004',  1000,      400],
-  //         // ['2005',  1170,      460],
-  //         // ['2006',  660,       1120],
-  //         // ['2007',  1030,      540]
-  //       ]);
-
-  chartOptions = {
-    title: 'TSS over time',
-    // curveType: 'function',
-    legend: { position: 'bottom' },
-		vAxis: {title: 'TSS [mg/L]',minValue: 0},
-		lineWidth: 1.5,
-		pointSize: 3,
-  };
-
-  chart = new google.visualization.ScatterChart(document.getElementById('chart'));
-
-  chart.draw(chartData,chartOptions);
-
-	$('#Export').click(function () {
-        var csvFormattedDataTable = google.visualization.dataTableToCsv(data);
-        var encodedUri = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csvFormattedDataTable);
-        this.href = encodedUri;
-        this.download = 'table-data.csv';
-        this.target = '_blank';
-    });
-
-	$(".loader").toggle();
-
-};*/
-
 
 
 water.App.prototype.updateMap= function(){
@@ -1256,6 +1257,8 @@ water.App.prototype.updateMap= function(){
 							afterHigh: dates[1][1]
 		}
 
+		water.instance.removeLayer('ecomap')
+
 		$('.loader').toggle()
 
 		$.ajax({
@@ -1263,15 +1266,16 @@ water.App.prototype.updateMap= function(){
 			data: params,
 			dataType: "json",
 			success: function (data) {
+				water.instance.removeLayer(name)
 				water.instance.showMap(data.eeMapId, data.eeToken, name, 0);
+				$('.loader').toggle()
 	    },
 	    error: function (data) {
 	      console.log(data.responseText);
+				$('.loader').toggle()
 	    }
 		})
 	}).bind(this)
-
-	$('.loader').toggle()
 }
 
 /**
@@ -1286,15 +1290,18 @@ water.App.prototype.clearMap = function(){
 
 // Load administrative boundaries maps
 water.App.prototype.loadAdmBoundsMap = function() {
+	$('.loader').toggle()
   var name = 'adm_bounds';
   $.ajax({
     url: "/get_adm_bounds_map",
     dataType: "json",
     success: function (data) {
 			water.instance.showMap(data.eeMapId, data.eeToken, name, 3);
+			$('.loader').toggle()
     },
     error: function (data) {
       console.log(data.responseText);
+			$('.loader').toggle()
     }
   });
 }
@@ -1330,6 +1337,14 @@ water.App.prototype.showMap = function(eeMapId, eeToken, name, index) {
 // ---------------------------------------------------------------------------------- //
 
 water.App.prototype.initExport = function() {
+	function wrapCoords(lng,lat){
+		coords_list = []
+		coords_array.forEach(function(coords) {
+			var lat = coords.lat();
+			var lng = coords.lng();
+			coords_list.push([lng,lat]);
+		});
+	}
 	$('.export').click(function () {
 		// show panel
 		$('.download_panel').css('display', 'block');
@@ -1354,83 +1369,72 @@ water.App.prototype.initExport = function() {
 		if (export_name == "") {
 			export_name = 'Ecodash_BACI_' + base_params.time_start + '_' + base_params.time_end;
 		}
-		// get download link(s)
-		var region_selection = $("input[name='control-selection-method']:checked").val();
-		if (region_selection == 'Draw polygon') {
-			var coords_array = water.instance.currentPolygon.latLngs.b[0].b;
-			var coords_list  = []
-			coords_array.forEach(function(coords) {
-				var lat = coords.lat();
-				var lng = coords.lng();
-				coords_list.push([lng,lat]);
-			});
-			var params = $.extend(base_params, {coords: JSON.stringify(coords_list)}, {export_name: export_name});
-			$.ajax({
-				url: "/export_drawn",
-				data: params,
-				dataType: "json",
-				success: function (data) {
-					// hide prep message
-					$('#download_prep').css('display', 'none');
-					// show result
-					//water.instance.showMap(data.eeMapId, data.eeToken, 'test', 4);
-					//console.log(data);
-					//window.location.replace(data);
-					$('#link1').css('display', 'block');
-					$('#link1').attr('href', data);
-				},
-				error: function (data) {
-					console.log(data.responseText);
-				}
-			});
-		} else {
-			// use asynchronous ajax calls to allow getting/showing multiple download links at once
-			var async_ajax_call_export_counter  = 0;
-			var async_ajax_call_export_function = function(params) {
-				$.ajax({
-					url: "/export_selected",
-					async: true,
-					data: params,
-					dataType: "json",
-					success: function (data) {
-						// hide prep message
-						$('#download_prep').css('display', 'none');
-						// show result
-						//water.instance.showMap(data.eeMapId, data.eeToken, 'test', 4);
-						//console.log(data);
-						//window.location.replace(data);
-						$('#link' + (async_ajax_call_export_counter+1)).css('display', 'block');
-						$('#link' + (async_ajax_call_export_counter+1)).attr('href', data);
-						async_ajax_call_export_counter++;
-						if (async_ajax_call_export_counter < water.instance.points.length) {
-							point  = water.instance.points[async_ajax_call_export_counter];
-							params = $.extend(base_params, point, {export_name: export_name});
-							async_ajax_call_export_function(params);
-						}
-					},
-					error: function (data) {
-						console.log(data.responseText);
-						async_ajax_call_export_counter++;
-						if (async_ajax_call_export_counter < water.instance.points.length) {
-							point  = water.instance.points[async_ajax_call_export_counter];
-							params = $.extend(base_params, point, {export_name: export_name});
-							async_ajax_call_export_function(params);
-						}
-					}
-				});
+
+		export_geom = $("input[name='export-selection']:checked").val()
+		params = {}
+
+		var controlRegionAdmPolygon = false;
+    var interventionRegionAdmPolygon = false;
+		if (export_geom === "control") {
+			if (water.App.controlLat && water.App.controlLon) {
+				controlRegionAdmPolygon = true;
 			}
-			var point  = water.instance.points[0];
-			var params = $.extend(base_params, point, {export_name: export_name}, {region_selection: region_selection});
-			async_ajax_call_export_function(params);
+			if (controlRegionAdmPolygon) {
+				params.whichPoly = controlRegionAdmPolygon;
+				params.geomLat = water.App.controlLat;
+				params.geomLon = water.App.controlLon;
+			} else {
+				var coords = getCoordinates();
+				params.geom = coords[0].toString();
+			}
 		}
-		// get metadata
-		var metadata_header = Object.keys(water.App.prototype.getAllParams()).join().toString();
-		var metadata_values = $.map(water.App.prototype.getAllParams(), function(x){return x}).join().toString();
-		var metadata_csv    = metadata_header + '\n' + metadata_values
-		$('#link_metadata').css('display', 'block');
-		$('#link_metadata').attr('download', export_name + '.csv');
-		$('#link_metadata').attr('href', encodeURI("data:text/csv;charset=utf-8" + ',' + metadata_csv));
+		else {
+			if (water.App.interventionLat && water.App.interventionLon) {
+				interventionRegionAdmPolygon = true;
+			}
+			if (interventionRegionAdmPolygon) {
+	      params.whichPoly = interventionRegionAdmPolygon;
+	      params.geomLat = water.App.interventionLat;
+	      params.geomLon = water.App.interventionLon;
+	    } else {
+	      var coords = getCoordinates();
+	      params.geom = coords[1].toString();
+	    }
+		}
+
+		console.log(params)
+
+		// get download link(s)
+		var coords_array = params.geom;
+		var coords_list  = []
+		var params = $.extend(base_params, {coords: JSON.stringify(coords_list)}, {export_name: export_name});
+		$.ajax({
+			url: "/export_drawn",
+			data: params,
+			dataType: "json",
+			success: function (data) {
+				// hide prep message
+				$('#download_prep').css('display', 'none');
+				// show result
+				//water.instance.showMap(data.eeMapId, data.eeToken, 'test', 4);
+				//console.log(data);
+				//window.location.replace(data);
+				$('#link1').css('display', 'block');
+				$('#link1').attr('href', data);
+			},
+			error: function (data) {
+				console.log(data.responseText);
+			}
+		});
 	});
+
+		// get metadata
+		// var metadata_header = Object.keys(water.App.prototype.getAllParams()).join().toString();
+		// var metadata_values = $.map(water.App.prototype.getAllParams(), function(x){return x}).join().toString();
+		// var metadata_csv    = metadata_header + '\n' + metadata_values
+		// $('#link_metadata').css('display', 'block');
+		// $('#link_metadata').attr('download', export_name + '.csv');
+		// $('#link_metadata').attr('href', encodeURI("data:text/csv;charset=utf-8" + ',' + metadata_csv));
 };
 
 // ---------------------------------------------------------------------------------- //
@@ -1454,10 +1458,11 @@ water.App.prototype.numberOfDays = function(day1, day2) {
  * @return {google.maps.ImageMapType} A Google Maps ImageMapType object for the
  *     EE map with the given ID and token.
  */
-water.App.getEeMapType = function(eeMapId, eeToken, name) {
+water.App.prototype.getEeMapType = function(eeMapId, eeToken, name) {
+	// var EE_URL = 'https://earthengine.googleapis.com';
   var eeMapOptions = {
     getTileUrl: function(tile, zoom) {
-      var url = water.App.EE_URL + '/map/';
+      var url = EE_URL + '/map/';
       url += [eeMapId, zoom, tile.x, tile.y].join('/');
       url += '?token=' + eeToken;
       return url;
@@ -1482,16 +1487,16 @@ water.App.createDrawingManager = function(map, type) {
     drawingManagerOptions = {
       drawingControl: false,
       polygonOptions: {
-        fillColor: '#e8370b',
-        strokeColor: '#e8370b'
+        fillColor: '#2c3e50',
+        strokeColor: '#2c3e50'
       }
     };
   } else if (type === 'interventionRegion') {
     drawingManagerOptions = {
       drawingControl: false,
       polygonOptions: {
-        fillColor: '#16e5b1',
-        strokeColor: '#16e5b1'
+        fillColor: '#95a5a6',
+        strokeColor: '#95a5a6'
       }
     };
   }
