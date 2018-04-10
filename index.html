@@ -25,6 +25,8 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/6.1.5/bootstrap-slider.min.js"></script>
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+		<script src="https://code.highcharts.com/modules/exporting.js"></script>
 
 		<!-- Third-party CSS. -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
@@ -36,6 +38,8 @@
 		<link rel="stylesheet" href="static/main.css">
 		<script src="/static/script.js"></script>
 		<script src="/static/ee_api_js.js"></script>
+		<script src="/static/export-csv.js"></script>
+
 
 	</head>
 	<body>
@@ -43,9 +47,19 @@
 		<!-- The DOM of the application. -->
 		<div class="water">
 
-			<!-- Banner with SERVIR-Mekong logo. -->
+			<div class="col" id='open-menu' style="display:none">
+				<div class="con">
+					<div class="bar arrow-top"></div>
+					<div class="bar arrow-middle"></div>
+					<div class="bar arrow-bottom"></div>
+				</div>
+			</div>
+
+			<div class="loader"></div>
+
+			<!-- Banner with SERVIR-Mekong logo. margin:0px 35px-->
 			<div class="banner" align="right">
-				<div style="float:right; width:100%; height: 20px; margin:0px 10px; "><img border="0" style="height:25px; margin-top:2px;" src="static/images/servir.png"></div>
+				<div style="float:right; width:100%; height: 20px; right:35px; position:absolute;"><a target="blank_" href="https://servir.adpc.net/"><img border="0" style="height:25px; margin-top:2px;" src="static/images/servir.png"></a></div>
 			</div>
 
 			<!-- The element into which Google Maps is rendered. -->
@@ -55,35 +69,60 @@
 			<div class="ui">
 
 				<!-- Button that opens the main control box after it has been collapsed -->
-				<div class="settings-button">&#9776;</div>
+				<!-- <div class="settings-button">&#9776;</div>
 				<script>
 				$(document).ready(function(){
 					$(".settings-button").click(function () {
+						$(".map").css("left", "500px");
 						$(".settings-button").toggle();
 						$(".panel").toggle();
 					});
 				});
-				</script>
+				</script> -->
 
 				<!-- The main control box. -->
 				<div class="panel">
+
+					<div class="col1" id='close-menu'>
+							<div class="con">
+								<div class="bar top"></div>
+								<div class="bar middle"></div>
+								<div class="bar bottom"></div>
+							</div>
+					</div>
 
 					<!-- Title, info button with general information text and collapse button. -->
 					<header>
 						<h1>
 							<span>Global Ecodash</span>
 							<!-- collapse button for entire panel. -->
-							<div class="collapse-button">&#171;</div>
+
+							<!-- <div class="hamburger hamburger-collapse" id="collapse-button" type="button">
+								<span class="hamburger-box">
+									<span class="hamburger-inner"></span>
+								</span>
+							</div>
+							<script>
+							$(document).ready(function(){
+								$("#collapse-button").click(function () {
+									$(".map").css("left", "500px");
+									$("#settings-button").toggle();
+									$(".panel").toggle();
+								});
+							});
+							</script> -->
+							<!-- <div class="collapse-button">&#171;</div>
 							<script>
 							$(document).ready(function(){
 								$(".collapse-button").click(function () {
+									$(".map").css("left", "0px");
 									$(".panel").toggle();
 									$(".settings-button").toggle();
 								});
 							});
-							</script>
+							</script> -->
 							<!-- button that toggles display of general information -->
-							<button class="general-info-button btn btn-default btn-xs pull-right">i</button>
+							<button class="general-info-button btn btn-default btn-xs pull-right">?</button>
 							<script>
 							$(".general-info-button").click(function () {
 								$(".general-info").toggleClass("general-info-shown");
@@ -211,7 +250,7 @@
 								<span>Legend:</span>
 								<img class="legend-img" src="/static/images/mylegend.png" alt="Legend">
 								<p class='legend-labels'>
-									Decrease
+									&nbsp&nbsp&nbspDecrease
 									&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
 									Stable
 									&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
@@ -224,16 +263,16 @@
 					<!-- Controls -->
 					<div class="controls">
 						<div class="inputs">
-							<p><b>Controls:</b></p>
+							<h4><b>Controls:</b></h4>
 							<!-- The year selection control. -->
 							<div class="input-block before-date">
 								<div class="input-block-label"><b>B</b>efore Period:</div>
-								<input class="date-picker-1 form-control">
+								<input class="date-picker-1 form-control ui-control">
 								<span class="period_slice"> - </span>
 								<input class="date-picker-2 form-control">
 							</div>
 
-							<div class="input-block after-date">
+							<div class="input-block after-date" id="interDates">
 								<div class="input-block-label"><b>A</b>fter Period:</div>
 								<input class="date-picker-3 form-control">
 								<span class="period_slice"> - </span>
@@ -247,13 +286,14 @@
 									<li><input type="radio" name="control-selection-method" value="Adm. bounds" id="control-selection-method"><label>Adm. bounds</label></li>
 									<!-- <li><input type="radio" name="control-selection-method" value="Tiles" id="control-selection-method"><label>Tiles</label></li> -->
 									<li><input type="radio" name="control-selection-method" value="Draw polygon" id="control-selection-method"><label>Draw polygon</label></li>
+									<li><span class="box" id="controlRegionColorBox" style="background-color: #2c3e50" /></li>
 								</ul>
 								<span class="message">
 									<a class="control-draw" href="#"></a>
 								</span>
 								<span class="message-drawing">
 									<!--Draw a polygon... -->
-									<button class="control-cancel btn btn-default btn-xs">Cancel</button>
+									<!--<button class="control-cancel btn btn-default btn-xs">Cancel</button>-->
 								</span>
 								<span class="message-selected">
 									<!--Selected-->
@@ -267,13 +307,14 @@
 									<li><input type="radio" name="intervention-selection-method" value="Adm. bounds" id="intervention-selection-method"><label>Adm. bounds</label></li>
 									<!-- <li><input type="radio" name="intervention-selection-method" value="Tiles" id="intervention-selection-method"><label>Tiles</label></li> -->
 									<li><input type="radio" name="intervention-selection-method" value="Draw polygon" id="intervention-selection-method"><label>Draw polygon</label></li>
+									<li><span class="box" id="interventionRegionColorBox" style="background-color: #95a5a6" /></li>
 								</ul>
 								<span class="message">
-									<a class="-intervention-draw" href="#"></a>
+									<a class="intervention-draw" href="#"></a>
 								</span>
 								<span class="message-drawing">
 									<!--Draw a polygon... -->
-									<button class="intervention-cancel btn btn-default btn-xs">Cancel</button>
+									<!--<button class="intervention-cancel btn btn-default btn-xs">Cancel</button>-->
 								</span>
 								<span class="message-selected">
 									<!--Selected-->
@@ -295,7 +336,7 @@
 								<div class="input-block-label">Export Region:</div>
 									<ul>
 										<li><input type="radio" name="export-selection" value="control" id="export-selection"><label>Control</label></li>
-										<li><input type="radio" name="export-selection" value="intervention" id="export-selection"><label>Intervention</label></li>
+										<li><input type="radio" name="export-selection" value="intervention" id="export-selection" checked="checked"><label>Intervention</label></li>
 									</ul>
 								<br>
 								<span class="input-block-label">Filename:</span>
@@ -329,7 +370,7 @@
 					</div>
 
 
-					<div class="attr-show-button">&#171;</div>
+					<!-- <div class="attr-show-button">&#171;</div>
 					<script>
 					$(document).ready(function(){
 						$(".attr-show-button").click(function () {
@@ -338,20 +379,21 @@
 							$(".attr-collapse-button").show();
 						});
 					});
-					</script>
+					</script> -->
 
 					<!-- Block with relevant organisation/company logo and link to websites -->
 					<div class="attributions">
 						<hr/>
 						<a href="https://www.usaid.gov/" target="_blank"><img border="0" src="static/images/usaid.png" style="height: 40px"></a>
-						<a href="https://www.nasa.gov/" target="_blank"><img border="0" src="static/images/nasa.png" style="height: 40px; margin-left:30px"></a>
-						<a href="http://www.adpc.net/" target="_blank"><img border="0" src="static/images/adpclogo.jpg" style="height:40px; margin-left:30px"></a>
-						<a href="https://www.deltares.nl/en/" target="_blank"><img border="0" src="static/images/deltares_tr.png" style="height:36px; margin-left:5px"></a>
-						<a href="http://http://sig-gis.com/" target="_blank"><img border="0" src="static/images/sig_tr.png" style="height: 40px; margin-top:10px; margin-left:35px"></a>
+						<a href="https://www.nasa.gov/" target="_blank"><img border="0" src="static/images/nasa.png" style="height: 40px; margin-left:25px"></a>
+						<a href="http://www.adpc.net/" target="_blank"><img border="0" src="static/images/adpclogo.jpg" style="height:40px; margin-left:15px"></a>
+						<a href="http://http://sig-gis.com/" target="_blank"><img border="0" src="static/images/sig_tr.png" style="height: 39px; margin-top:10px; margin-left:8px"></a>
+						<a href="https://www.deltares.nl/en/" target="_blank"><img border="0" src="static/images/deltares_tr.png" style="height:36px; margin-left:80px"></a>
 						<a href="https://www.sei-international.org/asia" target="_blank"><img border="0" src="static/images/sei_tr.png" style="height: 40px; margin-top:10px; margin-left:50px"></a>
 						<!--<a href="https://earthengine.google.com/" target="_blank"><img border="0" src="static/images/googlelogo_color_272x92dp.png" style="height:34px; margin-left:15px"></a>-->
 						<a href="https://earthengine.google.com/" target="_blank"><img border="0" src="static/images/google_earthengine_powered_400px.png" style="height:40px; margin-top:10px; margin-left:100px"></a>
-						<div class="attr-collapse-button">&#171;</div>
+						<p></br></br></p>
+						<!-- <div class="attr-collapse-button">&#171;</div>
 						<script>
 						$(document).ready(function(){
 							$(".attr-collapse-button").click(function () {
@@ -362,7 +404,7 @@
 						});
 						</script>
 					</div>
-				</div>
+				</div> -->
 
 				<!-- scrollbar for entire panel -->
 				<script>
@@ -388,6 +430,18 @@
 				<a id="link3" target="_blank">Click here to download water layer (3)</a>
 				<a id="link4" target="_blank">Click here to download water layer (4)</a>
 				<a id="link_metadata" target="_blank">Click here to download metadata</a>
+			</div>
+
+		</div>
+
+		<div id="chartModal" class="modal display-none-imp">
+
+			<!-- Modal content -->
+			<div class="modal-content">
+				<div class="modal-header">
+					<span class="modal-close">&times;</span>
+				</div>
+				<div class="modal-body"></div>
 			</div>
 
 		</div>

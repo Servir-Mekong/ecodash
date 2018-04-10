@@ -14,6 +14,7 @@ import jinja2
 import webapp2
 import oauth2client.appengine
 
+
 import socket
 
 from google.appengine.api import urlfetch
@@ -33,7 +34,7 @@ MEMCACHE_EXPIRATION = 60 * 60 * 24
 
 
 # The URL fetch timeout time (seconds).
-URL_FETCH_TIMEOUT = 60
+URL_FETCH_TIMEOUT = 900
 
 WIKI_URL = ""
 
@@ -51,8 +52,8 @@ socket.setdefaulttimeout(URL_FETCH_TIMEOUT)
 urlfetch.set_default_fetch_deadline(URL_FETCH_TIMEOUT)
 
 # set the collection ID
-IMAGE_COLLECTION_ID1 = ee.ImageCollection('MODIS/MYD13A1')
-IMAGE_COLLECTION_ID2 = ee.ImageCollection('MODIS/MOD13A1')
+IMAGE_COLLECTION_ID1 = ee.ImageCollection('MODIS/006/MYD13Q1')
+IMAGE_COLLECTION_ID2 = ee.ImageCollection('MODIS/006/MOD13A1')
 
 IMAGE_COLLECTION_ID =  IMAGE_COLLECTION_ID1.merge(IMAGE_COLLECTION_ID2);
 
@@ -194,7 +195,6 @@ class GetAdmBoundsMapHandler(webapp2.RequestHandler):
             'eeMapId': mapid['mapid'],
             'eeToken': mapid['token']
         }
-        print(content)
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps(content))
 
@@ -220,9 +220,9 @@ class GetSelectedAdmBoundsHandler(webapp2.RequestHandler):
     def get(self):
         mode = self.request.params.get('mode')
         if mode == 'control':
-            color = 'grey'
+            color = '2c3e50'
         else:
-            color = 'magenta'
+            color = '95a5a6'
         lat   = ee.Number(float(self.request.params.get('lat')))
         lng   = ee.Number(float(self.request.params.get('lng')))
         point = ee.Geometry.Point([lng, lat])
@@ -259,26 +259,49 @@ class GetTimeSeriesHandler(webapp2.RequestHandler):
     def get(self):
 
         def coords2poly(points):
-            coords = []
-            for items in eval(points):
-    			coords.append([items[1],items[0]])
+            _geom = points.split(',')
+            coor_list = [float(_geom_) for _geom_ in _geom]
+            return ee.FeatureCollection(ee.Geometry.Polygon(coor_list))
 
-    	    return ee.FeatureCollection(ee.Geometry.Polygon(coords))
+        #control =  self.request.get('control')
+        #intervention = self.request.get('intervention')
+        beforeIni = self.request.get('before').split(',')[0]
+        beforeEnd = self.request.get('before').split(',')[1]
+        afterIni = self.request.get('after').split(',')[0]
+        afterEnd = self.request.get('after').split(',')[1]
 
-        control =  unicode(self.request.get('control'))
-        intervention = unicode(self.request.get('intervention'))
-        beforeIni = self.request.get('before')[0]
-        beforeEnd = self.request.get('before')[1]
-        afterIni = self.request.get('after')[0]
-        afterEnd = self.request.get('after')[1]
+        if self.request.get('controlAdmPolygon') == 'true':
+            lat   = ee.Number(float(self.request.params.get('controlLat')))
+            lng   = ee.Number(float(self.request.params.get('controlLon')))
+            point = ee.Geometry.Point([lng, lat])
+            controlPoly  = Adm_bounds.filterBounds(point)
+            #control = area.geometry()
+        else:
+            controlPoly = coords2poly(self.request.get('control'))
 
-        controlPoly = coords2poly(control)
-        interventionPoly = coords2poly(intervention)
+        if self.request.get('interventionAdmPolygon') == 'true':
+            lat = ee.Number(float(self.request.params.get('interventionLat')))
+            lng = ee.Number(float(self.request.params.get('interventionLon')))
+            point = ee.Geometry.Point([lng, lat])
+            interventionPoly = Adm_bounds.filterBounds(point)
+        else:
+            interventionPoly = coords2poly(self.request.get('intervention'))
+        #controlPoly = coords2poly(control)
+        #interventionPoly = coords2poly(intervention)
 
         cDetails = ComputePolygonDrawTimeSeries(controlPoly,beforeIni,beforeEnd,afterIni,afterEnd)
         iDetails = ComputePolygonDrawTimeSeries(interventionPoly,beforeIni,beforeEnd,afterIni,afterEnd)
 
-        details = {'control':cDetails,'intervention':iDetails}
+        diff = []
+        itv = zip(*iDetails)[1]
+        ctr = zip(*cDetails)[1]
+        timing = zip(*iDetails)[0]
+
+        for i in range(len(itv)):
+            d = itv[i]-ctr[i]
+            diff.append([timing[i],d])
+
+        details = {'control':cDetails,'intervention':iDetails,'difference':diff}
 		#memcache.add(str(counter), json.dumps(details), MEMCACHE_EXPIRATION)
         content = json.dumps(details)
 
@@ -350,13 +373,20 @@ def GetPolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end):
 
 def ComputePolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end):
 
+  featureArea = feature.geometry().area().getInfo()
+
+  print(featureArea)
+
+  if featureArea > 50000*1E6:
+      REDUCTION_SCALE_METERS = 10000
+
   """Returns a series of brightness over time for the polygon."""
   cumulative = Calculation(ref_start,ref_end,series_start,series_end)
 
   # Compute the mean brightness in the region in each image.
   def ComputeMean(img):
     reduction = img.reduceRegion(
-        ee.Reducer.mean(), feature.geometry(), REDUCTION_SCALE_METERS)
+        ee.Reducer.mean(), feature.geometry(), REDUCTION_SCALE_METERS,None,None,True)
     return ee.Feature(None, {
         'EVI': reduction.get('EVI'),
         'system:time_start': img.get('system:time_start')
@@ -427,12 +457,10 @@ def Calculation(before_start,before_end,after_start,after_end):
       # Get the internal_cloud_algorithm_flag bit.
       clouds = getQABits(QA,10, 10, 'cloud_flag');
       land = getQABits(QA,11, 13, 'land_flag');
+      qual = getQABits(QA,2, 5, 'quality_flag');
       mask = clouds.eq(0).And(land.eq(1))
       # Return an image masking out cloudy areas.
-      return img.updateMask(mask);
-
-  print ref_start,ref_end
-  print series_start, series_end
+      return img.updateMask(mask.And(qual.lt(12)));
 
   collection = ee.ImageCollection(IMAGE_COLLECTION_ID).map(maskPoorQuality)
   reference = collection.filterDate(before_start,before_end).sort('system:time_start').select('EVI')

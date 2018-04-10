@@ -27,7 +27,8 @@ water.App = function(eeMapId, eeToken) {
   this.map = water.App.createMap();
 
   // The drawing manager, for drawing on the Google Map.
-  this.drawingManager = water.App.createDrawingManager(this.map);
+  this.controlRegionDrawingManager = water.App.createDrawingManager(this.map, 'controlRegion');
+  this.interventionRegionDrawingManager = water.App.createDrawingManager(this.map, 'interventionRegion');
 
   // The currently active layer
   //(used to prevent reloading when requested layer is the same).
@@ -36,7 +37,6 @@ water.App = function(eeMapId, eeToken) {
 	this.waterParams = {};
 
    // Initialize the UI components.
-  this.initDatePickers();
   this.initControlRegionPicker();
 	this.initInterventionRegionPicker();
   this.toggleBoxes();
@@ -46,11 +46,48 @@ water.App = function(eeMapId, eeToken) {
 	this.initPlot();
 	this.updateMap();
 
+  // Close the Modal
+  $('span.modal-close').click(function () {
+    closeModal();
+  });
+
+	// Add Google Maps resize listener
+	$("#open-menu").click(function () {
+		// $(".map").css("left", "500px");
+		$(".map").css("width", "calc(100% - 9.6em)");
+
+		// listen for the window resize event & trigger Google Maps to update too
+	  $(window).resize(function() {
+	    // (the 'map' here is the result of the created 'var map = ...' above)
+	    google.maps.event.trigger(this.map, "resize");
+	  });
+		$("#close-menu").toggle();
+		$("#open-menu").toggle();
+		$(".ui").toggle();
+	});
+
+	$("#close-menu").click(function () {
+		// $(".map").css("left", "0px");
+		$(".map").css("width", "calc(100% + 26em)");
+
+
+		// listen for the window resize event & trigger Google Maps to update too
+		$(window).resize(function() {
+			// (the 'map' here is the result of the created 'var map = ...' above)
+			google.maps.event.trigger(this.map, "resize");
+		});
+		$("#close-menu").toggle();
+		$("#open-menu").toggle();
+		$(".ui").toggle();
+	});
+
+	this.initDatePickers();
+
   // Load the basic background maps.
   this.loadBasicMaps(eeMapId, eeToken);
 
    // Load the default image.
-  this.refreshImage();
+  //this.refreshImage();
 };
 
 /**
@@ -82,25 +119,25 @@ water.App.createMap = function() {
  * @return {google.maps.ImageMapType} A Google Maps ImageMapType object for the
  *     EE map with the given ID and token.
  */
-var getEeMapType = function(eeMapId, eeToken) {
-  var eeMapOptions = {
-    getTileUrl: function(tile, zoom) {
-      var url = EE_URL + '/map/';
-      url += [eeMapId, zoom, tile.x, tile.y].join('/');
-      url += '?token=' + eeToken;
-      return url;
-    },
-    tileSize: new google.maps.Size(256, 256),
-    name: 'ecomap',
-	opacity: 1.0
-  };
-  return new google.maps.ImageMapType(eeMapOptions);
-};
+// var getEeMapType = function(eeMapId, eeToken) {
+//   var eeMapOptions = {
+//     getTileUrl: function(tile, zoom) {
+//       var url = EE_URL + '/map/';
+//       url += [eeMapId, zoom, tile.x, tile.y].join('/');
+//       url += '?token=' + eeToken;
+//       return url;
+//     },
+//     tileSize: new google.maps.Size(256, 256),
+//     name: 'ecomap',
+// 	opacity: 1.0
+//   };
+//   return new google.maps.ImageMapType(eeMapOptions);
+// };
 
 
 // Load basic maps upon loading the main web page
 water.App.prototype.loadBasicMaps = function(eeMapId, eeToken) {
-	var mapType = getEeMapType(eeMapId, eeToken);
+	var mapType = this.getEeMapType(eeMapId, eeToken,'ecomap');
 	console.log(eeMapId)
 	this.map.overlayMapTypes.push(mapType);
 }
@@ -128,38 +165,55 @@ water.App.prototype.showBasicMap = function(eeMapId, eeToken, name, index) {
 
 // Initializes the date pickers.
 water.App.prototype.initDatePickers = function() {
+	var date = new Date();
   // Create the date pickers.
   $('.date-picker-1').datepicker({
     format: 'yyyy-mm-dd',
     viewMode: 'days',
     minViewMode: 'days',
     autoclose: true,
-    startDate: new Date('1988-01-01'),
-    endDate: new Date()
+		orientation: 'top right',
+		pickerPosition: 'top-right',
+		startDate: '2000-01-01',
+		endDate: date,
+		beforeShow: function(input, inst)
+    {
+        inst.dpDiv.css({marginLeft: '500px'});
+    }
   });
   $('.date-picker-2').datepicker({
     format: 'yyyy-mm-dd',
     viewMode: 'days',
     minViewMode: 'days',
     autoclose: true,
-    startDate: new Date('1988-01-01'),
-    endDate: new Date()
+		orientation: 'top right',
+		pickerPosition: 'top-right',
+		startDate: '2000-01-01',
+		endDate: date,
   });
 	$('.date-picker-3').datepicker({
 		format: 'yyyy-mm-dd',
 		viewMode: 'days',
 		minViewMode: 'days',
 		autoclose: true,
-		startDate: new Date('1988-01-01'),
-		endDate: new Date()
+		orientation: 'top right',
+		pickerPosition: 'top-right',
+		startDate: '2000-01-01',
+		endDate: date
 	});
 	$('.date-picker-4').datepicker({
 		format: 'yyyy-mm-dd',
 		viewMode: 'days',
 		minViewMode: 'days',
 		autoclose: true,
-		startDate: new Date('1988-01-01'),
-		endDate: new Date()
+		orientation: 'top right',
+		pickerPosition: 'top-right',
+		startDate: '2000-01-01',
+		endDate: date,
+		beforeShow: function(input, inst)
+		{
+				inst.dpDiv.css({marginLeft: '500px'});
+		}
 	});
 
   // Set default dates.
@@ -172,7 +226,7 @@ water.App.prototype.initDatePickers = function() {
   //$('.date-picker').on('changeDate', this.refreshImage.bind(this));
 
   // Respond when the user clicks the 'submit' button.
-  $('.submit').on('click', this.refreshImage.bind(this));
+  //$('.submit').on('click', this.refreshImage.bind(this));
 };
 
 
@@ -307,7 +361,7 @@ water.App.prototype.setWaterMap = function(eeMapId, eeToken, name, index) {
 water.App.prototype.removeLayer = function(name) {
   this.map.overlayMapTypes.forEach((function(mapType, index) {
     if (mapType && mapType.name == name) {
-      //this.map.overlayMapTypes.removeAt(index);   // old, hard removal
+      // this.map.overlayMapTypes.removeAt(index);   // old, hard removal
 			this.map.overlayMapTypes.setAt(index, null);  // new, instead set null at the same index (to keep length of array intact, used for adding/removing layers and keep their zIndex intact)
     }
   }).bind(this));
@@ -434,6 +488,9 @@ water.App.prototype.removeLoadingAlert = function(name) {
 // Initializes the region picker.
 water.App.prototype.initControlRegionPicker = function() {
 
+  // Hide the color box
+  $('span#controlRegionColorBox').hide();
+
 	// Respond when the user changes the selection
 	$("input[name='control-selection-method']").change(polygonSelectionMethod);
 
@@ -463,7 +520,7 @@ water.App.prototype.initControlRegionPicker = function() {
 		// carry out action based on selection
 		if (selection == "Tiles"){
 			// cancel drawing
-			$('.control-region .control-cancel').click();
+			//$('.control-region .control-cancel').click();
 			// clear existing overlays
 			water.instance.removeLayer('adm_bounds');
 			$('.control-region .control-clear').click();
@@ -471,10 +528,13 @@ water.App.prototype.initControlRegionPicker = function() {
 			water.App.prototype.loadTilesMap();
 		} else if (selection == "Adm. bounds"){
 			// cancel drawing
-			$('.control-region .control-cancel').click();
+			//$('.control-region .control-cancel').click();
 			// clear existing overlays
 			water.instance.removeLayer('tiles');
 			$('.control-region .control-clear').click();
+      // Starts
+      $('.control-region').toggleClass('drawing', false);
+      water.instance.controlRegionDrawingManager.setOptions({drawingMode: null});
 			// show overlay on map
 			water.App.prototype.loadAdmBoundsMap();
 		} else if (selection == "Draw polygon"){
@@ -488,12 +548,12 @@ water.App.prototype.initControlRegionPicker = function() {
 
 	this.map.addListener('click', function(event) {
 		var selection = $("input[name='control-selection-method']:checked").val();
+    var coords = event.latLng;
+    var lat = coords.lat();
+    var lng = coords.lng();
 		if (selection == 'Tiles' || selection == 'Adm. bounds') {
-			var coords = event.latLng;
-			var lat = coords.lat();
-			var lng = coords.lng();
 			var params = {lat: lat, lng: lng,mode:'control'};
-			var name = 'selected_polygon';
+			var name = 'selected_control_polygon';
 			if (ctrl_key_is_down) {
 				// check if current selection doesn't exceed allowed maximum
 				if (nr_selected < water.App.MAX_SELECTION) {
@@ -503,7 +563,7 @@ water.App.prototype.initControlRegionPicker = function() {
 				}
 			} else {
 				for (var i=0; i<nr_selected; i++) {
-					water.instance.removeLayer(name);
+					//water.instance.removeLayer(name);
 				}
 				nr_selected = 1;
 				water.instance.points = [];
@@ -515,7 +575,7 @@ water.App.prototype.initControlRegionPicker = function() {
 				data: params,
 				dataType: "json",
 				success: function (data) {
-					water.instance.showMap(data.eeMapId, data.eeToken, name, 4);
+					water.instance.showMap(data.eeMapId, data.eeToken, name, 5);
 					$('.export').attr('disabled', false);
 					//water.instance.point = params;
 					water.instance.points.push(params);
@@ -525,35 +585,47 @@ water.App.prototype.initControlRegionPicker = function() {
 				}
 			});
 		} else if (selection == 'Adm. bounds') {
-			$('.warnings span').text('')
-			$('.warnings').hide();
-			$.ajax({
-				url: "/select_adm_bounds",
-				data: params,
-				dataType: "json",
-				success: function (data) {
-					water.instance.showMap(data.eeMapId, data.eeToken, name, 4);
-					//console.log(data.size);
-					if (data.size > water.App.AREA_LIMIT_2) {
-						// $('.export').attr('disabled', true);
-						$('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_2 + ' km2. This exceeds the current limitations for downloading data. ' +
-																		 'Please use one of the other region selection options to download data for this area.')
-						$('.warnings').show();
-					} else if (data.size > water.App.AREA_LIMIT_1) {
-						// $('.export').attr('disabled', false);
-						$('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_1 + ' km2. This is near the current limitation for downloading data. '+
-																		 'Please be warned that the download might result in a corrupted zip file. You can give it a try or use  one of the other region selection options to download data for this area.')
-						$('.warnings').show();
-					} else {
-						// $('.export').attr('disabled', false);
-					}
-					//water.instance.point = params;
-					water.instance.points.push(params);
-				},
-				error: function (data) {
-					console.log(data.responseText);
-				}
-			});
+      this.overlayMapTypes.forEach(function (layer, index) {
+				$('.loader').toggle();
+        if (layer && layer.name === 'adm_bounds' && $('span#controlRegionColorBox').is(':hidden')) {
+          $('.warnings span').text('');
+          $('.warnings').hide();
+          water.App.controlLat = lat;
+          water.App.controlLon = lng;
+          $.ajax({
+            url: "/select_adm_bounds",
+            data: params,
+            dataType: "json",
+            success: function (data) {
+              water.instance.removeLayer('adm_bounds');
+              water.instance.showMap(data.eeMapId, data.eeToken, name, 5);
+              //console.log(data.size);
+              if (data.size > water.App.AREA_LIMIT_2) {
+                // $('.export').attr('disabled', true);
+                $('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_2 + ' km2. This exceeds the current limitations for downloading data. ' +
+                                         'Please use one of the other region selection options to download data for this area.')
+                $('.warnings').show();
+              } else if (data.size > water.App.AREA_LIMIT_1) {
+                // $('.export').attr('disabled', false);
+                $('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_1 + ' km2. This is near the current limitation for downloading data. '+
+                                         'Please be warned that the download might result in a corrupted zip file. You can give it a try or use  one of the other region selection options to download data for this area.')
+                $('.warnings').show();
+              } else {
+                // $('.export').attr('disabled', false);
+              }
+              //water.instance.point = params;
+              water.instance.points.push(params);
+              $('span#controlRegionColorBox').show();
+              $('.intervention-region').show();
+							$('.loader').toggle()
+            },
+            error: function (data) {
+              console.log(data.responseText);
+							$('.loader').toggle()
+            }
+          });
+        }
+      });
 		}
 	});
 
@@ -562,11 +634,15 @@ water.App.prototype.initControlRegionPicker = function() {
 
   // Respond when the user draws a polygon on the map.
   google.maps.event.addListener(
-      this.drawingManager, 'overlaycomplete',
+      this.controlRegionDrawingManager, 'overlaycomplete',
       (function(event) {
         if (this.getControlDrawingModeEnabled()) {
-          this.handleNewPolygon(event.overlay);
+          this.handleNewPolygon(event.overlay, 'controlRegion');
+          $('span#controlRegionColorBox').show();
+          $('.intervention-region').show();
 					// this.controlAOI = event.overlay
+          water.App.controlLat = null;
+          water.App.controlLon = null;
         } else {
           event.overlay.setMap(null);
         }
@@ -628,12 +704,12 @@ water.App.prototype.initControlRegionPicker = function() {
 
   // Respond when the user cancels polygon drawing.
   //$('.region .cancel').click(this.setDrawingModeEnabled.bind(this, false));  // original function
-	$('.control-region .control-cancel').click((function() {
+	/*$('.control-region .control-cancel').click((function() {
 		this.setControlDrawingModeEnabled(false);
 		if ($("input[name='control-selection-method']:checked").val() == 'Draw polygon') {
 			$("input[name='control-selection-method']:checked").attr('checked', false);
 		}
-	}).bind(this));
+	}).bind(this));*/
 
   // Respond when the user clears the polygon.
   //$('.region .clear').click(this.clearPolygon.bind(this));  // original function
@@ -641,9 +717,11 @@ water.App.prototype.initControlRegionPicker = function() {
 		// try to clear polygon (won't work if no polygon was drawn, try/catch to make it work)
 		try {
 			this.clearControlPolygon();
+      $('span#controlRegionColorBox').hide();
+      $('.intervention-region').hide();
 		} catch(err) {
-			//console.log('Trying to remove a drawn polygon from map, but results in error:')
-			//console.log(err);
+			console.log('Trying to remove a drawn polygon from map, but results in error:')
+			console.log(err);
 		}
 		if ($("input[name='control-selection-method']:checked").val() == 'Draw polygon') {
 			$("input[name='control-selection-method']:checked").attr('checked', false);
@@ -655,6 +733,12 @@ water.App.prototype.initControlRegionPicker = function() {
 
 // Initializes the region picker.
 water.App.prototype.initInterventionRegionPicker = function() {
+
+  // Hide the intervention Control Box
+  $('.intervention-region').hide();
+
+  // Hide the color box
+  $('span#interventionRegionColorBox').hide();
 
 	// Respond when the user changes the selection
 	$("input[name='intervention-selection-method']").change(polygonSelectionMethod);
@@ -685,7 +769,7 @@ water.App.prototype.initInterventionRegionPicker = function() {
 		// carry out action based on selection
 		if (selection == "Tiles"){
 			// cancel drawing
-			$('.intervention-region .intervention-cancel').click();
+			//$('.intervention-region .intervention-cancel').click();
 			// clear existing overlays
 			water.instance.removeLayer('adm_bounds');
 			$('.intervention-region .intervention-clear').click();
@@ -693,12 +777,16 @@ water.App.prototype.initInterventionRegionPicker = function() {
 			water.App.prototype.loadTilesMap();
 		} else if (selection == "Adm. bounds"){
 			// cancel drawing
-			$('.intervention-region .intervention-cancel').click();
+			//$('.intervention-region .intervention-cancel').click();
 			// clear existing overlays
 			water.instance.removeLayer('tiles');
 			$('.intervention-region .intervention-clear').click();
+      // Starts
+      $('.intervention-region').toggleClass('drawing', false);
+      water.instance.interventionRegionDrawingManager.setOptions({drawingMode: null});
 			// show overlay on map
 			water.App.prototype.loadAdmBoundsMap();
+      water.App.prototype.setInterventionDrawingModeEnabled(false);
 		} else if (selection == "Draw polygon"){
 			// clear existing overlays
 			water.instance.removeLayer('adm_bounds');
@@ -709,25 +797,19 @@ water.App.prototype.initInterventionRegionPicker = function() {
 	}
 
 	this.map.addListener('click', function(event) {
+		$('.loader').toggle()
 		var selection = $("input[name='intervention-selection-method']:checked").val();
 		var exportation = $("input[name='intervention-selection-method']:checked").val();
 
 		if (exportation == 'control' || exportation == 'intervention') {
 			$('.export').attr('disabled', false);
 		}
-		// if (exportation == 'control') {
-		//
-		// }
-		// if (exportation == 'intervention') {
-		//
-		// }
-
+    var coords = event.latLng;
+    var lat = coords.lat();
+    var lng = coords.lng();
 		if (selection == 'Tiles' || selection == 'Adm. bounds') {
-			var coords = event.latLng;
-			var lat = coords.lat();
-			var lng = coords.lng();
 			var params = {lat: lat, lng: lng, mode:'intervention'};
-			var name = 'selected_polygon';
+			var name = 'selected_intervention_polygon';
 			if (ctrl_key_is_down) {
 				// check if current selection doesn't exceed allowed maximum
 				if (nr_selected < water.App.MAX_SELECTION) {
@@ -759,35 +841,45 @@ water.App.prototype.initInterventionRegionPicker = function() {
 				}
 			});
 		} else if (selection == 'Adm. bounds') {
-			$('.warnings span').text('')
-			$('.warnings').hide();
-			$.ajax({
-				url: "/select_adm_bounds",
-				data: params,
-				dataType: "json",
-				success: function (data) {
-					water.instance.showMap(data.eeMapId, data.eeToken, name, 4);
-					//console.log(data.size);
-					if (data.size > water.App.AREA_LIMIT_2) {
-						// $('.export').attr('disabled', true);
-						$('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_2 + ' km2. This exceeds the current limitations for downloading data. ' +
-																		 'Please use one of the other region selection options to download data for this area.')
-						$('.warnings').show();
-					} else if (data.size > water.App.AREA_LIMIT_1) {
-						// $('.export').attr('disabled', false);
-						$('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_1 + ' km2. This is near the current limitation for downloading data. '+
-																		 'Please be warned that the download might result in a corrupted zip file. You can give it a try or use  one of the other region selection options to download data for this area.')
-						$('.warnings').show();
-					} else {
-						// $('.export').attr('disabled', false);
-					}
-					//water.instance.point = params;
-					water.instance.points.push(params);
-				},
-				error: function (data) {
-					console.log(data.responseText);
-				}
-			});
+      this.overlayMapTypes.forEach(function (layer, index) {
+        if (layer && layer.name === 'adm_bounds' && $('span#interventionRegionColorBox').is(':hidden')) {
+					$('.warnings span').text('');
+    			$('.warnings').hide();
+          water.App.interventionLat = lat;
+          water.App.interventionLon = lng;
+    			$.ajax({
+    				url: "/select_adm_bounds",
+    				data: params,
+    				dataType: "json",
+    				success: function (data) {
+              water.instance.removeLayer('adm_bounds');
+    					water.instance.showMap(data.eeMapId, data.eeToken, name, 4);
+    					//console.log(data.size);
+    					if (data.size > water.App.AREA_LIMIT_2) {
+    						// $('.export').attr('disabled', true);
+    						$('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_2 + ' km2. This exceeds the current limitations for downloading data. ' +
+    																		 'Please use one of the other region selection options to download data for this area.')
+    						$('.warnings').show();
+    					} else if (data.size > water.App.AREA_LIMIT_1) {
+    						// $('.export').attr('disabled', false);
+    						$('.warnings span').text('The selected area is larger than ' + water.App.AREA_LIMIT_1 + ' km2. This is near the current limitation for downloading data. '+
+    																		 'Please be warned that the download might result in a corrupted zip file. You can give it a try or use  one of the other region selection options to download data for this area.')
+    						$('.warnings').show();
+    					} else {
+    						// $('.export').attr('disabled', false);
+    					}
+    					//water.instance.point = params;
+    					water.instance.points.push(params);
+              $('span#interventionRegionColorBox').show();
+							$('.loader').toggle()
+    				},
+    				error: function (data) {
+    					console.log(data.responseText);
+							$('.loader').toggle()
+    				}
+    			});
+        }
+      });
 		}
 	});
 
@@ -796,11 +888,14 @@ water.App.prototype.initInterventionRegionPicker = function() {
 
   // Respond when the user draws a polygon on the map.
   google.maps.event.addListener(
-      this.drawingManager, 'overlaycomplete',
+      this.interventionRegionDrawingManager, 'overlaycomplete',
       (function(event) {
         if (this.getInterventionDrawingModeEnabled()) {
-          this.handleNewPolygon(event.overlay);
-					this.interventionAOI = event.overlay
+          this.handleNewPolygon(event.overlay, 'interventionRegion');
+					//this.interventionAOI = event.overlay;
+          $('span#interventionRegionColorBox').show();
+          water.App.interventionLat = null;
+          water.App.interventionLon = null;
         } else {
           event.overlay.setMap(null);
         }
@@ -862,12 +957,12 @@ water.App.prototype.initInterventionRegionPicker = function() {
 
   // Respond when the user cancels polygon drawing.
   //$('.region .cancel').click(this.setDrawingModeEnabled.bind(this, false));  // original function
-	$('.intervention-region .intervention-cancel').click((function() {
+	/*$('.intervention-region .intervention-cancel').click((function() {
 		this.setInterventionDrawingModeEnabled(false);
 		if ($("input[name='intervention-selection-method']:checked").val() == 'Draw polygon') {
 			$("input[name='intervention-selection-method']:checked").attr('checked', false);
 		}
-	}).bind(this));
+	}).bind(this));*/
 
   // Respond when the user clears the polygon.
   //$('.region .clear').click(this.clearPolygon.bind(this));  // original function
@@ -875,6 +970,7 @@ water.App.prototype.initInterventionRegionPicker = function() {
 		// try to clear polygon (won't work if no polygon was drawn, try/catch to make it work)
 		try {
 			this.clearInterventionPolygon();
+      $('span#interventionRegionColorBox').hide();
 		} catch(err) {
 			//console.log('Trying to remove a drawn polygon from map, but results in error:')
 			//console.log(err);
@@ -896,13 +992,17 @@ water.App.prototype.initInterventionRegionPicker = function() {
 water.App.prototype.setControlDrawingModeEnabled = function(enabled) {
   $('.control-region').toggleClass('drawing', enabled);
   var mode = enabled ? google.maps.drawing.OverlayType.POLYGON : null;
-  this.drawingManager.setOptions({drawingMode: mode});
+  if (this.controlRegionDrawingManager) {
+    this.controlRegionDrawingManager.setOptions({drawingMode: mode});
+  }
 };
 
 water.App.prototype.setInterventionDrawingModeEnabled = function(enabled) {
   $('.intervention-region').toggleClass('drawing', enabled);
   var mode = enabled ? google.maps.drawing.OverlayType.POLYGON : null;
-  this.drawingManager.setOptions({drawingMode: mode});
+  if (this.interventionRegionDrawingManager) {
+    this.interventionRegionDrawingManager.setOptions({drawingMode: mode});
+  }
 };
 
 /**
@@ -919,14 +1019,27 @@ water.App.prototype.getInterventionDrawingModeEnabled = function() {
 
 // Clears the current polygon from the map and enables drawing.
 water.App.prototype.clearControlPolygon = function() {
-  this.currentPolygon.setMap(null);
+  if (this.controlRegionPolygon) {
+    this.controlRegionPolygon.setMap(null);
+  }
+  water.instance.removeLayer('selected_control_polygon');
+  //$('input#control-selection-method').each(function () {
+    //$(this).removeClass('selected');
+  //  $(this).prop('checked', false);
+  //});
   $('.control-region').removeClass('selected');
   $('.export').attr('disabled', true);
 };
 
 // Clears the current polygon from the map and enables drawing.
 water.App.prototype.clearInterventionPolygon = function() {
-  this.currentPolygon.setMap(null);
+  if (this.interventionRegionPolygon) {
+    this.interventionRegionPolygon.setMap(null);
+  }
+  water.instance.removeLayer('selected_intervention_polygon');
+  //$('input#intervention-selection-method').each(function () {
+  //  $(this).prop('checked', false);
+  //});
   $('.intervention-region').removeClass('selected');
   $('.export').attr('disabled', true);
 };
@@ -936,7 +1049,7 @@ water.App.prototype.clearInterventionPolygon = function() {
  * @param {Object} opt_overlay The new polygon drawn on the map. If
  *     undefined, the default polygon is treated as the new polygon.
  */
-water.App.prototype.handleNewPolygon = function(opt_overlay) {
+water.App.prototype.handleNewPolygon = function(opt_overlay, type) {
 	var drawn_polygon_size = google.maps.geometry.spherical.computeArea(opt_overlay.getPath()) / 1e6;
 	//console.log(drawn_polygon_size);
 	if (drawn_polygon_size > water.App.AREA_LIMIT_2) {
@@ -953,9 +1066,14 @@ water.App.prototype.handleNewPolygon = function(opt_overlay) {
 	} else {
 		$('.export').attr('disabled', false);
 	}
-  this.currentPolygon = opt_overlay;
-  $('.control-region').addClass('selected');
-  this.setControlDrawingModeEnabled(false);
+  this[type + 'Polygon'] = opt_overlay;
+  //this.currentPolygon = opt_overlay;
+  //$('.control-region').addClass('selected');
+  if (type === 'controlRegion') {
+    this.setControlDrawingModeEnabled(false);
+  } else if (type === 'interventionRegion') {
+    this.setInterventionDrawingModeEnabled(false);
+  }
 };
 
 getDates = function() {
@@ -966,24 +1084,60 @@ getDates = function() {
   return [[controlIni,controlEnd],[interventionIni,interventionEnd]];
 };
 
+getPolygonArray = function (pathArray) {
+  var geom = [];
+  for (var i = 0; i < pathArray.length; i++) {
+    var coordinatePair = [pathArray[i].lng().toFixed(2), pathArray[i].lat().toFixed(2)];
+    geom.push(coordinatePair);
+  }
+  return geom;
+};
+
 getCoordinates = function() {
- 	var cAoi = this.controlPoly.getPath().getArray()
-	var iAoi = this.interventionPoly.getPath().getArray()
+  var cAoi = iAoi = [];
+  if (water.instance.controlRegionPolygon) {
+    cAoi = getPolygonArray(water.instance.controlRegionPolygon.getPath().getArray());
+		console.log(cAoi)
+  }
+  if (water.instance.interventionRegionPolygon) {
+    iAoi = getPolygonArray(water.instance.interventionRegionPolygon.getPath().getArray());
+		console.log(iAoi)
+  }
   return [cAoi, iAoi];
 };
 
-water.App.prototype.initPlot = function(){
+water.App.prototype.initPlot = function() {
 	$('.submit').click(function(){
 		$(".loader").toggle();
-		var dates = getDates()
-		var coords = getCoordinates();
-		var params = {before:dates[0],
-									after: dates[1],
-									control: coords[0],
-									intervention: coords[1]
-
-		}
-		console.log(coords)
+		var dates = getDates();
+    var params = {
+      before:dates[0].toString(),
+      after: dates[1].toString()
+    }
+    var controlRegionAdmPolygon = false;
+    var interventionRegionAdmPolygon = false;
+    if (water.App.controlLat && water.App.controlLon) {
+      controlRegionAdmPolygon = true;
+    }
+    if (water.App.interventionLat && water.App.interventionLon) {
+      interventionRegionAdmPolygon = true;
+    }
+    if (controlRegionAdmPolygon) {
+      params.controlAdmPolygon = controlRegionAdmPolygon;
+      params.controlLat = water.App.controlLat;
+      params.controlLon = water.App.controlLon;
+    } else {
+      var coords = getCoordinates();
+      params.control = coords[0].toString();
+    }
+    if (interventionRegionAdmPolygon) {
+      params.interventionAdmPolygon = interventionRegionAdmPolygon;
+      params.interventionLat = water.App.interventionLat;
+      params.interventionLon = water.App.interventionLon;
+    } else {
+      var coords = getCoordinates();
+      params.intervention = coords[1].toString();
+    }
 
 		$.ajax({
 			url: "/timeHandler",
@@ -994,68 +1148,99 @@ water.App.prototype.initPlot = function(){
 			},
 			error: function (data) {
 				alert("Uh-oh, an error occured! This is embarrassing! Here is the problem: "+data['error']+". Please try again.");
+				$('.loader').toggle()
 			}
 		})
 	}).bind(this)
 };
 
-
-var showChart = function(timeseries) {
-	document.getElementById('chart-window').style.display = "block";
-	document.getElementById('chart-info').style.display = "block";
-	var DataArr = []
-	timeseries.forEach(function(point) {
-		point[0] = new Date(parseInt(point[0], 10));
-		DataArr.push([point[0]]);
-	firstGraph = 1
-  });
-
-
-  var count = 0;
-  timeseries.forEach(function(point) {
-	  DataArr[count].push(point[1]);
-	  count = count +1;
-  });
-
-  chartData = new google.visualization.DataTable();
-  chartData.addColumn('date','Date');
-	chartData.addColumn('number','TSS');
-
-  chartData.addRows(DataArr);
-
-	// var data = google.visualization.arrayToDataTable([
-	// 				timeseries
-  //         // ['Year', 'Sales', 'Expenses'],
-  //         // ['2004',  1000,      400],
-  //         // ['2005',  1170,      460],
-  //         // ['2006',  660,       1120],
-  //         // ['2007',  1030,      540]
-  //       ]);
-
-  chartOptions = {
-    title: 'TSS over time',
-    // curveType: 'function',
-    legend: { position: 'bottom' },
-		vAxis: {title: 'TSS [mg/L]',minValue: 0},
-		lineWidth: 1.5,
-		pointSize: 3,
-  };
-
-  chart = new google.visualization.ScatterChart(document.getElementById('chart-info'));
-
-  chart.draw(chartData,chartOptions);
-
-	$('#Export').click(function () {
-        var csvFormattedDataTable = google.visualization.dataTableToCsv(data);
-        var encodedUri = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csvFormattedDataTable);
-        this.href = encodedUri;
-        this.download = 'table-data.csv';
-        this.target = '_blank';
-    });
-
-	$(".loader").toggle();
-
+// Modal Close Function
+var closeModal = function () {
+  $('.modal-body').html('');
+  $('#chartModal').addClass('display-none-imp');
 };
+
+// Modal Open Function
+var showModal = function () {
+  $('#chartModal').removeClass('display-none-imp');
+};
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function (event) {
+  if (event.target === $('#chartModal')[0]) {
+    closeModal();
+  }
+};
+
+var showChart = function (data) {
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
+
+  var date_x = [];
+  data.control.forEach(function (point) {
+    var d = new Date(parseInt(point[0], 10))
+    date_x.push(d.getFullYear() + " " + monthNames[d.getMonth()] + " " + (d.getDate() > 10 ? d.getDate() : '0' + d.getDate()));
+  });
+
+  var control_line = [];
+  var intervention_line = [];
+  var diff_line = [];
+  data.control.forEach(function (point) {
+    control_line.push(point[1]);
+  });
+  data.intervention.forEach(function (point) {
+    intervention_line.push(point[1]);
+  });
+  data.difference.forEach(function (point) {
+    diff_line.push(point[1]);
+  });
+
+  $('.modal-body').highcharts({
+    chart: {
+        type: 'line'
+    },
+    title: {
+        text: 'BACI Analysis'
+    },
+    subtitle: {
+        text: ''
+    },
+    xAxis: {
+        categories: date_x
+    },
+    yAxis: {
+        title: {
+            text: 'Change in EVI'
+        }
+    },
+    plotOptions: {
+        line: {
+            dataLabels: {
+                enabled: false
+            },
+            enableMouseTracking: true
+        }
+    },
+    series: [{
+        name: 'Control',
+        data: control_line
+    }, {
+        name: 'Intervention',
+        data: intervention_line
+    }, {
+      name: 'Difference',
+      data: diff_line
+    }],
+    credits: {
+      enabled: false
+    },
+		exporting: {
+			enabled: true
+		}
+  });
+  showModal();
+	$(".loader").toggle()
+};
+
 
 water.App.prototype.updateMap= function(){
 	$('.update').click(function(){
@@ -1066,6 +1251,8 @@ water.App.prototype.updateMap= function(){
 							afterHigh: dates[1][1]
 		}
 
+		water.instance.removeLayer('ecomap')
+
 		$('.loader').toggle()
 
 		$.ajax({
@@ -1073,15 +1260,16 @@ water.App.prototype.updateMap= function(){
 			data: params,
 			dataType: "json",
 			success: function (data) {
+				water.instance.removeLayer(name)
 				water.instance.showMap(data.eeMapId, data.eeToken, name, 0);
+				$('.loader').toggle()
 	    },
 	    error: function (data) {
 	      console.log(data.responseText);
+				$('.loader').toggle()
 	    }
 		})
 	}).bind(this)
-
-	$('.loader').toggle()
 }
 
 /**
@@ -1096,15 +1284,18 @@ water.App.prototype.clearMap = function(){
 
 // Load administrative boundaries maps
 water.App.prototype.loadAdmBoundsMap = function() {
+	$('.loader').toggle()
   var name = 'adm_bounds';
   $.ajax({
     url: "/get_adm_bounds_map",
     dataType: "json",
     success: function (data) {
 			water.instance.showMap(data.eeMapId, data.eeToken, name, 3);
+			$('.loader').toggle()
     },
     error: function (data) {
       console.log(data.responseText);
+			$('.loader').toggle()
     }
   });
 }
@@ -1131,8 +1322,8 @@ water.App.prototype.loadTilesMap = function() {
 water.App.prototype.showMap = function(eeMapId, eeToken, name, index) {
 	var EE_URL = 'https://earthengine.googleapis.com';
   var mapType = new ee.MapLayerOverlay(EE_URL + '/map', eeMapId, eeToken, {name: name});
-  //this.map.overlayMapTypes.push(mapType);        // old, just push to array, will always show latest layer on top
-	this.map.overlayMapTypes.setAt(index, mapType);  // new, use index to keep correct zIndex when adding/removing layers
+  this.map.overlayMapTypes.push(mapType);        // old, just push to array, will always show latest layer on top
+	//this.map.overlayMapTypes.setAt(index, mapType);  // new, use index to keep correct zIndex when adding/removing layers
 };
 
 // ---------------------------------------------------------------------------------- //
@@ -1140,6 +1331,14 @@ water.App.prototype.showMap = function(eeMapId, eeToken, name, index) {
 // ---------------------------------------------------------------------------------- //
 
 water.App.prototype.initExport = function() {
+	function wrapCoords(lng,lat){
+		coords_list = []
+		coords_array.forEach(function(coords) {
+			var lat = coords.lat();
+			var lng = coords.lng();
+			coords_list.push([lng,lat]);
+		});
+	}
 	$('.export').click(function () {
 		// show panel
 		$('.download_panel').css('display', 'block');
@@ -1164,83 +1363,72 @@ water.App.prototype.initExport = function() {
 		if (export_name == "") {
 			export_name = 'Ecodash_BACI_' + base_params.time_start + '_' + base_params.time_end;
 		}
-		// get download link(s)
-		var region_selection = $("input[name='control-selection-method']:checked").val();
-		if (region_selection == 'Draw polygon') {
-			var coords_array = water.instance.currentPolygon.latLngs.b[0].b;
-			var coords_list  = []
-			coords_array.forEach(function(coords) {
-				var lat = coords.lat();
-				var lng = coords.lng();
-				coords_list.push([lng,lat]);
-			});
-			var params = $.extend(base_params, {coords: JSON.stringify(coords_list)}, {export_name: export_name});
-			$.ajax({
-				url: "/export_drawn",
-				data: params,
-				dataType: "json",
-				success: function (data) {
-					// hide prep message
-					$('#download_prep').css('display', 'none');
-					// show result
-					//water.instance.showMap(data.eeMapId, data.eeToken, 'test', 4);
-					//console.log(data);
-					//window.location.replace(data);
-					$('#link1').css('display', 'block');
-					$('#link1').attr('href', data);
-				},
-				error: function (data) {
-					console.log(data.responseText);
-				}
-			});
-		} else {
-			// use asynchronous ajax calls to allow getting/showing multiple download links at once
-			var async_ajax_call_export_counter  = 0;
-			var async_ajax_call_export_function = function(params) {
-				$.ajax({
-					url: "/export_selected",
-					async: true,
-					data: params,
-					dataType: "json",
-					success: function (data) {
-						// hide prep message
-						$('#download_prep').css('display', 'none');
-						// show result
-						//water.instance.showMap(data.eeMapId, data.eeToken, 'test', 4);
-						//console.log(data);
-						//window.location.replace(data);
-						$('#link' + (async_ajax_call_export_counter+1)).css('display', 'block');
-						$('#link' + (async_ajax_call_export_counter+1)).attr('href', data);
-						async_ajax_call_export_counter++;
-						if (async_ajax_call_export_counter < water.instance.points.length) {
-							point  = water.instance.points[async_ajax_call_export_counter];
-							params = $.extend(base_params, point, {export_name: export_name});
-							async_ajax_call_export_function(params);
-						}
-					},
-					error: function (data) {
-						console.log(data.responseText);
-						async_ajax_call_export_counter++;
-						if (async_ajax_call_export_counter < water.instance.points.length) {
-							point  = water.instance.points[async_ajax_call_export_counter];
-							params = $.extend(base_params, point, {export_name: export_name});
-							async_ajax_call_export_function(params);
-						}
-					}
-				});
+
+		export_geom = $("input[name='export-selection']:checked").val()
+		params = {}
+
+		var controlRegionAdmPolygon = false;
+    var interventionRegionAdmPolygon = false;
+		if (export_geom === "control") {
+			if (water.App.controlLat && water.App.controlLon) {
+				controlRegionAdmPolygon = true;
 			}
-			var point  = water.instance.points[0];
-			var params = $.extend(base_params, point, {export_name: export_name}, {region_selection: region_selection});
-			async_ajax_call_export_function(params);
+			if (controlRegionAdmPolygon) {
+				params.whichPoly = controlRegionAdmPolygon;
+				params.geomLat = water.App.controlLat;
+				params.geomLon = water.App.controlLon;
+			} else {
+				var coords = getCoordinates();
+				params.geom = coords[0].toString();
+			}
 		}
-		// get metadata
-		var metadata_header = Object.keys(water.App.prototype.getAllParams()).join().toString();
-		var metadata_values = $.map(water.App.prototype.getAllParams(), function(x){return x}).join().toString();
-		var metadata_csv    = metadata_header + '\n' + metadata_values
-		$('#link_metadata').css('display', 'block');
-		$('#link_metadata').attr('download', export_name + '.csv');
-		$('#link_metadata').attr('href', encodeURI("data:text/csv;charset=utf-8" + ',' + metadata_csv));
+		else {
+			if (water.App.interventionLat && water.App.interventionLon) {
+				interventionRegionAdmPolygon = true;
+			}
+			if (interventionRegionAdmPolygon) {
+	      params.whichPoly = interventionRegionAdmPolygon;
+	      params.geomLat = water.App.interventionLat;
+	      params.geomLon = water.App.interventionLon;
+	    } else {
+	      var coords = getCoordinates();
+	      params.geom = coords[1].toString();
+	    }
+		}
+
+		console.log(params)
+
+		// get download link(s)
+		var coords_array = params.geom;
+		var coords_list  = []
+		var params = $.extend(base_params, {coords: JSON.stringify(coords_list)}, {export_name: export_name});
+		$.ajax({
+			url: "/export_drawn",
+			data: params,
+			dataType: "json",
+			success: function (data) {
+				// hide prep message
+				$('#download_prep').css('display', 'none');
+				// show result
+				//water.instance.showMap(data.eeMapId, data.eeToken, 'test', 4);
+				//console.log(data);
+				//window.location.replace(data);
+				$('#link1').css('display', 'block');
+				$('#link1').attr('href', data);
+			},
+			error: function (data) {
+				console.log(data.responseText);
+			}
+		});
 	});
+
+		// get metadata
+		// var metadata_header = Object.keys(water.App.prototype.getAllParams()).join().toString();
+		// var metadata_values = $.map(water.App.prototype.getAllParams(), function(x){return x}).join().toString();
+		// var metadata_csv    = metadata_header + '\n' + metadata_values
+		// $('#link_metadata').css('display', 'block');
+		// $('#link_metadata').attr('download', export_name + '.csv');
+		// $('#link_metadata').attr('href', encodeURI("data:text/csv;charset=utf-8" + ',' + metadata_csv));
 };
 
 // ---------------------------------------------------------------------------------- //
@@ -1264,10 +1452,11 @@ water.App.prototype.numberOfDays = function(day1, day2) {
  * @return {google.maps.ImageMapType} A Google Maps ImageMapType object for the
  *     EE map with the given ID and token.
  */
-water.App.getEeMapType = function(eeMapId, eeToken, name) {
+water.App.prototype.getEeMapType = function(eeMapId, eeToken, name) {
+	// var EE_URL = 'https://earthengine.googleapis.com';
   var eeMapOptions = {
     getTileUrl: function(tile, zoom) {
-      var url = water.App.EE_URL + '/map/';
+      var url = EE_URL + '/map/';
       url += [eeMapId, zoom, tile.x, tile.y].join('/');
       url += '?token=' + eeToken;
       return url;
@@ -1286,14 +1475,26 @@ water.App.getEeMapType = function(eeMapId, eeToken, name) {
  * @return {google.maps.drawing.DrawingManager} A drawing manager for
  *     the given map.
  */
-water.App.createDrawingManager = function(map) {
-  var drawingManager = new google.maps.drawing.DrawingManager({
-    drawingControl: false,
-    polygonOptions: {
-      fillColor: '#2c3e50',
-      strokeColor: '#2c3e50'
-    }
-  });
+water.App.createDrawingManager = function(map, type) {
+  var drawingManagerOptions;
+  if (type === 'controlRegion') {
+    drawingManagerOptions = {
+      drawingControl: false,
+      polygonOptions: {
+        fillColor: '#2c3e50',
+        strokeColor: '#2c3e50'
+      }
+    };
+  } else if (type === 'interventionRegion') {
+    drawingManagerOptions = {
+      drawingControl: false,
+      polygonOptions: {
+        fillColor: '#95a5a6',
+        strokeColor: '#95a5a6'
+      }
+    };
+  }
+  var drawingManager = new google.maps.drawing.DrawingManager(drawingManagerOptions);
   drawingManager.setMap(map);
   return drawingManager;
 };
@@ -1333,3 +1534,8 @@ water.App.ControlPoly = new google.maps.Polygon();
 
 /** @type {Object} Control Polygon */
 water.App.InterventionPoly = new google.maps.Polygon();
+
+water.App.controlLat = null;
+water.App.controlLon = null;
+water.App.interventionLat = null;
+water.App.interventionLon = null;
