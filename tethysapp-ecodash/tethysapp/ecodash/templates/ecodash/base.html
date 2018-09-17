@@ -1,0 +1,69 @@
+{% extends "tethys_apps/app_base.html" %}
+
+{% load tethys_gizmos staticfiles %}
+
+{% block title %}{{ tethys_app.name }}{% endblock %}
+
+{% block app_icon %}
+  {# The path you provided in your app.py is accessible through the tethys_app.icon context variable #}
+  <img src="{% static tethys_app.icon %}">
+{% endblock %}
+
+{# The name you provided in your app.py is accessible through the tethys_app.name context variable #}
+{% block app_title %}{{ tethys_app.name }}{% endblock %}
+
+{% block app_navigation_items %}
+  <li class="title">App Controls</li>
+
+  <img id="legend" src="ecodash/public/images/mylegend.png" rotate="90">
+  <li class="separator"></li>
+
+  <li><p>Before</p></li>
+  {% gizmo before_date_ini %}
+  {% gizmo before_date_end %}
+
+  <li><p>After</p></li>
+  {% gizmo after_date_ini %}
+  {% gizmo after_date_end %}
+
+  <li><p>Control</p></li>
+  <form class="form-inline">
+      <!-- <label>Control Geometry &nbsp;</label> -->
+      <select id="control-type">
+        <option value="Point">Point</option>
+        <option value="Polygon">Polygon</option>
+        <option value="Circle">Circle</option>
+        <option value="None">None</option>
+      </select>
+    </form>
+
+  <li><p>Intervention</p></li>
+  <form class="form-inline">
+      <!-- <label>Control Geometry &nbsp;</label> -->
+      <select id="intervention-type">
+        <option value="Point">Point</option>
+        <option value="Polygon">Polygon</option>
+        <option value="Circle">Circle</option>
+        <option value="None">None</option>
+      </select>
+    </form>
+
+  <li class="separator"></li>
+  {% gizmo update-button %}
+{% endblock %}
+
+{% block app_content %}
+{% endblock %}
+
+{% block app_actions %}
+{% endblock %}
+
+{% block content_dependent_styles %}
+  {{ block.super }}
+  <link href="{% static 'ecodash/css/main.css' %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static 'ecodash/js/main.js' %}" type="text/javascript"></script>
+{% endblock %}
