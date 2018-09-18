@@ -34,6 +34,16 @@ class Ecodash(TethysAppBase):
                 url='ecodash/update_map',
                 controller='ecodash.ajax_controllers.update_map'
             ),
+            UrlMap(
+                name='time_series',
+                url='ecodash/time_series',
+                controller='ecodash.ajax_controllers.time_series'
+            ),
+            UrlMap(
+                name='export_data',
+                url='ecodash/export_data',
+                controller='ecodash.ajax_controllers.export_data'
+            ),
         )
 
         return url_maps

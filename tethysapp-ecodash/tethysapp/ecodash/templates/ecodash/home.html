@@ -2,6 +2,10 @@
 {% load tethys_gizmos staticfiles %}
 
 {% block header_buttons %}
+  <div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="Chart">
+      <a data-toggle="modal" data-target="#chart-modal"><span class="fa fa-area-chart"></span></a>
+  </div>
+
   <div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="Help">
     <a data-toggle="modal" data-target="#help-modal"><span class="glyphicon glyphicon-question-sign"></span></a>
   </div>
@@ -17,14 +21,22 @@
   {{ block.super }}
   <script src="https://openlayers.org/en/v4.3.4/build/ol.js" type="text/javascript"></script>
   <script src="{% static 'ecodash/js/map.js' %}" type="text/javascript"></script>
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/bootstrap-slider.min.js" type="text/javascript"></script> -->
 {% endblock %}
 
 {% block app_content %}
-  <div class="spinner",style="display:none;"></div>
+
   {% gizmo eco_map %}
 
   <div id="layers" name="layers" data-eco-url="{{eco_layer}}" style="display:none;"></div>
+  <input type="text" name="pointC-lat-lon" id="pointC-lat-lon" hidden>
+  <input type="text" name="polyC-lat-lon" id="polyC-lat-lon" hidden>
+  <input type="text" name="pointI-lat-lon" id="pointI-lat-lon" hidden>
+  <input type="text" name="polyI-lat-lon" id="polyI-lat-lon" hidden>
+
+  <div id="spinner" class="backdrop" style="display:none;">
+    <div class="loader"></div>
+  </div>
+  
 {% endblock %}
 
 {# Use the after_app_content block for modals #}
@@ -35,23 +47,60 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h5 class="modal-title" id="help-modal-label">Example Modal</h5>
+          <h5 class="modal-title" id="help-modal-label">Help</h5>
         </div>
         <div class="modal-body">
-          <p>You can add custom buttons to the app header using the <code>header_buttons</code> block. Use anchor/link tags for the button and wrap it in a div with the class <code>header-button</code>. For buttons with the gliphyicons, add the <code>glyphicon-button</code> class as well.</p>
-          <p>Ever have trouble using a modal in a Tethys app? Use the <code>after_app_content</code> block for modal content to allow them to function properly. See: <a href="https://getbootstrap.com/javascript/#modals">Bootstrap Modals</a></p>
-          <p>Add tooltips to any element by adding the <code>data-toggle</code>, <code>data-placement</code>, and <code>title</code> attributes to the button. See: <a href="https://getbootstrap.com/javascript/#tooltips">Bootstrap Tooltips</a></p>
+          <p>This applications provides a near real-time method for quantifying vegetation using cloud computing technology and remote-sensing data.
+             This application uses a novel custom indicator to monitor vegetation on a planetary scale, and then combined this with remote-sensing data for near real-time customized quantification of vegetation change.
+             Google Earth Engine, a cloud-based geo-computational technology, is used to temporally, geographically and adaptively filter data collections, all while performing calculations on a global scale.
+             These technologies can help policy makers, project managers and other non-experts to quantify vegetation for various purposes including monitoring and ecosystem valuation, and allow them to use the results for local economic and social progress in a developing nation.
+             To read more about the application pleas read the following paper: <a href="http://www.mdpi.com/2072-4292/10/5/760/htm" target="_blank"> An Operational Before-After-Control-Impact (BACI) Designed Platform for Vegetation Monitoring at Planetary Scale</a>.</p>
+           <p>To get started:
+             <ol>
+               <li>Select your before intervention period range</li>
+               <li>Select your after intervention period range</li>
+               <li>Select the geographic region of the control plot</li>
+               <li>Select the geographic region of the intervention plot</li>
+               <li>Retrieve the data from analysis by:</li>
+               <ul>
+                  <li>Display the analysis data using the "Show time series" button</li>
+                  <li>Or, download the geographic data for individual plots using the "Download" buttons</li>
+               </ul>
+            </ol>
+           </p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal">Download Map</button>
+          <a href="https://sig-gis.com/" target="_blank"><img id="sig-logo" src="{% static 'ecodash/images/sig-logo.png' %}"></a>
         </div>
       </div>
     </div>
+  </div>
+
+  <!--Show TS Plot -->
+  <div class="modal fade" id="chart-modal" role="dialog" aria-labelledby="chart-modal-label">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h5 class="modal-title" id="chart-modal-label">BACI Analysis</h5>
+              </div>
+
+              <div class="modal-body">
+                  <div class="chart-wrapper">
+                      <div class="chart-inner" style="width:100%;height:75%;">
+                          <div id="plotter" name="plotter" >
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
   </div>
 {% endblock %}
 
 {% block app_actions %}
 
-  {% gizmo download_button %}
+  {% gizmo control_button %}
+  {% gizmo intervention_button %}
 
 {% endblock %}

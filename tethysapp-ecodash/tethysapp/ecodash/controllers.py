@@ -59,16 +59,37 @@ def home(request):
         style='success'
     )
 
-    download_button = Button(
-        display_text='Download Data',
-        name='download-button',
-        icon='glyphicon glyphicon-download-alt',
+    chart_button = Button(
+        display_text='Show time series',
+        name='chart-button',
+        icon='glyphicon glyphicon-signal',
         style='success'
+    )
+
+    remove_button = Button(
+        display_text='Remove geometries',
+        name='remove-button',
+        icon='glyphicon glyphicon-remove',
+        style='danger'
+    )
+
+    intervention_button = Button(
+        display_text='Download intervention plot data',
+        name='intervention-button',
+        icon='glyphicon glyphicon-download-alt',
+        style='default'
+    )
+
+    control_button = Button(
+        display_text='Download control plot data',
+        name='control-button',
+        icon='glyphicon glyphicon-download-alt',
+        style='default'
     )
 
     view_options = MVView(
         projection='EPSG:4326',
-        center=[0,7.5],
+        center=[0,10],
         zoom=3,
         maxZoom=18,
         minZoom=2
@@ -89,7 +110,10 @@ def home(request):
         'after_date_ini': after_date_ini,
         'after_date_end': after_date_end,
         'update-button': update_button,
-        'download_button': download_button,
+        'chart-button': chart_button,
+        'remove_button': remove_button,
+        'intervention_button': intervention_button,
+        'control_button': control_button,
         'eco_layer': eco_layer,
         'eco_map': eco_map,
         # 'product_selection': product_selection,

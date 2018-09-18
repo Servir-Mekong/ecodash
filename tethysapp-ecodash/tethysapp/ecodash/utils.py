@@ -9,6 +9,8 @@ IMAGE_COLLECTION_ID2 = ee.ImageCollection('MODIS/006/MOD13A1')
 
 IMAGE_COLLECTION_ID =  IMAGE_COLLECTION_ID1.merge(IMAGE_COLLECTION_ID2);
 
+REDUCTION_SCALE_METERS = 1000
+
 Adm_bounds = ee.FeatureCollection('ft:1tdSwUL7MVpOauSgRzqVTOwdfy17KDbw-1d9omPw')#ee.FeatureCollection('USDOS/LSIB/2013')
 
 
@@ -45,37 +47,26 @@ def getEcoMap(before_start,before_end,after_start,after_end):
   }))
 
 
+def ComputePolygonTimeSeries(coords,ref_start,ref_end,series_start,series_end):
 
-def GetPolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end):
-  """Returns details about the polygon with the passed-in ID."""
-  #details = memcache.get(polygon_id)
+  # if len(coords["type"]) == 'Polygon':
+  #     geom = ee.Geometry.Polygon(coords["coordinates"])
+  #     featureArea = geom.area().getInfo()
+  #     if featureArea > 50000*1E6:
+  #         REDUCTION_SCALE_METERS = 10000
+  #     else:
+  #         REDUCTION_SCALE_METERS = 1000
+  # else:
+  #     geom = ee.Geometry.Point(coords["coordinates"])
+  #     REDUCTION_SCALE_METERS = 250
 
-  # If we've cached details for this polygon, return them.
-  #if details is not None:
-  #  return details
-
-  details = {}
-
-  try:
-    details['timeSeries'] = ComputePolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end)
-    # Store the results in memcache.
-    #memcache.add(polygon_id, json.dumps(details), MEMCACHE_EXPIRATION)
-  except ee.EEException as e:
-    # Handle exceptions from the EE client library.
-    details['error'] = str(e)
-
-  # Send the results to the browser.
-  return json.dumps(details)
-
-
-def ComputePolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end):
-
-  featureArea = feature.geometry().area().getInfo()
-
-  print(featureArea)
-
+  geom = ee.Geometry.Polygon(coords["coordinates"])
+  featureArea = geom.area().getInfo()
   if featureArea > 50000*1E6:
-      REDUCTION_SCALE_METERS = 10000
+    REDUCTION_SCALE_METERS = 10000
+  else:
+    REDUCTION_SCALE_METERS = 10000
+
 
   """Returns a series of brightness over time for the polygon."""
   cumulative = Calculation(ref_start,ref_end,series_start,series_end)
@@ -83,7 +74,7 @@ def ComputePolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end):
   # Compute the mean brightness in the region in each image.
   def ComputeMean(img):
     reduction = img.reduceRegion(
-        ee.Reducer.mean(), feature.geometry(), REDUCTION_SCALE_METERS,None,None,True)
+        ee.Reducer.mean(), geom, REDUCTION_SCALE_METERS,None,None,True)
     return ee.Feature(None, {
         'EVI': reduction.get('EVI'),
         'system:time_start': img.get('system:time_start')
@@ -102,37 +93,6 @@ def ComputePolygonTimeSeries(feature,ref_start,ref_end,series_start,series_end):
 
   return mymap
 
-
-def ComputePolygonDrawTimeSeries(polygon,ref_start,ref_end,series_start,series_end):
-
-  """Returns a series of brightness over time for the polygon."""
-  cumulative = Calculation(ref_start,ref_end,series_start,series_end)
-
-  # Compute the mean brightness in the region in each image.
-  def ComputeMean(img):
-    reduction = img.reduceRegion(
-        ee.Reducer.mean(), feature.geometry(), REDUCTION_SCALE_METERS)
-
-
-    return ee.Feature(None, {
-        'EVI': reduction.get('EVI'),
-        'system:time_start': img.get('system:time_start')
-    })
-
-  # Extract the results as a list of lists.
-  def ExtractMean(feature):
-    return [
-        feature['properties']['system:time_start'],
-        feature['properties']['EVI']
-    ]
-
-  feature = ee.FeatureCollection(polygon)
-
-  chart_data = cumulative.map(ComputeMean).getInfo()
-
-  mymap = map(ExtractMean, chart_data['features'])
-
-  return mymap
 
 def Calculation(before_start,before_end,after_start,after_end):
 
@@ -207,3 +167,17 @@ def Calculation(before_start,before_end,after_start,after_end):
   cumulative = ee.ImageCollection(ee.List(mycollection.iterate(accumulate, first)))
 
   return cumulative
+
+def GetDownloadURL(coords,before_start,before_end,after_start,after_end):
+
+  cumulative = Calculation(before_start,before_end,after_start,after_end)
+
+  myList = cumulative.toList(500)
+
+  fit = ee.Image(myList.get(-1)) #.clip(mekongCountries)
+
+  return fit.getDownloadURL({
+		'scale': 500,
+		'crs': 'EPSG:4326',
+		'region': coords["coordinates"]
+  })
