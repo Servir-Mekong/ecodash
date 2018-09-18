@@ -1,7 +1,7 @@
 # EcoDash
 A web application for providing a near real-time method for quantifying vegetation using cloud computing technology and remote-sensing data <a href="http://tethys.sig-gis.com/apps/ecodash">http://tethys.sig-gis.com/apps/ecodash</a>.
 
-![Screenshot](static/images/screenshot.png)
+![Screenshot](tethysapp-ecodash/tethysapp/ecodash/public/images/screenshot.png)
 
 Dependencies are:
 - tethysplatform
