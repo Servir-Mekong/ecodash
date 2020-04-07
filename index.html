@@ -1,55 +1,55 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		
+
 		<title>EcoDash</title>
-	    
+
 	    <!-- CSS file. -->
 	    <link href="/static/css/main.css" rel="stylesheet" type="text/css">
-	
+
 		<!-- Google Web Fonts. -->
 		<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
-	
+
 		<!-- The Google JavaScript loader tool (for the Maps, Charts APIs). -->
 		<script src="https://www.google.com/jsapi"></script>
-		
+
 		<!-- Google Web Fonts. -->
 		<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
-		
+
 		<!-- the google maps api -->
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCftEx2S9RjScdfNCGa4Z-8HgUVIUjOErk &v=3.exp&libraries=drawing"></script>
-		
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbsy6aJ_4CBa1jOFF0DeLiLLzjN_cYOVc&v=3.exp&libraries=drawing"></script>
+
 		<!-- Load JavaScript -->
 		<script src="/static/js/script.js"></script>
-	
+
 		<!-- Load jquery -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-	
+
 		<!-- load boostrap -->
 	    <script src="static/js/bootstrap.min.js"></script>
-	
+
 		<!-- custom library to download maps -->
 	    <script src='/_ah/channel/jsapi'></script>
-	
+
 		<!-- load libraries to download kml -->
 		<script src="/static/js/kml.js"></script>
 		<script src="/static/js/xmlwriter.js"></script>
         <script src="/static/js/toGeoJSON.js"></script>
-			
+
 	</head>
-	
-	
+
+
 	<body>
-	
-		<!-- The page header. -->	
-		<section id="pageheader">	
+
+		<!-- The page header. -->
+		<section id="pageheader">
 		<div class="logos">
 		   <a href="https://www.usaid.gov/" target="_blank"><img id="usaid" src="static/images/usaid.png" alt="USAID">
 		   <a href="https://www.nasa.gov/" target="_blank"><img id="nasa" src="static/images/nasa.png" alt="NASA"></a>
-		   <a href="http://www.adpc.net" target="_blank"><img id="adpc" src="static/images/adpclogo.jpg" alt="ADPC"></a> 
-		   <a href="http://servir.adpc.net/" target="_blank"><img id="servir" src="static/images/servir.png" alt="SERVIR"></a> 
+		   <a href="http://www.adpc.net" target="_blank"><img id="adpc" src="static/images/adpclogo.jpg" alt="ADPC"></a>
+		   <a href="http://servir.adpc.net/" target="_blank"><img id="servir" src="static/images/servir.png" alt="SERVIR"></a>
 		</div>
-		
+
 
 		<!-- The nav bar. -->
 		<nav>
@@ -62,7 +62,7 @@
 
 		<!-- The page content -->
 	    <section id="pagecontent">
-		
+
 				<!-- The about page -->
 		<div id="about">
 			<h1>About the Sustainable Landscapes Ecosystem Monitoring Tool</h1>
@@ -71,7 +71,7 @@
 			this context. In the current version, the focus is on the Enhanced Vegetation Index (EVI) calculated using MODIS multispectral data with
 			a pixel resolution of 250 x 250 m. EVI is a measure of relative biomass particularly suited to high-biomass areas of the globe.</p>
 
-			<p>The tool is made possible by connecting the user interface with Google Earth Engine, a cloud computing platform that links extensive data archives with substantial processing power. 
+			<p>The tool is made possible by connecting the user interface with Google Earth Engine, a cloud computing platform that links extensive data archives with substantial processing power.
 			This architecture makes formerly heavy analyses time and cost effective for users. The  comparison of broad-scale biological productivity in an area from one period to another has
 			applications beyond projects seeking to monitor the effects of their interventions. This tool can also potentially be used to provide insight
 			into changes related to climate change, urban expansion, infrastructure development, and other impacts.</p>
@@ -80,15 +80,15 @@
 			 well-served by large scale remotely sensed data: the comparison of conditions in a large area from one time period with another using
 			 calculations based on remotely sensed gridded data. In its general architecture, the tool can support the analysis of any type of gridded
 			 data and future iterations will allow users to select from a number of possible datasets.</p>
-			 
+
 			 <hr><h1>Development and Acknowledgment</h1>
 			 <p>This tool was developed by SERVIR-Mekong in close consultation with the Vietnam Forests and Deltas project and their partners in Vietnam, in
 			 particular the Ministry of Agriculture and Rural Development and constituent agencies.</p>
-			 
+
 			 <p>The Python code for Google Earth Engine was developed by Winrock International in partnership with members of the Google Earth Engine team.</p>
-			 
+
 			 <p>The user interface was developed by Spatial Informatics Group (SIG) using Clojurescript, Google Closure, and the Google App Engine SDK.</p>
-			 
+
 			 <div id="about-logos"><img src="/static/images/servir.png">
 				 <img src="/static/images/usaid.png"><img src="/static/images/nasa.png">
 				 <img src="/static/images/adpclogo.jpg">
@@ -100,23 +100,23 @@
 				 <img src="/static/images/deltares_tr.png">
 			 </div>
 		 </div> <!-- end of about -->
-		
-	
+
+
 			<!-- The DOM of the application. -->
 			<div id="ecodash">
-			
-			<!-- block with general info --> 
+
+			<!-- block with general info -->
 			<div id="general-info">
 				<h1>Sustainable Landscapes Ecosystem Monitoring Tool (EcoDash)</h1>
-				
+
 				<h2> What is it?</h2>
 				<p>This tool might best be thought of as a "landscape calculator". With this tool you can explore if the landscape has been degraded in the past years or maybe getting greener.  </p>
-				
+
 				<h2> Why this tool?</h2>
 				<p>We build this tool for policy makers and project managers. They were looking for simple ways to evaluate the impact of interventions and compare it with other areas that haven't undergone any interventions.  </p>
-				
+
 				<h2>How to use it?</h2>
-				
+
 				<p>1. Select a baseline period. This is the period before you started the intervention or project.</p>
 				<p>2. Select the study period. This is the period of the project or intervention.</p>
 				<p>3. Update the map</p>
@@ -130,8 +130,8 @@
 
 
 
-				
-				 <p>EcoDash is a collaborative effort between its developers and its community of users. 
+
+				 <p>EcoDash is a collaborative effort between its developers and its community of users.
 				   We welcome suggestions for improvements on our <a href="https://github.com/Servir-Mekong/ecodash/issues" target="_blank">Github</a>issues page.</p>
 				   <input id="start-button" type="button" name="start-button" value="Get Started!">
 		   </div>
@@ -147,35 +147,35 @@
 				<p></p><a id="PieLink" target="_blank"></a></p>
 				<p><a id="csvPie" href="#">Download as csv</a></p>
 			</div>
-			
-			
+
+
 			<!-- The element into which Google Maps is rendered. -->
 			<div id="map"></div>
-			
+
 			<!-- spinner is shown during calculations -->
-			<div class="spinner"></div>	
-			
-			<!-- block with info --> 
+			<div class="spinner"></div>
+
+			<!-- block with info -->
 			<div id="info1">
 				<img id="img" src="static/images/about.png" alt="about"></th>
-				<h3>Select the timespan for the baseline here. With the baseline we determine the initial conditions.</h3>				      
+				<h3>Select the timespan for the baseline here. With the baseline we determine the initial conditions.</h3>
 			</div>
 			<div id="info2">
 				<img id="img" src="static/images/about.png" alt="about"></th>
-				<h3>Select the timespan for the study period here. This is the period over which you want to do the analysis.</h3>				      
+				<h3>Select the timespan for the study period here. This is the period over which you want to do the analysis.</h3>
 			</div>
 			<div id="info3">
 				<img id="img" src="static/images/about.png" alt="about"></th>
-		    	<h3>Do you want to do the analysis for a administrative unit or draw your own polygon?</h3>				      
-		    	<h3>You can upload your own polygon in KML format.</h3>				      
+		    	<h3>Do you want to do the analysis for a administrative unit or draw your own polygon?</h3>
+		    	<h3>You can upload your own polygon in KML format.</h3>
 			</div>
-						
-			
-			
-			<!-- block with legend --> 
+
+
+
+			<!-- block with legend -->
 			<div id="legend">
 			<h2><a href="https://en.wikipedia.org/wiki/Enhanced_vegetation_index" target="_blank">&#916 EVI</a></h2>
-			
+
 			<table>
 			  <tr>
 				<th rowspan="3"><img id="img" src="static/images/mylegend.png" alt="legend"></th>
@@ -192,20 +192,20 @@
 			  </tr>
 			  <tr>
 				<td colspan="2"><input type="range" min="0" max="1" step="0.1" value="1", name="opacitySlider" id="opacitySlider"></td>
-			  </tr>			  	  
+			  </tr>
 			</table>
-			
+
 			</div>
-			
+
 			<div id="feedback">
 				 <a href="https://docs.google.com/a/sig-gis.com/forms/d/1c7QP7BqDbURH3bLs9uphtXgFY6AEYKjN8vKsWRS85QI/edit?ts=57ec66c4" target="_blank">Please give us feedback!</a>
-			</div>	
-		
+			</div>
+
 			<div id="settings-button">☰</div>
-			
-			<!-- The element with all sliders and buttons. -->		
+
+			<!-- The element with all sliders and buttons. -->
 			<div id="ui" style="display: block;">
-				
+
 				<header>
 					<h1>EcoDash Controls</h1>
 					<div id="collapse-button">«</div>
@@ -213,8 +213,8 @@
 				</header>
 
 				<div id="controls">
-															
-					
+
+
 					<table>
 						<colgroup>
 							<col style="width: 291px">
@@ -228,14 +228,14 @@
 
 
 					<pre class="tab"><div id="sliderval1"></div>-<div id="sliderval2"></div></pre>
-					
+
 					<div class="range-slider">
 					<input type="range" min="2002" max="2016" step="1" value="2002", name="slider1" id="slider1">
 					<input type="range" min="2002" max="2016" step="1" value="2008", name="slider2" id="slider2">
 					</div>
-					
-				
-					
+
+
+
 					<table>
 						<colgroup>
 							<col style="width: 291px">
@@ -245,59 +245,59 @@
 						<td><h3>Select a time period to measure ∆EVI</h3></td>
 						<td><h3 id="step2">?</h3></td>
 						</tr>
-					</table>	
+					</table>
 
 					<pre class="tab"><div id="sliderval3"></div>-<div id="sliderval4"></div></pre>
 					<div class="range-slider">
 					<input type="range" min="2000" max="2016" step="1" value="2009",name="slider3" id="slider3">
 					<input type="range" min="2000" max="2016" step="1" value="2014",name="slider4" id="slider4">
 					</div>
-					
-					<button id="updateMap">Update map</button>	
-					
+
+					<button id="updateMap">Update map</button>
+
 					<table>
 						<colgroup>
 							<col style="width: 291px">
 							<col style="width: 21px">
-						</colgroup>						
+						</colgroup>
 						<tr>
 							<td><h3>Choose a polygon selection method</h3></td>
 							<td><h3 id="step3">?</h3></td>
 						</tr>
-					</table>	
-					
+					</table>
+
 					<ul>
 					<li><input type="radio" name="polygon-selection-method" value="Province" id="polygon-selection-method"><label>Province</label></li>
 					<li><input type="radio" name="polygon-selection-method" value="Country" id="polygon-selection-method"><label>Country</label></li>
 					<li><input type="radio" name="polygon-selection-method" value="Draw Polygon" id="polygon-selection-method"><label>Draw Polygon</label></li>
 					<li><input id="files" type="file" multiple="" name="files1[]"><output id="file_list"></output></li>
 					</ul>
-					
-					<button id="downloadkml">Download Polygon</button>	
-					
+
+					<button id="downloadkml">Download Polygon</button>
+
 					<h3>Click a polygon on the map or draw your own</h3><p id="polygon">Selection: <em id="name"></em>
-					
+
 					<h3>Step 6: Review the historical ∆EVI in the selection</h3>
 					<div id="chart" style="display: none;"></div>
-					
-					
+
+
 					<button id="clearchart">Clear chart</button>
-					<button id="export">export map</button>	
+					<button id="export">export map</button>
 					<a id="link" target="_blank">Download the data</a>
-					
+
 					<button id="piechart">Show pie chart</button>
-					
+
 					<!-- file upload button -->
 					<input type="file" id="fileOpen" style="visibility: hidden; width: 2px;" />
-					
-					</div>	
+
+					</div>
 			</div> <!-- end of ui display block -->
 		</div> 	<!-- end of ecodash -->
 
 	    </section>
 
 
-		
+
 		<!-- the page footer -->
 		 <section id="pagefooter">
 		 <div class="logos">
@@ -325,10 +325,7 @@
 		  ga('send', 'pageview');
 
 		</script>
-		
-		
+
+
 	</body>
 </html>
-
-
-

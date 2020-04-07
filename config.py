@@ -12,6 +12,6 @@ EE_ACCOUNT = 'ecodash-beta@appspot.gserviceaccount.com'
 # (.p12 suffix) to .pem, run the openssl command like this:
 # openssl pkcs12 -in downloaded-privatekey.p12 -nodes -nocerts > privatekey.pem
 # You can find more detailed instructions in the README.
-EE_PRIVATE_KEY_FILE = 'credentials/privatekey.pem'
+EE_PRIVATE_KEY_FILE = 'credentials/privatekey.json'
 
 EE_CREDENTIALS = ee.ServiceAccountCredentials(EE_ACCOUNT, EE_PRIVATE_KEY_FILE)
