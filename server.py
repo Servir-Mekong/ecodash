@@ -32,7 +32,7 @@ MEMCACHE_EXPIRATION = 60 * 60 * 24
 
 
 # The URL fetch timeout time (seconds).
-URL_FETCH_TIMEOUT = 60
+URL_FETCH_TIMEOUT = 6000000
 
 WIKI_URL = ""
 
@@ -56,12 +56,12 @@ IMAGE_COLLECTION_ID2 = ee.ImageCollection('MODIS/MOD13A1')
 #IMAGE_COLLECTION_ID =  IMAGE_COLLECTION_ID1.merge(IMAGE_COLLECTION_ID2);
 
 # work only with Image collection 1 to speed up
-IMAGE_COLLECTION_ID = ee.ImageCollection('MODIS/MYD13A1')
+IMAGE_COLLECTION_ID = ee.ImageCollection('MODIS/006/MYD13A1')
 
 ref_start = '2002-01-01'
 ref_end = '2008-12-31'
 series_start = '2009-01-01'
-series_end = '2014-12-31'
+series_end = '2019-12-31'
 
 counter = 0
 CountryorProvince = 0
@@ -97,8 +97,10 @@ class MainHandler(webapp2.RequestHandler):
         mapid = updateMap(ref_start,ref_end,series_start,series_end)
         counter = self.request.get('mycounter')
         template_values = {
+            'GOOGLE_MAPS_API_KEY': config.GOOGLE_MAPS_API_KEY,
             'eeMapId': mapid['mapid'],
             'eeToken': mapid['token'],
+            'eeMapURL': mapid['tile_fetcher'].url_format,
             'serializedPolygonIds_country': json.dumps(POLYGON_IDS_COUNTRY),
             'serializedPolygonIds_province': json.dumps(POLYGON_IDS_PROVINCE)
         }
@@ -264,7 +266,8 @@ class GetMapHandler(webapp2.RequestHandler):
 
 		template_values = {
 			'eeMapId': mapid['mapid'],
-			'eeToken': mapid['token']
+			'eeToken': mapid['token'],
+            'eeMapURL': str(mapid['tile_fetcher'].url_format)
         }
 
 		template = JINJA2_ENVIRONMENT.get_template('index.html')
@@ -348,6 +351,8 @@ def updateMap(ref_start,ref_end,series_start,series_end):
   myList = cumulative.toList(500)
 
   fit = ee.Image(myList.get(-1)) #.clip(mekongCountries)
+  waterMask = fit.neq(0)
+  fit = fit.updateMask(waterMask);
 
 
   months = ee.Date(series_end).difference(ee.Date(series_start),"month").getInfo()
@@ -534,7 +539,7 @@ def Calculation(ref_start,ref_end,series_start,series_end):
     ## cast it to Image.
     previous = ee.Image(ee.List(mylist).get(-1))
     ## Add the current anomaly to make a new cumulative anomaly image.
-    added = image.add(previous).set('system:time_start', image.get('system:time_start'))
+    added = image.unmask(0).add(previous).set('system:time_start', image.get('system:time_start'))
     ## Propagate metadata to the new image.
     #
     ## Return the list with the cumulative anomaly inserted.

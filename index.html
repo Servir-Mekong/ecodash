@@ -4,8 +4,6 @@
 
 		<title>EcoDash</title>
 
-	    <!-- CSS file. -->
-	    <link href="/static/css/main.css" rel="stylesheet" type="text/css">
 
 		<!-- Google Web Fonts. -->
 		<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
@@ -15,9 +13,16 @@
 
 		<!-- Google Web Fonts. -->
 		<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+		<link href="//db.onlinewebfonts.com/c/116af611cbcd9e4bada60b4e700430c1?family=Avenir+Light" rel="stylesheet" type="text/css"/>
+
+		<!--Plugin CSS file with desired skin-->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.0/css/ion.rangeSlider.min.css"/>
+
+		<!-- CSS file. -->
+		<link href="/static/css/main.css" rel="stylesheet" type="text/css">
 
 		<!-- the google maps api -->
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbsy6aJ_4CBa1jOFF0DeLiLLzjN_cYOVc&v=3.exp&libraries=drawing"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY | safe }}&v=3.exp&libraries=drawing"></script>
 
 		<!-- Load JavaScript -->
 		<script src="/static/js/script.js"></script>
@@ -26,7 +31,9 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 
 		<!-- load boostrap -->
-	    <script src="static/js/bootstrap.min.js"></script>
+	   <script src="static/js/bootstrap.min.js"></script>
+
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.0/js/ion.rangeSlider.min.js"></script>
 
 		<!-- custom library to download maps -->
 	    <script src='/_ah/channel/jsapi'></script>
@@ -34,7 +41,7 @@
 		<!-- load libraries to download kml -->
 		<script src="/static/js/kml.js"></script>
 		<script src="/static/js/xmlwriter.js"></script>
-        <script src="/static/js/toGeoJSON.js"></script>
+    <script src="/static/js/toGeoJSON.js"></script>
 
 	</head>
 
@@ -53,9 +60,12 @@
 
 		<!-- The nav bar. -->
 		<nav>
+			<a class="application_name" href="">EcoDash</a>
 		<ul>
 			<li id="homebutton">Home</li>
 			<li id="aboutbutton">About</li>
+			<li>
+			<a href="https://docs.google.com/a/sig-gis.com/forms/d/1c7QP7BqDbURH3bLs9uphtXgFY6AEYKjN8vKsWRS85QI/edit?ts=57ec66c4" target="_blank">Feedback</a></li>
 		</ul>
 		</nav>
 		</section>
@@ -144,28 +154,33 @@
 
 			<div id="pie-chart-info">
 				<div id="chart_div"></div>
-				<p></p><a id="PieLink" target="_blank"></a></p>
-				<p><a id="csvPie" href="#">Download as csv</a></p>
+				<p><a id="PieLink" target="_blank" style="position: absolute;bottom: 20px;width: 100%;"></a></p>
+				<p><a id="csvPie" href="#" style="position: absolute; bottom: 8px; margin: 15px; width: auto;">Download as csv</a></p>
 			</div>
 
 
 			<!-- The element into which Google Maps is rendered. -->
 			<div id="map"></div>
 
+			<div class="logo-map">
+				<a href="http://sig-gis.com/" target="_blank"><img id="sig" style="height: 35px; margin-bottom: 10px;" src="/static/images/logosig.png" alt="SIG"></a>
+				<a href="https://earthengine.google.com/" target="_blank"><img id="gee" style="height: 35px;" src="/static/images/gee-2.png" alt="GEE"></a>
+			</div>
+
 			<!-- spinner is shown during calculations -->
 			<div class="spinner"></div>
 
 			<!-- block with info -->
-			<div id="info1">
-				<img id="img" src="static/images/about.png" alt="about"></th>
+			<div id="info1" class="info">
+				<!-- <img id="img" src="static/images/about.png" alt="about"></th> -->
 				<h3>Select the timespan for the baseline here. With the baseline we determine the initial conditions.</h3>
 			</div>
-			<div id="info2">
-				<img id="img" src="static/images/about.png" alt="about"></th>
+			<div id="info2" class="info">
+				<!-- <img id="img" src="static/images/about.png" alt="about"></th> -->
 				<h3>Select the timespan for the study period here. This is the period over which you want to do the analysis.</h3>
 			</div>
-			<div id="info3">
-				<img id="img" src="static/images/about.png" alt="about"></th>
+			<div id="info3" class="info">
+				<!-- <img id="img" src="static/images/about.png" alt="about"></th> -->
 		    	<h3>Do you want to do the analysis for a administrative unit or draw your own polygon?</h3>
 		    	<h3>You can upload your own polygon in KML format.</h3>
 			</div>
@@ -174,7 +189,7 @@
 
 			<!-- block with legend -->
 			<div id="legend">
-			<h2><a href="https://en.wikipedia.org/wiki/Enhanced_vegetation_index" target="_blank">&#916 EVI</a></h2>
+			<h2><a href="https://en.wikipedia.org/wiki/Enhanced_vegetation_index" target="_blank" style="color: #FFF;">&#916 EVI</a></h2>
 
 			<table>
 			  <tr>
@@ -187,18 +202,10 @@
 			  <tr>
 				<td>Decrease</td>
 			  </tr>
-			  <tr>
-				<td colspan="2"><h2>opacity</h2></td>
-			  </tr>
-			  <tr>
-				<td colspan="2"><input type="range" min="0" max="1" step="0.1" value="1", name="opacitySlider" id="opacitySlider"></td>
-			  </tr>
 			</table>
+			<p>Opacity</p>
+			<input type="range" min="0" max="1" step="0.1" value="1", name="opacitySlider" id="opacitySlider">
 
-			</div>
-
-			<div id="feedback">
-				 <a href="https://docs.google.com/a/sig-gis.com/forms/d/1c7QP7BqDbURH3bLs9uphtXgFY6AEYKjN8vKsWRS85QI/edit?ts=57ec66c4" target="_blank">Please give us feedback!</a>
 			</div>
 
 			<div id="settings-button">☰</div>
@@ -208,7 +215,7 @@
 
 				<header>
 					<h1>EcoDash Controls</h1>
-					<div id="collapse-button">«</div>
+					<div id="collapse-button" class="foldable-btn down"></div>
 					<input id="info-button" type="button" name="info-button" value="i">
 				</header>
 
@@ -221,18 +228,15 @@
 							<col style="width: 21px">
 						</colgroup>
 					  <tr>
-						<td><h3>Select a time period for the baseline EVI</h3></td>
+						<td><h3>1. Select a time period for the baseline EVI</h3></td>
 						<td><h3 id="step1"> ?</h3></td>
 					  </tr>
 					</table>
 
+					<div style="width:70%; margin-left:15px;">
+                    <input type="text" class="js-range-slider" id="baseline_period" name="baseline_period" />
+          </div>
 
-					<pre class="tab"><div id="sliderval1"></div>-<div id="sliderval2"></div></pre>
-
-					<div class="range-slider">
-					<input type="range" min="2002" max="2016" step="1" value="2002", name="slider1" id="slider1">
-					<input type="range" min="2002" max="2016" step="1" value="2008", name="slider2" id="slider2">
-					</div>
 
 
 
@@ -242,18 +246,14 @@
 							<col style="width: 21px">
 						</colgroup>
 					  <tr>
-						<td><h3>Select a time period to measure ∆EVI</h3></td>
+						<td><h3>2. Select a time period to measure ∆EVI</h3></td>
 						<td><h3 id="step2">?</h3></td>
 						</tr>
 					</table>
+					<div style="width:70%; margin-left:15px;">
+                    <input type="text" class="js-range-slider" id="measure_period" name="measure_period" />
+          </div>
 
-					<pre class="tab"><div id="sliderval3"></div>-<div id="sliderval4"></div></pre>
-					<div class="range-slider">
-					<input type="range" min="2000" max="2016" step="1" value="2009",name="slider3" id="slider3">
-					<input type="range" min="2000" max="2016" step="1" value="2014",name="slider4" id="slider4">
-					</div>
-
-					<button id="updateMap">Update map</button>
 
 					<table>
 						<colgroup>
@@ -261,23 +261,71 @@
 							<col style="width: 21px">
 						</colgroup>
 						<tr>
-							<td><h3>Choose a polygon selection method</h3></td>
+							<td><h3>3. Choose a polygon selection method</h3></td>
 							<td><h3 id="step3">?</h3></td>
 						</tr>
 					</table>
 
-					<ul>
-					<li><input type="radio" name="polygon-selection-method" value="Province" id="polygon-selection-method"><label>Province</label></li>
-					<li><input type="radio" name="polygon-selection-method" value="Country" id="polygon-selection-method"><label>Country</label></li>
-					<li><input type="radio" name="polygon-selection-method" value="Draw Polygon" id="polygon-selection-method"><label>Draw Polygon</label></li>
-					<li><input id="files" type="file" multiple="" name="files1[]"><output id="file_list"></output></li>
-					</ul>
+					<div class="image-options hide">
+		        <button class="province">
+		          <div class="button-wrapper">
+		            <svg class="c-icon icon-square-point" viewBox="0 0 180 180">
+		              <image xlink:href="/static/images/map-point.svg" />
+		            </svg>
+		            <div class="label">
+		              Province
+		            </div>
+		          </div>
+		        </button>
+		        <button class="country">
+		          <div class="button-wrapper">
+		            <svg class="c-icon icon-square-point" viewBox="0 0 180 180">
+		              <image xlink:href="/static/images/map-point.svg" />
+		            </svg>
+		            <div class="label">
+		              Country
+		            </div>
+		          </div>
+		        </button>
+		        <button class="draw-polygon">
+		          <div class="button-wrapper">
+		            <svg class="c-icon icon-square-point" viewBox="-100 -120 800 800">
+		              <image xlink:href="/static/images/draw-tool.svg" />
+		            </svg>
+		            <div class="label">
+		              Draw Polygon
+		            </div>
+		          </div>
+		        </button>
+						<button class="upload-files" >
+		          <div class="button-wrapper">
+		            <svg class="c-icon icon-square-point" viewBox="-100 -100 650 650">
+		              <image xlink:href="/static/images/folder.svg" />
+		            </svg>
+		            <div class="label">
+		              Upload Files
+		            </div>
+		          </div>
+		        </button>
+		      </div>
+					<input id="files" type="file" multiple="" name="files1[]" hidden><output id="file_list"></output>
+
+					<!-- <ul>
+					<li><input type="radio" name="polygon-selection-method" value="Province" id="polygon-selection-method" hidden><label>Province</label></li>
+					<li><input type="radio" name="polygon-selection-method" value="Country" id="polygon-selection-method" hidden><label>Country</label></li>
+					<li><input type="radio" name="polygon-selection-method" value="Draw Polygon" id="polygon-selection-method" hidden><label>Draw Polygon</label></li>
+					<li><input id="files" type="file" multiple="" name="files1[]"><output id="file_list" hidden></output></li>
+					</ul> -->
 
 					<button id="downloadkml">Download Polygon</button>
 
-					<h3>Click a polygon on the map or draw your own</h3><p id="polygon">Selection: <em id="name"></em>
+					<p> Click a polygon on the map or draw your own</p><p id="polygon">Selection: <em id="name"></em>
 
-					<h3>Step 6: Review the historical ∆EVI in the selection</h3>
+					<h3>4. Update EVI Map</h3>
+					<p>Click the button "Update Map" to measure EVI</p>
+					<button id="updateMap">Update map</button>
+
+					<h3>5. Review the historical ∆EVI in the selection</h3>
 					<div id="chart" style="display: none;"></div>
 
 
@@ -293,18 +341,17 @@
 					</div>
 			</div> <!-- end of ui display block -->
 		</div> 	<!-- end of ecodash -->
-
 	    </section>
 
 
 
 		<!-- the page footer -->
-		 <section id="pagefooter">
+		 <!-- <section id="pagefooter">
 		 <div class="logos">
 		   <a href="http://sig-gis.com/" target="_blank"><img id="sig" src="/static/images/logosig.png" alt="SIG"></a>
 		   <a href="https://earthengine.google.com/" target="_blank"><img id="gee" src="/static/images/gee.jpg" alt="GEE"></a>
 		 </div>
-		 </section>
+		 </section> -->
 
 
 		<!-- Boot application once the body loads. -->
@@ -313,6 +360,7 @@
 			boot(
           '{{ eeMapId | safe }}',
           '{{ eeToken | safe }}',
+					'{{ eeMapURL | safe }}',
           '{{ serializedPolygonIds_country | safe }}',
           '{{ serializedPolygonIds_province | safe }}');
 

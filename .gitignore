@@ -1,5 +1,6 @@
 *.pyc
 .nrepl*
+config.py
 cljs/out/
 cljs/
 static/compiled_js/

@@ -13,5 +13,6 @@ EE_ACCOUNT = 'ecodash-beta@appspot.gserviceaccount.com'
 # openssl pkcs12 -in downloaded-privatekey.p12 -nodes -nocerts > privatekey.pem
 # You can find more detailed instructions in the README.
 EE_PRIVATE_KEY_FILE = 'credentials/privatekey.json'
+GOOGLE_MAPS_API_KEY = 'AIzaSyCbsy6aJ_4CBa1jOFF0DeLiLLzjN_cYOVc'
 
 EE_CREDENTIALS = ee.ServiceAccountCredentials(EE_ACCOUNT, EE_PRIVATE_KEY_FILE)

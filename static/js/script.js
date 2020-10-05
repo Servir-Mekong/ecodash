@@ -19,15 +19,16 @@ var DataArr = [];
 var all_overlays = [];
 var firstGraph = 0;
 var map;
-var currentShape; 
+var currentShape;
 
  /**
  * Starts the Surface Water Tool application. The main entry point for the app.
  * @param {string} eeMapId The Earth Engine map ID.
  * @param {string} eeToken The Earth Engine map token.
+ * @param {string} eeMapURL The Earth Engine map tile url.
  */
-var boot = function(eeMapId, eeToken,serializedPolygonIds_country,serializedPolygonIds_province) {
-	
+var boot = function(eeMapId, eeToken, eeMapURL, serializedPolygonIds_country,serializedPolygonIds_province) {
+
 	google.load('visualization', '1.0');
 
 	// Load the Visualization API and the piechart package.
@@ -36,8 +37,9 @@ var boot = function(eeMapId, eeToken,serializedPolygonIds_country,serializedPoly
 	// Set a callback to run when the Google Visualization API is loaded.
 	google.setOnLoadCallback(drawPieChart);
 
-	var app = new App(eeMapId, 
+	var app = new App(eeMapId,
 					  eeToken,
+            eeMapURL,
 					  JSON.parse(serializedPolygonIds_country),
 					  JSON.parse(serializedPolygonIds_province));
 };
@@ -51,29 +53,28 @@ var boot = function(eeMapId, eeToken,serializedPolygonIds_country,serializedPoly
  * The main Surface Water Tool application.
  * @param {google.maps.ImageMapType} mapType The map type to render on the map.
  */
-var App = function(eeMapId, eeToken,countryNames,provinceNames) {
-	  
+var App = function(eeMapId, eeToken, eeMapURL, countryNames,provinceNames) {
+
   // Create and display the map.
   map = createMap();
- 
   // Load the default image.
-  refreshImage(eeMapId, eeToken,countryNames,provinceNames);
-  
+  refreshImage(eeMapURL);
+
   // parse to global variables
   PROVINCES = provinceNames;
   COUNTRIES = countryNames;
-  
+
   channel = new goog.appengine.Channel(eeToken);
-    
+
   // create listeners for buttons and sliders
   setupListeners();
-  
-  // run the slider function to initialize the dates  
+
+  // run the slider function to initialize the dates
   slider();
-  
-  // set the mouseover functions for the 
+
+  // set the mouseover functions for the
   infotexts();
-  
+
  };
 
 /**
@@ -83,20 +84,20 @@ var App = function(eeMapId, eeToken,countryNames,provinceNames) {
  * @return {google.maps.Map} A map instance with the map type rendered.
  */
 var createMap = function() {
-  
+
   // set the map options
   var mapOptions = {
     center: DEFAULT_CENTER,
     zoom: DEFAULT_ZOOM,
-	maxZoom: MAX_ZOOM,
-	streetViewControl: false,
-	zoomControlOptions: {
-          style: google.maps.ZoomControlStyle.SMALL,
-          position:google.maps.ControlPosition.LEFT_CENTER
-               }
+	  maxZoom: MAX_ZOOM,
+	  streetViewControl: false,
+    mapTypeControl: true,
+    fullscreenControl: false,
+	  zoomControlOptions: {
+      style: google.maps.ZoomControlStyle.SMALL,
+      position:google.maps.ControlPosition.LEFT_TOP
+    }
 	};
-
-
 
   var map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
@@ -115,35 +116,113 @@ function setupListeners() {
   document.getElementById('start-button').addEventListener("click", getStarted);
   document.getElementById('collapse-button').addEventListener("click", collapseMenu);
   document.getElementById('settings-button').addEventListener("click", collapseMenu);
-  
-  document.getElementById('updateMap').addEventListener("click", updateButton);
-  
-  document.getElementById('clearchart').addEventListener("click", clearChart);
-  
-  document.getElementById('export').addEventListener("click", exportMap);
-  
-  document.getElementById('chart').addEventListener("click", showgraph);
-  
-  document.getElementById('chart-info').addEventListener("click", showgraph);
-  
-  document.getElementById('pie-chart-info').addEventListener("click", hidePie);
-  
-  document.getElementById('piechart').addEventListener("click", showPie);
-  
-  document.getElementById('slider1').addEventListener("change", slider);
-  document.getElementById('slider2').addEventListener("change", slider);
-  document.getElementById('slider3').addEventListener("change", slider);
-  document.getElementById('slider4').addEventListener("change", slider);
-  
-  document.getElementById('opacitySlider').addEventListener("change", opacitySliders);
 
-  $("input[name='polygon-selection-method']").change(polygonSelectionMethod)
+  document.getElementById('updateMap').addEventListener("click", updateButton);
+
+  document.getElementById('clearchart').addEventListener("click", clearChart);
+
+  document.getElementById('export').addEventListener("click", exportMap);
+
+  document.getElementById('chart').addEventListener("click", showgraph);
+
+  document.getElementById('chart-info').addEventListener("click", showgraph);
+
+  document.getElementById('pie-chart-info').addEventListener("click", hidePie);
+
+  document.getElementById('piechart').addEventListener("click", showPie);
+
+  document.getElementById('opacitySlider').addEventListener("change", opacitySliders);
+  //
+  // $("input[name='polygon-selection-method']").change(polygonSelectionMethod)
 
   // the polygon click handler
-  map.data.addListener('click', handlePolygonClick.bind(this));	
-  
+  map.data.addListener('click', handlePolygonClick.bind(this));
+
   // kml upload function
   document.getElementById('files').addEventListener('change', fileOpenDialog, false);
+
+  $('.province').click(function(){
+
+    $(".country").removeClass('selected');
+    $(".draw-polygon").removeClass('selected');
+    $(".upload-files").removeClass('selected');
+		$(this).addClass('selected');
+
+    mode = 0;
+
+    // remove the drawing manager
+    if (drawingManager){
+      drawingManager.setMap(null);
+    }
+
+    // clear existing overlays
+    clearMap();
+
+    PROVINCES.forEach((function(provinceName) {
+    map.data.loadGeoJson('static/province/' +provinceName + '.json')}).bind());
+      map.data.setStyle(function(feature) {
+      return {
+        fillColor: '#006cfa',
+        strokeColor: '#006cfa',
+        strokeWeight: 1
+        };
+        });
+  });
+
+  $('.country').click(function(){
+
+    $(".province").removeClass('selected');
+    $(".draw-polygon").removeClass('selected');
+    $(".upload-files").removeClass('selected');
+		$(this).addClass('selected');
+
+    mode = 1;
+
+    // remove the drawing manager
+    if (drawingManager){
+      drawingManager.setMap(null);
+    }
+
+    // clear existing overlays
+    clearMap();
+
+    COUNTRIES.forEach((function(country) {
+    map.data.loadGeoJson('static/country/' +country + '.json')}).bind());
+      map.data.setStyle(function(feature) {
+      return {
+        fillColor: '#006cfa',
+        strokeColor: '#006cfa',
+        strokeWeight: 1
+        };
+        });
+  });
+
+    $('.draw-polygon').click(function(){
+
+      $(".country").removeClass('selected');
+      $(".province").removeClass('selected');
+      $(".upload-files").removeClass('selected');
+  		$(this).addClass('selected');
+
+      mode = 2;
+
+  		// clear existing overlays
+  		clearMap();
+
+  		// setup drawing
+  		createDrawingManager();
+    });
+
+    $('.upload-files').click(function(){
+      $(".country").removeClass('selected');
+      $(".draw-polygon").removeClass('selected');
+      $(".province").removeClass('selected');
+  		$(this).addClass('selected');
+
+      $('#files').click();
+    });
+
+
 }
 
 /**
@@ -189,11 +268,11 @@ var showPie = function() {
 
    // get infoscreen by id
    var graphscreen = document.getElementById('pie-chart-info');
-   
+
    if (counter > 0){
 	graphscreen.style.display = 'block';
 	}
-   
+
    var pieButton = document.getElementById('piechart');
    pieButton.style.display = 'none';
 
@@ -207,12 +286,12 @@ var hidePie = function() {
 
    // get infoscreen by id
    var graphscreen = document.getElementById('pie-chart-info');
-   
+
    graphscreen.style.display = 'none';
-   
+
    var pieButton = document.getElementById('piechart');
    pieButton.style.display = 'block';
-	
+
 }
 
 /**
@@ -233,16 +312,30 @@ var getStarted = function() {
 **/
 function collapseMenu() {
 
-   var menu = document.getElementById('ui');
-   var settings_button = document.getElementById('settings-button');
+   var menuControls = document.getElementById('controls');
+   var collapseBtn = document.getElementById('collapse-button');
 
-	if  (menu.style.display == 'none') {
-		 menu.style.display = 'block';
-		 settings_button.style.display="none";
-	} else {
-		menu.style.display = 'none';
-		settings_button.style.display = 'block';	
-    }
+   if($("#collapse-button").hasClass("down")){
+     $("#collapse-button").removeClass("down");
+     $("#collapse-button").addClass("up");
+     $("#controls").css("display", "none");
+
+
+   }else{
+     $("#collapse-button").removeClass("up");
+     $("#collapse-button").addClass("down");
+     $("#controls").css("display", "block");
+
+
+   }
+
+	// if  (menu.style.display == 'none') {
+	// 	 menu.style.display = 'block';
+	// 	 settings_button.style.display="none";
+	// } else {
+	// 	menu.style.display = 'none';
+	// 	settings_button.style.display = 'block';
+  //   }
 }
 
 /**
@@ -252,10 +345,10 @@ function collapseMenu() {
 var homePage = function(){
 	showmap = document.getElementById('map');
 	showmap.style.display = "block";
-	
+
 	showUI = document.getElementById('ui');
 	showUI.style.display = "block";
-	
+
 	hideAbout = document.getElementById('about');
 	hideAbout.style.display = "hide";
 
@@ -288,7 +381,7 @@ function updateButton() {
 
 	update_button = document.getElementById('updateMap')
 	update_button.style.display = 'none';
-	
+
 	ShowMap();
 }
 
@@ -299,7 +392,7 @@ function updateButton() {
 var updateKMLButton = function() {
 	update_button = document.getElementById('downloadkml')
 	update_button.style.display = 'block';
-	
+
 	// Setup the click event listeners
     google.maps.event.addDomListener(update_button, 'click', function () {
         saveKMLFile();
@@ -310,7 +403,7 @@ var updateKMLButton = function() {
 * set the onmouseover events of the info buttons
 **/
 var infotexts = function(){
-	
+
    var s1 = document.getElementById('step1');
 	s1.onmouseover = function() {
 	  document.getElementById('info1').style.display = 'block';
@@ -318,7 +411,7 @@ var infotexts = function(){
 	s1.onmouseout = function() {
 	  document.getElementById('info1').style.display = 'none';
 	}
-	
+
   var s2 = document.getElementById('step2');
     s2.onmouseover = function() {
 	  document.getElementById('info2').style.display = 'block';
@@ -345,25 +438,41 @@ var slider = function() {
 
 	update_button = document.getElementById('updateMap')
 	update_button.style.display = 'block';
-		
-	refStart = $("#slider1").val();
-	refStop = $("#slider2").val();
 
-	studyStart = $("#slider3").val();
-	studyStop = $("#slider4").val();
-	
-	var slider1 = document.getElementById("sliderval1");
-    slider1.innerHTML = refStart;
+  $('#measure_period').ionRangeSlider({
+    skin: "round",
+    type: "double",
+    grid: false,
+    min: 2002,
+    max: 2019,
+    from: 2009,
+    to: 2019,
+    onChange: function (data) {
+              update_button = document.getElementById('updateMap')
+              update_button.style.display = 'block';
+            },
+  });
 
-	var slider2 = document.getElementById("sliderval2");
-    slider2.innerHTML = refStop;	
+  $('#baseline_period').ionRangeSlider({
+    skin: "round",
+    type: "double",
+    grid: false,
+    min: 2002,
+    max: 2019,
+    from: 2002,
+    to: 2008,
+    onChange: function (data) {
+          update_button = document.getElementById('updateMap')
+          update_button.style.display = 'block';
+            },
+  });
 
-	var slider3 = document.getElementById("sliderval3");
-    slider3.innerHTML =studyStart;
+	// Get values
+  var refStart = $("#baseline_period").data("from");
+  var refStop= $("#baseline_period").data("to");
+  var studyStart = $("#measure_period").data("from");
+  var studyStop= $("#measure_period").data("to");
 
-	var slider4 = document.getElementById("sliderval4");
-    slider4.innerHTML = studyStop;	
-	
 	clearChart();
 }
 
@@ -373,18 +482,22 @@ var slider = function() {
  */
 var GetDates = function() {
 
-	refStart = $("#slider1").val();
-	refStop = $("#slider2").val();
+	// Get values
+	var refStart = $("#baseline_period").data("from");
+	var refStop= $("#baseline_period").data("to");
+  var studyStart = $("#measure_period").data("from");
+	var studyStop= $("#measure_period").data("to");
+  console.log(refStart, ' ', refStop, ' ', studyStart, ' ', studyStop)
 
-	studyStart = $("#slider3").val();
-	studyStop = $("#slider4").val();
-	
+
 	return [refStart, refStop, studyStart, studyStop]
 }
 
 /**
 * Display the polygons when the radio button changes
 **/
+
+
 function polygonSelectionMethod(){
 
 	// hide the download kml button
@@ -393,7 +506,7 @@ function polygonSelectionMethod(){
 
 	// get the variable name
 	var selection  = $("input[name='polygon-selection-method']:checked").val();
-	
+
 	if (selection == "Province"){
 
 		mode = 0;
@@ -410,15 +523,15 @@ function polygonSelectionMethod(){
 		map.data.loadGeoJson('static/province/' +provinceName + '.json')}).bind());
 			map.data.setStyle(function(feature) {
 			return {
-			  fillColor: 'white',
-			  strokeColor: 'white',
-			  strokeWeight: 2
+			  fillColor: '#006cfa',
+			  strokeColor: '#006cfa',
+			  strokeWeight: 1
 				};
 			  });
 		}
 
 	if (selection == "Country"){
-		
+
 		mode = 1;
 
 		// remove the drawing manager
@@ -433,21 +546,21 @@ function polygonSelectionMethod(){
 		map.data.loadGeoJson('static/country/' +country + '.json')}).bind());
 			map.data.setStyle(function(feature) {
 			return {
-			  fillColor: 'white',
-			  strokeColor: 'white',
-			  strokeWeight: 2
+			  fillColor: '#006cfa',
+			  strokeColor: '#006cfa',
+			  strokeWeight: 1
 				};
 			  });
-		}		
+		}
 
-	if (selection == "Draw Polygon"){	
-		
+	if (selection == "Draw Polygon"){
+
 		mode = 2;
-	
+
 		// clear existing overlays
 		clearMap();
-	
-		// setup drawing 
+
+		// setup drawing
 		createDrawingManager();
 		}
 
@@ -465,9 +578,9 @@ var createDrawingManager = function(){
 			strokeColor: CSS_COLOR_NAMES[counter]
 		  }
 		});
-		
+
 		drawingManager.setMap(map);
-		
+
 		// Respond when a new polygon is drawn.
 		google.maps.event.addListener(drawingManager, 'overlaycomplete',
 
@@ -484,15 +597,15 @@ var createDrawingManager = function(){
 		});
 
           var geom = event.overlay.getPath().getArray();
-                      
+
           // fire the analysis
           GEE_call_graph(geom);
-          
-          currentShape = new google.maps.Polygon({ paths: geom})       
+
+          currentShape = new google.maps.Polygon({ paths: geom})
         });
-			
+
 		updateKMLButton();
-			
+
 }
 
 
@@ -501,7 +614,7 @@ var createDrawingManager = function(){
 **/
 var clearMap = function(){
 
-	// remove all polygons 
+	// remove all polygons
 	map.data.forEach(function (feature) {
 		 map.data.remove(feature);});
 
@@ -509,7 +622,7 @@ var clearMap = function(){
 	 {
 		all_overlays[i].overlay.setMap(null);
 	}
-	
+
 	all_overlays = [];
 
 }
@@ -524,19 +637,19 @@ var clearChart = function(){
 	map.data.revertStyle();
 
 	firstGraph = 0;
-	
-	$('#ui #chart').empty(); 
+
+	$('#ui #chart').empty();
 	$('#ui #chart').hide();
 
-	$('#largechart').empty(); 
+	$('#largechart').empty();
 	$('#largechart').hide();
-	
+
 	var chartbutton = document.getElementById('clearchart');
     chartbutton.style.display = 'none';
-    
+
     var graphscreen = document.getElementById('chart-info');
     graphscreen.style.display = 'none';
-    
+
     var myName = [];
 	DataArr = [];
 
@@ -552,39 +665,39 @@ var clearChart = function(){
  */
 
 var handlePolygonClick = function(event) {
-    
+
   var feature = event.feature;
-    
+
   var showlink = document.getElementById("link")
   showlink.style.display = 'none';
-		
+
   // get geometry of polygon
   var polyPath = event.feature.getGeometry().getAt(0).getArray();
   // parse geometry to global variable
   currentShape = new google.maps.Polygon({paths: polyPath});
-	
-   
+
+
   // Instantly higlight the polygon and show the title of the polygon.
   map.data.overrideStyle(feature, {strokeWeight: 6,
 								   fillcolor: CSS_COLOR_NAMES[counter],
-								   strokeColor: CSS_COLOR_NAMES[counter]  	
+								   strokeColor: CSS_COLOR_NAMES[counter]
 									});
-   
-   // get the name of the polygon  
+
+   // get the name of the polygon
    var title = feature.getProperty('title');
-   
+
    // add the name of the polygon to the array
    myName.push(title);
-   
+
    // show selection on panel
    document.getElementById("name").innerHTML = title;
-   
+
    // get the feature id
    var id = feature.getProperty('id');
-   
+
    // Get the data and draw the graph
    GEE_call_graph(id);
-     
+
    counter = counter + 1;
 }
 
@@ -598,24 +711,25 @@ var GEE_call_graph = function(feature){
 
   var data = {mycounter: counter,
 			  folder : mode,
-			  refLow : Dates[0],									 
+			  refLow : Dates[0],
 			  refHigh : Dates[1],
 			  studyLow : Dates[2],
-			  studyHigh : Dates[3]									 
-			  } 
-  
+			  studyHigh : Dates[3]
+			  }
+
   $(".spinner").toggle();
-  
-  $.get('/details?polygon_id=' + feature,data).done((function(data) {    
+
+  $.get('/details?polygon_id=' + feature,data).done((function(data) {
     if (data['error']) {
       alert("An error! This is embarrassing! Please report to the sys admin. ");
     } else {
 		showChart(data['timeSeries']);
-		
+
+
     }
   }).bind(this));
 
-  $.get('/pieChart?polygon_id=' + feature,data).done((function(data) {    
+  $.get('/pieChart?polygon_id=' + feature,data).done((function(data) {
     if (data['error']) {
       alert("An error! This is embarrassing! Please report to the sys admin. ");
     } else {
@@ -624,69 +738,69 @@ var GEE_call_graph = function(feature){
     }
   }).bind(this));
 
-  
-}  
+
+}
 
 
 /**
 * ajax call to get data for graph for uploaded
 **/
 var GEE_call_graph_uploaded_poly = function(geom){
-  
+
     var Dates = GetDates();
-    
+
     mode = 3;
-    
+
     var coords = getCoordinates(currentShape);
 
 
     if (coords.length > 200) {
-		var stepSize = Math.round(coords.length / 200);   
+		var stepSize = Math.round(coords.length / 200);
 		var myshapefile = []
 		for (var i = 0; i < coords.length; i += stepSize ) {
 				myshapefile.push(coords[i]);
 			}
 		coords = myshapefile;
 	}
-	
+
 
 	var data = {mycounter: counter,
 			  folder : mode,
-			  refLow : Dates[0],									 
+			  refLow : Dates[0],
 			  refHigh : Dates[1],
 			  studyLow : Dates[2],
-			  studyHigh : Dates[3]									 
-			  } 
-  
+			  studyHigh : Dates[3]
+			  }
+
   $(".spinner").toggle();
-  
-  $.get('/details?polygon_id=' + JSON.stringify(coords),data).done((function(data) {    
+
+  $.get('/details?polygon_id=' + JSON.stringify(coords),data).done((function(data) {
     if (data['error']) {
       alert("An error! This is embarrassing! Please report to the sys admin. ");
     } else {
 		showChart(data['timeSeries']);
     }
-  }).bind(this)); 
- 
+  }).bind(this));
 
-  $.get('/pieChart?polygon_id=' + JSON.stringify(coords),data).done((function(data) {    
+
+  $.get('/pieChart?polygon_id=' + JSON.stringify(coords),data).done((function(data) {
     if (data['error']) {
       alert("An error! This is embarrassing! Please report to the sys admin. ");
     } else {
 		drawPieChart(data);
         $(".spinner").toggle();
     }
-  }).bind(this)); 
+  }).bind(this));
 
 
-}  
+}
 
 /**
 * Function need for kml downlaod function
 **/
 // Extract an array of coordinates for the given polygon.
 var getCoordinates = function (shape) {
-    
+
     //Check if drawn shape is rectangle or polygon
     if (shape.type == google.maps.drawing.OverlayType.RECTANGLE) {
         var bounds = shape.getBounds();
@@ -716,7 +830,7 @@ var getCoordinates = function (shape) {
 var setRectanglePolygon = function (newShape) {
     clearPolygon();
     currentShape = newShape;
-    
+
 };
 
 /** Clears the current polygon and cancels any outstanding analysis.
@@ -737,7 +851,7 @@ var clearPolygon = function () {
  */
 var showChart = function(timeseries) {
 
-  // unwrap the download png outerhtml 	
+  // unwrap the download png outerhtml
   $('png').contents().unwrap();
 
   if (firstGraph == 0){
@@ -747,23 +861,23 @@ var showChart = function(timeseries) {
 	firstGraph = 1
   });
   }
-  
+
   var count = 0;
   timeseries.forEach(function(point) {
 	  DataArr[count].push(point[1]);
 	  count = count +1;
   });
-  
+
   var data = new google.visualization.DataTable();
   data.addColumn('date');
-  for (i = 0; i < counter; i++) { 
+  for (i = 0; i < counter; i++) {
 	data.addColumn('number', myName[i]);
   }
 
   data.addRows(DataArr);
- 
+
   var wrapper = createWrapper(300,200,data);
- 
+
   $('#ui #chart').show();
   var chartEl = $('#chart').get(0);
   wrapper.setContainerId(chartEl);
@@ -775,22 +889,22 @@ var showChart = function(timeseries) {
   var chartEl = $('#largechart').get(0);
   chart.setContainerId(chartEl);
   chart.draw();
-	
+
   // show the clear chart button
    var chartbutton = document.getElementById('clearchart');
    chartbutton.style.display = 'block';
-   
+
    var exportButton = document.getElementById('export')
    exportButton.style.display = 'block';
 
    var showlink = document.getElementById("link")
-   showlink.style.display = 'none'; 
+   showlink.style.display = 'none';
 
    // export as png
    google.visualization.events.addListener(chart, 'ready', function () {
 		document.getElementById('png').innerHTML = '<a href="' + chart.getChart().getImageURI() + '" target="_blank"' + '>Printable version</a>';
 		});
-	
+
 	// export as csv
     $('#Export').click(function () {
         var csvFormattedDataTable = google.visualization.dataTableToCsv(data);
@@ -818,13 +932,13 @@ var createWrapper = function(w,h,data){
       title: 'Biophyscial health',
       curveType: 'function',
       legend: {position: 'right'},
-      titleTextStyle: {fontName: 'Roboto'},
+      titleTextStyle: {fontName: 'Avenir Light'},
       chartArea: {width: '50%'},
       colors: CSS_COLOR_NAMES,
       vAxis: { format:'0.00'}
     }
   });
-  
+
   return wrapper;
 }
 
@@ -842,25 +956,25 @@ var showLargeChart = function(timeseries) {
 	firstGraph = 1
   });
   }
-  
+
   var count = 0;
   timeseries.forEach(function(point) {
 	  DataArr[count].push(point[1]);
 	  count = count +1;
   });
-  
+
   var data = new google.visualization.DataTable();
   data.addColumn('date');
-  for (i = 0; i < counter; i++) { 
+  for (i = 0; i < counter; i++) {
 	data.addColumn('number', myName[i]);
   }
-  
+
   data.addRows(DataArr);
-  
+
   // show the clear chart button
    var chartbutton = document.getElementById('clearchart');
    chartbutton.style.display = 'block';
-   
+
    var exportButton = document.getElementById('export')
    exportButton.style.display = 'block';
 
@@ -876,17 +990,17 @@ var ShowMap = function() {
 
 	// clear the map
 	map.overlayMapTypes.clear();
-	
+
 	var Dates = GetDates();
-	
+
 	var params = {};
-	
+
 	// set the parameters
 	params['refLow'] = Dates[0]
 	params['refHigh'] = Dates[1]
 	params['studyLow'] = Dates[2]
 	params['studyHigh'] = Dates[3]
-	
+
 	$(".spinner").toggle();
 
 	$.ajax({
@@ -894,17 +1008,17 @@ var ShowMap = function() {
 	  data: params,
       dataType: "json",
       success: function (data) {
-		 var mapType = getEeMapType(data.eeMapId, data.eeToken);
+		 var mapType = getEeMapType(data.eeMapURL);
 		 map.overlayMapTypes.push(mapType);
 		 $(".spinner").toggle();
-		
+
       },
       error: function (data) {
         alert("An error occured! Please refresh the page.");
       }
-    });	
-	
-	
+    });
+
+
 }
 
 
@@ -919,14 +1033,14 @@ function drawPieChart(dataArray) {
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'catagory');
     data.addColumn('number', 'area (ha)');
-    data.addRows([      
+    data.addRows([
       ['Large improvement', dataArray[0]],
       ['improvement', dataArray[1]],
       ['No Change', dataArray[2]],
       ['under stress', dataArray[3]],
       ['Severe stress', dataArray[4]]
     ]);
-    
+
     var l = myName.length;
     var title = myName[l-1]
 
@@ -942,7 +1056,7 @@ function drawPieChart(dataArray) {
     // Instantiate and draw our chart, passing in some options.
     var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
     chart.draw(data, options);
-    
+
    // show link to download the piechart
    document.getElementById('PieLink').innerHTML = '<a href="' + chart.getImageURI() + '" target="_blank"' + '>Printable version</a>';
 
@@ -953,8 +1067,8 @@ function drawPieChart(dataArray) {
         this.href = encodedUri;
         this.download = 'table-data.csv';
         this.target = '_blank';
-    });	
-    
+    });
+
   }
 
 
@@ -969,50 +1083,50 @@ function drawPieChart(dataArray) {
 var exportMap = function() {
 
 	var coords = getCoordinates(currentShape);
-	
+
 	var Dates = GetDates();
 
 	var data = {mycounter: counter,
 			  folder : mode,
-			  refLow : Dates[0],									 
+			  refLow : Dates[0],
 			  refHigh : Dates[1],
 			  studyLow : Dates[2],
-			  studyHigh : Dates[3]									 
-			  } 
-	
+			  studyHigh : Dates[3]
+			  }
 
-	$.get('/downloadHandler?polygon=' + JSON.stringify(coords),data).done((function(data) {    
+
+	$.get('/downloadHandler?polygon=' + JSON.stringify(coords),data).done((function(data) {
     if (data['error']) {
        alert("An error! This is embarrassing! Please report to the sys admin. ");
     } else {
-		
+
 	var showlink = document.getElementById("link")
 	showlink.style.display = 'block';
-	showlink.setAttribute("href",data);      
-		
+	showlink.setAttribute("href",data);
+
 	var showexport = document.getElementById("export")
 	showexport.style.display = 'none';
 
     }
-	}).bind(this)); 
+	}).bind(this));
 
-}  
-	
+}
+
 
 // ---------------------------------------------------------------------------------- //
 // Layer management
 // ---------------------------------------------------------------------------------- //
 
 /** Updates the image based on the current control panel config. */
-var refreshImage = function(eeMapId, eeToken) {
-  var mapType = getEeMapType(eeMapId, eeToken);
+var refreshImage = function(eeMapURL) {
+  var mapType = getEeMapType(eeMapURL);
   map.overlayMapTypes.push(mapType);
 };
 
 var opacitySliders = function() {
 
   setLayerOpacity($("#opacitySlider").val());
-  
+
 }
 
 var setLayerOpacity = function(value) {
@@ -1031,24 +1145,25 @@ var setLayerOpacity = function(value) {
 /**
  * Generates a Google Maps map type (or layer) for the passed-in EE map id. See:
  * https://developers.google.com/maps/documentation/javascript/maptypes#ImageMapTypes
- * @param {string} eeMapId The Earth Engine map ID.
- * @param {string} eeToken The Earth Engine map token.
+ * @param {string} eeMapURL The Earth Engine gee tile url.
  * @return {google.maps.ImageMapType} A Google Maps ImageMapType object for the
  *     EE map with the given ID and token.
  */
-var getEeMapType = function(eeMapId, eeToken) {
+var getEeMapType = function(eeMapURL) {
   var eeMapOptions = {
-    getTileUrl: function(tile, zoom) {
-      var url = EE_URL + '/map/';
-      url += [eeMapId, zoom, tile.x, tile.y].join('/');
-      url += '?token=' + eeToken;
-      return url;
-    },
-    tileSize: new google.maps.Size(256, 256),
-    name: 'ecomap',
-	opacity: 1.0
-  };
-  return new google.maps.ImageMapType(eeMapOptions);
+      getTileUrl: function (tile, zoom) {
+            var url = eeMapURL.replace('{x}', tile.x)
+                              .replace('{y}', tile.y)
+                              .replace('{z}', zoom);
+            return url;
+        },
+      tileSize: new google.maps.Size(256, 256),
+      name: 'ecomap',
+      opacity: 1.0
+    };
+    var mapType = new google.maps.ImageMapType(eeMapOptions);
+
+  return mapType;
 };
 
 /** @type {string} The Earth Engine API URL. */
@@ -1077,5 +1192,3 @@ var COUNTRIES;
 
 /** The drawing manager	*/
 var drawingManager;
-
-

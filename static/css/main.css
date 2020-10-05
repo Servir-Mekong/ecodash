@@ -3,7 +3,7 @@
 /********************/
 
 body {
-    font-family:Roboto;
+    font-family: 'Avenir Light', Verdana, Geneva, sans-serif;
     font-size:16px;
     height:100vh;
     background-image:url(../images/mountain_forest_scenery_small.jpg);
@@ -17,15 +17,20 @@ section, header, nav, footer {
     display:block;
 }
 
+button{
+  font-family: 'Avenir Light', Verdana, Geneva, sans-serif;
+}
+
+button:focus {outline:0;}
+
 /*****************/
 /* Header Styles */
 /*****************/
-
 #pageheader {
     position:fixed;
     top:0px;
     left:0px;
-    height:90px;
+    height:70px;
     width:100%;
 }
 
@@ -34,19 +39,31 @@ header {
     width:100%;
 }
 
+.logo-map{
+  position: absolute;
+  bottom: 1%;
+  right: 10px;
+  padding: 5px;
+  border-radius: 0px;
+  background-color: #ffffff1a;
+  font-size: 0.8rem;
+  color: #FFF;
+  width: auto;
+}
+
 .logos {
     position:relative;
     margin:0px;
     width:100%;
-    height:55px;
+    height:50px;
     background-color:#fff;
 }
 
 .logos img#usaid {
-    position:absolute;
-    top:5px;
-    left:30px;
-    width:150px;
+    position: absolute;
+    top: 5px;
+    left: 30px;
+    width: 120px;
 }
 
 .logos img#gee {
@@ -57,39 +74,50 @@ header {
 }
 
 .logos img#nasa {
-    position:absolute;
-    top:0px;
-    left:210px;
-    width:60px;
+    position: absolute;
+    top: 5px;
+    left: 165px;
+    width: 40px;
 }
 
 .logos img#adpc {
-    position:absolute;
-    top:9px;
-    left:300px;
-    width:80px;
+    position: absolute;
+    top: 9px;
+    left: 220px;
+    width: 65px;
 }
 
 .logos img#servir {
-    position:absolute;
-    top:12px;
-    right:30px;
-    width:250px;
+    position: absolute;
+    top: 12px;
+    right: 30px;
+    width: 200px;
 }
 
 nav {
     position:relative;
     margin:0px;
     width:100%;
-    height:35px;
-    background-color:#3a3a3a;
+    height:45px;
+    background-color:#000;
     color:#eee;
 }
-
+nav a.application_name{
+    position: absolute;
+    padding: 10px 10px 10px 10px;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 20px;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #FFF;
+    left: 20px;
+}
 nav ul {
     position:absolute;
-    top:0px;
-    left:30px;
+    bottom:5px;
+    right:30px;
+    height: 10px;
 }
 
 nav ul li {
@@ -98,6 +126,12 @@ nav ul li {
     padding:2px 10px;
     cursor:pointer;
 }
+
+nav ul li a{
+    text-decoration: none;
+    color: #FFF;
+}
+
 
 nav ul li homebutton {
     text-shadow:0px 0px 4px #fff;
@@ -121,8 +155,8 @@ nav ul li aboutbutton {
 }
 
 #pagecontent a {
-    color:#444;
-    text-decoration:none;
+  color: #010101;
+  text-decoration: none;
 }
 
 #pagecontent a:hover {
@@ -228,7 +262,7 @@ footer {
     position:absolute;
     top:0px;
     left:0px;
-    height:calc(100vh - 90px - 55px);
+    height:calc(100vh - 90px);
     width:100%;
 }
 
@@ -241,14 +275,36 @@ footer {
 }
 
 #ecodash #ui {
-    position:absolute;
-    top:0px;
-    right:0px;
-    height:100%;
-    width:20rem;
-    background-color:white;
-    padding:0.5%;
-    overflow:hidden;
+  top: 5px;
+  bottom: 5px;
+  width: 340px;
+  height: auto;
+  padding: 0px;
+  float: right;
+  right: 10px;
+  z-index: 5;
+  position: relative;
+  opacity: 1;
+  border-radius: 4px;
+  background: #FFF;
+  border: 1px solid #FFF;
+  max-height: 90%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+#pie-chart-info #PieLink a{
+  position: absolute;
+  bottom: 12px;
+  margin: 15px;
+  width: auto;
+}
+
+#pie-chart-info  #PieLink p{
+  position: absolute;
+  bottom: 8px;
+  margin: 15px;
+  width: auto;
 }
 
 #ecodash #settings-button {
@@ -283,8 +339,9 @@ footer {
 
 
 #ecodash #chart-info {
+  font-family: 'Avenir Light', Verdana, Geneva, sans-serif;
     display: none;
-	position:absolute;
+	  position:absolute;
     top:10%;
     left:10%;
     height:70%;
@@ -297,18 +354,19 @@ footer {
 }
 
 #ecodash #pie-chart-info {
-    display: none;
-	position:absolute;
-    top:15%;
-    left:1%;
-    height:40%;
-    width:20%;
-    padding:2%;
-    border-radius:3px;
-    background-color:white;
-    box-shadow:0px 0px 5px gray;
-    z-index:100;
-    border: 2px solid black
+  font-family: 'Avenir Light', Verdana, Geneva, sans-serif;
+  display: none;
+  position: absolute;
+  bottom: 3%;
+  left: 150px;
+  height: auto;
+  width: auto;
+  padding: 10px;
+  border-radius: 3px;
+  background-color: white;
+  box-shadow: 0px 0px 5px rgb(51,51,51);
+  z-index: 2;
+  border: 1px solid #010101;
 }
 
 #ecodash #general-info-shown {
@@ -325,46 +383,17 @@ footer {
     overflow:scroll;
 }
 
-#ecodash #info1{
-	display: none;
-	position:absolute;
-    top:40%;
-    left:20%;
-    right:30%;
-	bottom:20%;
-    padding:2%;
-    border-radius:0px;
-    background-color:white;
-    font-size:0.8rem;
-    text-align:center;
-}
-
-#ecodash #info2{
-	display: none;
-	position:absolute;
-    top:40%;
-    left:20%;
-    right:30%;
-	bottom:20%;
-    padding:2%;
-    border-radius:0px;
-    background-color:white;
-    font-size:0.8rem;
-    text-align:center;
-}
-
-#ecodash #info3{
-	display: none;
-	position:absolute;
-    top:40%;
-    left:20%;
-    right:30%;
-	bottom:20%;
-    padding:2%;
-    border-radius:0px;
-    background-color:white;
-    font-size:0.8rem;
-    text-align:center;
+#ecodash .info{
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 400px;
+  padding: 5px;
+  border-radius: 0px;
+  background-color: rgba(0, 0, 0, 0.73);
+  font-size: 0.8rem;
+  color: #FFF;
+  width: 350px;
 }
 
 #ecodash #download-screen {
@@ -403,28 +432,30 @@ footer {
 }
 
 #ecodash #legend {
-    position:absolute;
-    left:0px;
-    bottom:10px;
-    width:80px;
-    height:195px;
-    background-color:white;
-    padding:5px;
-    border-top-right-radius:3px;
+  position: absolute;
+  color: #FFF;
+  left: 20px;
+  bottom: 20px;
+  width: 90px;
+  height: 192px;
+  background-color: rgba(0, 0, 0, 0.86);
+  padding: 10px;
+  border-top-right-radius: 3px;
+  border-radius: 4px;
 }
 
 #ecodash #legend h2 {
-    font-size:0.9rem;
-    font-weight:bold;
-    color:gray;
-    text-align:center;
-    margin:4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFF;
+    text-align: center;
+    margin: 4px;
 }
 
 #ecodash #legend table tr {
     font-size:0.8rem;
-    font-weight: normal;  
-    font-family:Arial, sans-serif;
+    font-weight: normal;
+    font-family: 'Avenir Light', Verdana, Geneva, sans-serif;
     font-size:12px;
     padding:10px 5px;
     overflow:hidden;
@@ -460,8 +491,8 @@ footer {
     left:0px;
     bottom:0px;
     height:25px;
-    width:70px;
-    background-color:white;
+    width:80%;
+    background-color:none;
     padding:5px;
 }
 
@@ -499,16 +530,22 @@ footer {
 /***********************************/
 
 #ecodash #ui header {
-    height:1.5rem;
-    margin-bottom:0.5rem;
-    border-bottom:2px solid #666;
+  height: 30px;
+  background: #000;
+  color: #FFF;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
 }
 
 #ecodash #ui header h1 {
-    display:inline;
-    font-size:1.2rem;
-    font-weight:bold;
-    color:gray;
+  display: inline;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #FFF;
+  margin-block-start: 5px;
+  margin-block-end: 0;
+  margin-left: 10px;
+  float: left;
 }
 
 #ecodash #ui header #collapse-button {
@@ -519,23 +556,24 @@ footer {
 }
 
 #ecodash #ui header #info-button {
-    display:inline;
-    float:right;
-    margin:2px 10px 0px 0px;
-    padding:0px 3px;
-    background-image:linear-gradient(rgb(255,255,255) 0px, rgb(224,224,224) 100%);
-    background-position:0% 0%;
-    background-repeat:repeat-x;
-    border:1.25px solid rgb(204,204,204);
-    border-radius:3px;
-    box-shadow:rgba(255,255,255,0.15) 0px 1px 0px 0px inset,
-               rgba(0,0,0,0.075) 0px 1px 1px 0px;
-    font-size:12px;
-    color:rgb(51,51,51);
-    font-weight:400;
-    line-height:16px;
-    text-shadow:rgb(255,255,255) 0px 1px 0px;
-    cursor:pointer;
+  display: inline;
+  float: left;
+  margin: 2px 10px 5px 10px;
+  width: 15px;
+  height: 15px;
+  padding: 0px 3px;
+  background-image: linear-gradient(rgb(255,255,255) 0px, rgb(224,224,224) 100%);
+  background-position: 0% 0%;
+  background-repeat: repeat-x;
+  border: 1.25px solid rgb(204,204,204);
+  border-radius: 50%;
+  box-shadow: rgba(255,255,255,0.15) 0px 1px 0px 0px inset, rgba(0,0,0,0.075) 0px 1px 1px 0px;
+  font-size: 12px;
+  color: rgb(51,51,51);
+  font-weight: 600;
+  line-height: 16px;
+  text-shadow: rgb(255,255,255) 0px 1px 0px;
+  cursor: pointer;
 }
 
 #ecodash #ui #step1 {
@@ -601,7 +639,7 @@ footer {
 
 
 #ecodash #ui #sliderval1 {
-    
+
     left:60px;
     top:85px;
     width:10px;
@@ -609,11 +647,11 @@ footer {
     display:inline;
     font-size:0.8rem;
     font-weight:bold;
-  
+
 }
 
 #ecodash #ui #sliderval2 {
-    
+
     left:410px;
     top:85px;
     width:10px;
@@ -621,12 +659,12 @@ footer {
     display:inline;
     font-size:0.8rem;
     font-weight:bold;
-  
+
 }
 
 
 #ecodash #ui #sliderval3{
-   
+
     left:60px;
     top:155px;
     width:10px;
@@ -634,11 +672,11 @@ footer {
     display:inline;
     font-size:0.8rem;
     font-weight:bold;
-  
+
 }
 
 #ecodash #ui #sliderval4 {
-    
+
     left:210px;
     top:155px;
     width:10px;
@@ -646,7 +684,7 @@ footer {
     display:inline;
     font-size:0.8rem;
     font-weight:bold;
-  
+
 }
 
 /*********************************/
@@ -656,7 +694,27 @@ footer {
 #ecodash #ui #controls {
     height:94%;
     width:100%;
-    overflow:scroll;
+    overflow:hidden;
+    padding: 10px;
+}
+
+#ecodash #ui #controls button{
+    margin: 0px;
+    padding: 5px 20px 5px 20px;
+    font-size: 14px;
+    background-color: #006cfa;
+    border-radius: 5px;
+    border: none;
+    color: #FFF;
+
+  }
+
+#ecodash #ui #controls p {
+  font-size: 14px;
+  margin-block-start: 0em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
 }
 
 #ecodash #ui #controls h2 {
@@ -666,10 +724,26 @@ footer {
     margin-bottom:5px;
 }
 
+.foldable-btn {
+  width: 35px;
+  height: 100%;
+  border-radius: 11px;
+  opacity: 1;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.foldable-btn.down {
+  background-image: url(../images/fold_down.png);
+}
+.foldable-btn.up {
+  background-image: url(../images/fold_up.png);
+}
+
 #ecodash #ui #controls h3 {
-    font-size:0.8rem;
-    font-weight:bold;
-    color:gray;
+    font-size:14px;
+    font-weight:600;
+    color:#000;
     margin:5px 0px;
 }
 
@@ -738,6 +812,7 @@ footer {
 	display: none;
 }
 
+
 /*****************************/
 /* Multi-Range Slider Widget */
 /*****************************/
@@ -766,6 +841,29 @@ footer {
 .range-slider input:last-of-type::-moz-range-track {
     visibility:hidden;
 }
+
+
+.irs--round .irs-handle {
+    top: 30px;
+    width: 15px;
+    height: 15px;
+    border: 2px solid #006cfa;
+    background-color: #e1e4e9;
+    border-radius: 0;
+    box-shadow: 0 1px 3px rgba(0,0,255,0.3);
+}
+
+.irs--round .irs-from, .irs--round .irs-to, .irs--round .irs-single {
+    font-size: 12px;
+    line-height: 1;
+    text-shadow: none;
+    padding: 3px 5px;
+    background-color: #006cfa;
+    color: white;
+    border-radius: 4px;
+}
+
+
 
 /*****************/
 /* Slider Widget */
@@ -859,22 +957,80 @@ input[type=range]::-ms-fill-upper {
     background:transparent;
 }
 
-/******************/
-/* Spinner Widget */
-/******************/
 
-.spinner {
-    position:absolute;
-    top:35%;
-    left:35%;
-    width:8rem;
-    height:8rem;
-    border-radius:4rem;
-    border-bottom:1rem solid purple;
-    animation:sweep 1s infinite linear;
-    -moz-animation:sweep 1s infinite linear;
-    -webkit-animation:sweep 1s infinite linear;
+/* IMAGE RADIO OPTIONS */
+#ecodash #ui #controls .image-options {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    margin-top: 1.125rem;
+    padding-bottom: 0.9375rem;
+    width: 90%;
 }
+
+#ecodash #ui #controls .image-options button {
+    position: relative;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    cursor: pointer;
+    width: 20%;
+    background-color: #FFF;
+}
+
+#ecodash #ui #controls .image-options button:disabled {
+  fill: #7f7f7f;
+  pointer-events: none;
+}
+
+#ecodash #ui #controls .image-options button.selected::before {
+    content: '';
+    position: absolute;
+    bottom: 1px;
+    left: 10px;
+    left: 0.625rem;
+    width: 100%;
+    height: 2px;
+    height: 0.125rem;
+    background-color: #006cfa;
+}
+
+#ecodash #ui #controls .image-options button .label {
+    font-size: 11px;
+    line-height: 1.18;
+    color: #7f7f7f;
+}
+
+#ecodash #ui #controls .image-options button.selected .label {
+    color: #006cfa;
+}
+
+#ecodash #ui #controls .image-options button.selected svg {
+    fill: #006cfa;
+}
+
+
+#ecodash #ui #controls .layer-menu .layer-title {
+    color: #555;
+}
+
+/* DRAWING OPTIONS BUTTON */
+#ecodash #ui #controls .image-options button svg.icon-square-point {
+    width: 2rem;
+    height: 2rem;
+    margin-bottom: 0.1rem;
+}
+
 
 @keyframes sweep {
     from {
@@ -907,42 +1063,20 @@ input[type=range]::-ms-fill-upper {
 /* Spinner Widget */
 /******************/
 
+.loading-img {
+    width: 220px;
+    height: 220px;
+    margin-left: 50%;
+    margin-top: 20%;
+    background: url(../../modules/core/client/img/spinner.gif) center center no-repeat,url(../../../core/client/img/spinner.gif) center center no-repeat;
+}
+
 .spinner {
-	display: none;
+	 display: none;
     position:absolute;
     top:35%;
     left:35%;
     width:8rem;
     height:8rem;
-    border-radius:4rem;
-    border-bottom:1rem solid purple;
-    animation:sweep 1s infinite linear;
-    -moz-animation:sweep 1s infinite linear;
-    -webkit-animation:sweep 1s infinite linear;
+    background: url(../images/spinner.gif) center center no-repeat,url(../images/spinner.gif) center center no-repeat;
 }
-
-@keyframes sweep {
-    from {
-        transform:rotate(0deg);
-    }
-    to {
-        transform:rotate(360deg);
-    }
-}
-
-@-moz-keyframes sweep {
-    from {
-        -moz-transform:rotate(0deg);
-    }
-    to {
-        -moz-transform:rotate(360deg);
-    }
-}
-
-@-webkit-keyframes sweep {
-    from {
-        -webkit-transform:rotate(0deg);
-    }
-    to {
-        -webkit-transform:rotate(360deg);
-    }
