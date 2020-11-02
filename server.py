@@ -31,8 +31,8 @@ from google.appengine.api import taskqueue
 MEMCACHE_EXPIRATION = 60 * 60 * 24
 
 
-# The URL fetch timeout time (seconds).
-URL_FETCH_TIMEOUT = 6000000
+# The URL fetch timeout time (milliseconds).
+URL_FETCH_TIMEOUT = 120000 #2minute
 
 WIKI_URL = ""
 

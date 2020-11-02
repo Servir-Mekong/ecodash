@@ -214,16 +214,17 @@ footer {
 
 #about {
 	display:none;
-    position:absolute;
-    top:0%;
-    left:10%;
-    height:calc(100vh - 90px - 55px - 55px);
-    width:76%;
-    padding:2%;
-    overflow:scroll;
-    background:rgba(255, 255, 255, 0.8);
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#CCFFFFFF, endColorstr=#CCFFFFFF);
-    -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#CCFFFFFF, endColorstr=#CCFFFFFF);
+  position:absolute;
+  top:3%;
+  left:10%;
+  height:calc(100vh - 90px - 55px - 55px);
+  width:76%;
+  padding:2%;
+  z-index: 1;
+  overflow:auto;
+  background:rgba(255, 255, 255, 0.8);
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#CCFFFFFF, endColorstr=#CCFFFFFF);
+  -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#CCFFFFFF, endColorstr=#CCFFFFFF);
 }
 
 #about h1 {
@@ -293,14 +294,15 @@ footer {
   overflow-x: hidden;
 }
 
-#pie-chart-info #PieLink a{
-  position: absolute;
-  bottom: 12px;
-  margin: 15px;
-  width: auto;
+.btn-sm {
+  border: 1px solid #eee;
+  font-size: 12px;
+  margin: 3px;
+  padding: 3px;
 }
 
-#pie-chart-info  #PieLink p{
+
+#chart-info-area  #PieLink p{
   position: absolute;
   bottom: 8px;
   margin: 15px;
@@ -353,12 +355,12 @@ footer {
     z-index:100;
 }
 
-#ecodash #pie-chart-info {
+#ecodash #chart-info-area {
   font-family: 'Avenir Light', Verdana, Geneva, sans-serif;
   display: none;
   position: absolute;
   bottom: 3%;
-  left: 150px;
+  left: 140px;
   height: auto;
   width: auto;
   padding: 10px;
@@ -366,7 +368,7 @@ footer {
   background-color: white;
   box-shadow: 0px 0px 5px rgb(51,51,51);
   z-index: 2;
-  border: 1px solid #010101;
+  border: 0px solid #010101;
 }
 
 #ecodash #general-info-shown {
@@ -708,6 +710,18 @@ footer {
     color: #FFF;
 
   }
+
+  #ecodash #ui #controls button.chart-btn{
+    margin-bottom: 3px;
+    cursor: pointer;
+    padding: 5px 5px 5px 5px;
+    font-size: 12px;
+    background-color: #eee;
+    border-radius: 5px;
+    border: none;
+    color: rgb(51,51,51);
+
+    }
 
 #ecodash #ui #controls p {
   font-size: 14px;

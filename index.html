@@ -3,7 +3,10 @@
 	<head>
 
 		<title>EcoDash</title>
-
+		<link rel="shortcut icon" href="/static/images/favicon.png" type="image/x-icon">
+		<meta name="keywords" content="EcoDash, Sustainable Landscapes Ecosystem Monitoring Tool (EcoDash), Mekong, SERVIR, SERVIR Mekong">
+		<meta name="description" content="Sustainable Landscapes Ecosystem Monitoring Tool (EcoDash)">
+		<meta name="author" content="Thannarot Kunlamai, SERVIR Mekong">
 
 		<!-- Google Web Fonts. -->
 		<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
@@ -13,7 +16,7 @@
 
 		<!-- Google Web Fonts. -->
 		<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
-		<link href="//db.onlinewebfonts.com/c/116af611cbcd9e4bada60b4e700430c1?family=Avenir+Light" rel="stylesheet" type="text/css"/>
+		<link href="https://db.onlinewebfonts.com/c/116af611cbcd9e4bada60b4e700430c1?family=Avenir+Light" rel="stylesheet" type="text/css"/>
 
 		<!--Plugin CSS file with desired skin-->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.0/css/ion.rangeSlider.min.css"/>
@@ -22,7 +25,7 @@
 		<link href="/static/css/main.css" rel="stylesheet" type="text/css">
 
 		<!-- the google maps api -->
-		<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY | safe }}&v=3.exp&libraries=drawing"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY | safe }}&libraries=drawing"></script>
 
 		<!-- Load JavaScript -->
 		<script src="/static/js/script.js"></script>
@@ -36,7 +39,7 @@
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.0/js/ion.rangeSlider.min.js"></script>
 
 		<!-- custom library to download maps -->
-	    <script src='/_ah/channel/jsapi'></script>
+	   <script src='/_ah/channel/jsapi'></script>
 
 		<!-- load libraries to download kml -->
 		<script src="/static/js/kml.js"></script>
@@ -146,16 +149,29 @@
 				   <input id="start-button" type="button" name="start-button" value="Get Started!">
 		   </div>
 
-			<div id="chart-info">
+			<!-- <div id="chart-info">
 				<div id="largechart" style="display: none;"></div>
 				<div id='png'></div>
 				<a id="Export" href="#">Download as csv</a>
-			</div>
+			</div> -->
 
-			<div id="pie-chart-info">
-				<div id="chart_div"></div>
-				<p><a id="PieLink" target="_blank" style="position: absolute;bottom: 20px;width: 100%;"></a></p>
-				<p><a id="csvPie" href="#" style="position: absolute; bottom: 8px; margin: 15px; width: auto;">Download as csv</a></p>
+			<div id="chart-info-area">
+				<table>
+					<tr>
+					<td>
+						<a id="png" class="btn-sm">PNG</a>
+						<a id="Export" href="#" class="btn-sm">CSV</a>
+						<div id="chart" style="display: none;"></div>
+					</td>
+					<td>
+						<a id="PieLink" class="btn-sm">PNG</a>
+						<a id="csvPie" href="#" class="btn-sm">CSV</a>
+						<div id="chart_div"></div>
+						<!-- <p><a id="PieLink" target="_blank" style="position: absolute;bottom: 20px;width: 100%;"></a></p>
+						<p><a id="csvPie" href="#" style="position: absolute; bottom: 8px; margin: 15px; width: auto;">Download as csv</a></p> -->
+					</td>
+					</tr>
+				</table>
 			</div>
 
 
@@ -189,7 +205,7 @@
 
 			<!-- block with legend -->
 			<div id="legend">
-			<h2><a href="https://en.wikipedia.org/wiki/Enhanced_vegetation_index" target="_blank" style="color: #FFF;">&#916 EVI</a></h2>
+			<h2><a href="https://en.wikipedia.org/wiki/Enhanced_vegetation_index" target="_blank" style="color: #FFF;"> &#916 EVI</a></h2>
 
 			<table>
 			  <tr>
@@ -234,11 +250,8 @@
 					</table>
 
 					<div style="width:70%; margin-left:15px;">
-                    <input type="text" class="js-range-slider" id="baseline_period" name="baseline_period" />
+              <input type="text" class="js-range-slider" id="baseline_period" name="baseline_period" />
           </div>
-
-
-
 
 					<table>
 						<colgroup>
@@ -251,9 +264,8 @@
 						</tr>
 					</table>
 					<div style="width:70%; margin-left:15px;">
-                    <input type="text" class="js-range-slider" id="measure_period" name="measure_period" />
+              <input type="text" class="js-range-slider" id="measure_period" name="measure_period" />
           </div>
-
 
 					<table>
 						<colgroup>
@@ -310,13 +322,6 @@
 		      </div>
 					<input id="files" type="file" multiple="" name="files1[]" hidden><output id="file_list"></output>
 
-					<!-- <ul>
-					<li><input type="radio" name="polygon-selection-method" value="Province" id="polygon-selection-method" hidden><label>Province</label></li>
-					<li><input type="radio" name="polygon-selection-method" value="Country" id="polygon-selection-method" hidden><label>Country</label></li>
-					<li><input type="radio" name="polygon-selection-method" value="Draw Polygon" id="polygon-selection-method" hidden><label>Draw Polygon</label></li>
-					<li><input id="files" type="file" multiple="" name="files1[]"><output id="file_list" hidden></output></li>
-					</ul> -->
-
 					<button id="downloadkml">Download Polygon</button>
 
 					<p> Click a polygon on the map or draw your own</p><p id="polygon">Selection: <em id="name"></em>
@@ -326,14 +331,13 @@
 					<button id="updateMap">Update map</button>
 
 					<h3>5. Review the historical ∆EVI in the selection</h3>
-					<div id="chart" style="display: none;"></div>
 
 
-					<button id="clearchart">Clear chart</button>
-					<button id="export">export map</button>
+					<button id="clearchart" class="chart-btn">Clear chart</button>
+					<button id="hideChart" class="chart-btn">Hide Chart</button>
+					<button id="showChart" class="chart-btn" style="display: none;">Show Chart</button>
+					<button id="export" class="chart-btn">Export Map</button>
 					<a id="link" target="_blank">Download the data</a>
-
-					<button id="piechart">Show pie chart</button>
 
 					<!-- file upload button -->
 					<input type="file" id="fileOpen" style="visibility: hidden; width: 2px;" />
@@ -342,17 +346,6 @@
 			</div> <!-- end of ui display block -->
 		</div> 	<!-- end of ecodash -->
 	    </section>
-
-
-
-		<!-- the page footer -->
-		 <!-- <section id="pagefooter">
-		 <div class="logos">
-		   <a href="http://sig-gis.com/" target="_blank"><img id="sig" src="/static/images/logosig.png" alt="SIG"></a>
-		   <a href="https://earthengine.google.com/" target="_blank"><img id="gee" src="/static/images/gee.jpg" alt="GEE"></a>
-		 </div>
-		 </section> -->
-
 
 		<!-- Boot application once the body loads. -->
 		<script>

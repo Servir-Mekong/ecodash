@@ -35,7 +35,7 @@ var boot = function(eeMapId, eeToken, eeMapURL, serializedPolygonIds_country,ser
 	google.load('visualization', '1.0', {'packages':['corechart']});
 
 	// Set a callback to run when the Google Visualization API is loaded.
-	google.setOnLoadCallback(drawPieChart);
+	//google.setOnLoadCallback(drawPieChart);
 
 	var app = new App(eeMapId,
 					  eeToken,
@@ -123,13 +123,13 @@ function setupListeners() {
 
   document.getElementById('export').addEventListener("click", exportMap);
 
-  document.getElementById('chart').addEventListener("click", showgraph);
+  //document.getElementById('chart').addEventListener("click", showgraph);
 
-  document.getElementById('chart-info').addEventListener("click", showgraph);
+  //document.getElementById('chart-info').addEventListener("click", showgraph);
 
-  document.getElementById('pie-chart-info').addEventListener("click", hidePie);
+  document.getElementById('hideChart').addEventListener("click", hideChartArea);
 
-  document.getElementById('piechart').addEventListener("click", showPie);
+  document.getElementById('showChart').addEventListener("click", showPie);
 
   document.getElementById('opacitySlider').addEventListener("change", opacitySliders);
   //
@@ -267,14 +267,17 @@ var showgraph = function() {
 var showPie = function() {
 
    // get infoscreen by id
-   var graphscreen = document.getElementById('pie-chart-info');
+   var graphscreen = document.getElementById('chart-info-area');
 
    if (counter > 0){
 	graphscreen.style.display = 'block';
 	}
 
-   var pieButton = document.getElementById('piechart');
-   pieButton.style.display = 'none';
+   var showButton = document.getElementById('showChart');
+   showButton.style.display = 'none';
+
+   var hideButton = document.getElementById('hideChart');
+   hideButton.style.display = 'block';
 
 }
 
@@ -282,15 +285,18 @@ var showPie = function() {
 * function to show info screen
 * using the info button
  */
-var hidePie = function() {
+var hideChartArea = function() {
 
    // get infoscreen by id
-   var graphscreen = document.getElementById('pie-chart-info');
+   var graphscreen = document.getElementById('chart-info-area');
 
    graphscreen.style.display = 'none';
 
-   var pieButton = document.getElementById('piechart');
-   pieButton.style.display = 'block';
+   var showButton = document.getElementById('showChart');
+   showButton.style.display = 'block';
+
+   var hideButton = document.getElementById('hideChart');
+   hideButton.style.display = 'none';
 
 }
 
@@ -350,7 +356,7 @@ var homePage = function(){
 	showUI.style.display = "block";
 
 	hideAbout = document.getElementById('about');
-	hideAbout.style.display = "hide";
+	hideAbout.style.display = "none";
 
 	showLegend = document.getElementById('legend');
 	showLegend.style.display = "block";
@@ -372,6 +378,8 @@ var aboutPage = function(){
 
 	hideLegend = document.getElementById('legend');
 	hideLegend.style.display = "none";
+
+  $("#chart-info-area").css("display", "none");
 }
 
 /**
@@ -487,8 +495,6 @@ var GetDates = function() {
 	var refStop= $("#baseline_period").data("to");
   var studyStart = $("#measure_period").data("from");
 	var studyStop= $("#measure_period").data("to");
-  console.log(refStart, ' ', refStop, ' ', studyStart, ' ', studyStop)
-
 
 	return [refStart, refStop, studyStart, studyStop]
 }
@@ -633,22 +639,23 @@ var clearMap = function(){
 **/
 var clearChart = function(){
 
+  hideChartArea();
 	// clear colored polygons
 	map.data.revertStyle();
 
 	firstGraph = 0;
 
-	$('#ui #chart').empty();
-	$('#ui #chart').hide();
+	$('#chart').empty();
+	$('#chart').hide();
 
-	$('#largechart').empty();
-	$('#largechart').hide();
+	// $('#largechart').empty();
+	// $('#largechart').hide();
 
 	var chartbutton = document.getElementById('clearchart');
     chartbutton.style.display = 'none';
 
-    var graphscreen = document.getElementById('chart-info');
-    graphscreen.style.display = 'none';
+  // var graphscreen = document.getElementById('chart-info');
+  // graphscreen.style.display = 'none';
 
     var myName = [];
 	DataArr = [];
@@ -852,7 +859,7 @@ var clearPolygon = function () {
 var showChart = function(timeseries) {
 
   // unwrap the download png outerhtml
-  $('png').contents().unwrap();
+  // $('png').contents().unwrap();
 
   if (firstGraph == 0){
 	timeseries.forEach(function(point) {
@@ -876,19 +883,18 @@ var showChart = function(timeseries) {
 
   data.addRows(DataArr);
 
-  var wrapper = createWrapper(300,200,data);
+  var wrapper = createWrapper(350,250,data);
 
-  $('#ui #chart').show();
+  $('#chart').show();
   var chartEl = $('#chart').get(0);
   wrapper.setContainerId(chartEl);
   wrapper.draw();
 
-  var chart = createWrapper(900,500,data);
-
-  $('#largechart').show();
-  var chartEl = $('#largechart').get(0);
-  chart.setContainerId(chartEl);
-  chart.draw();
+  //var chart = createWrapper(900,500,data);
+  // $('#largechart').show();
+  // var chartEl = $('#largechart').get(0);
+  // chart.setContainerId(chartEl);
+  // chart.draw();
 
   // show the clear chart button
    var chartbutton = document.getElementById('clearchart');
@@ -901,9 +907,12 @@ var showChart = function(timeseries) {
    showlink.style.display = 'none';
 
    // export as png
-   google.visualization.events.addListener(chart, 'ready', function () {
-		document.getElementById('png').innerHTML = '<a href="' + chart.getChart().getImageURI() + '" target="_blank"' + '>Printable version</a>';
-		});
+    $('#png').click(function () {
+        var url = wrapper.getChart().getImageURI();
+        this.href = url;
+        this.download = 'line-chart.png';
+        this.target = '_blank';
+    });
 
 	// export as csv
     $('#Export').click(function () {
@@ -1047,8 +1056,8 @@ function drawPieChart(dataArray) {
 
     // Set chart options
     var options = {'title':title,
-                   'width':300,
-                   'height':300,
+                   'width':250,
+                   'height':250,
                    'chartArea': {'width': '90%', 'height': '80%'},
                    'colors': ['#0fa713','#4bff0f','#E5E500','#ff1b05','#931206']
                    };
@@ -1057,8 +1066,13 @@ function drawPieChart(dataArray) {
     var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
     chart.draw(data, options);
 
-   // show link to download the piechart
-   document.getElementById('PieLink').innerHTML = '<a href="' + chart.getImageURI() + '" target="_blank"' + '>Printable version</a>';
+   // export the piechart
+   $('#PieLink').click(function () {
+       var url = chart.getImageURI();
+       this.href = url;
+       this.download = 'pie-chart.png';
+       this.target = '_blank';
+   });
 
  	// export as csv
     $('#csvPie').click(function () {
