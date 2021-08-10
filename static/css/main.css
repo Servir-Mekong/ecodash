@@ -3,7 +3,7 @@
 /********************/
 
 body {
-    font-family: 'Avenir Light', Verdana, Geneva, sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-size:16px;
     height:100vh;
     background-image:url(../images/mountain_forest_scenery_small.jpg);
@@ -18,7 +18,7 @@ section, header, nav, footer {
 }
 
 button{
-  font-family: 'Avenir Light', Verdana, Geneva, sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 button:focus {outline:0;}
@@ -341,7 +341,7 @@ footer {
 
 
 #ecodash #chart-info {
-  font-family: 'Avenir Light', Verdana, Geneva, sans-serif;
+  font-family: 'Roboto', sans-serif;
     display: none;
 	  position:absolute;
     top:10%;
@@ -356,10 +356,10 @@ footer {
 }
 
 #ecodash #chart-info-area {
-  font-family: 'Avenir Light', Verdana, Geneva, sans-serif;
+  font-family: 'Roboto', sans-serif;
   display: none;
   position: absolute;
-  bottom: 3%;
+  bottom: 2%;
   left: 140px;
   height: auto;
   width: auto;
@@ -457,7 +457,7 @@ footer {
 #ecodash #legend table tr {
     font-size:0.8rem;
     font-weight: normal;
-    font-family: 'Avenir Light', Verdana, Geneva, sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-size:12px;
     padding:10px 5px;
     overflow:hidden;
@@ -1086,11 +1086,16 @@ input[type=range]::-ms-fill-upper {
 }
 
 .spinner {
-	 display: none;
-    position:absolute;
-    top:35%;
-    left:35%;
-    width:8rem;
-    height:8rem;
+    display: none;
+    z-index: 1005;
+    background: #e9e9e9;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     background: url(../images/spinner.gif) center center no-repeat,url(../images/spinner.gif) center center no-repeat;
+    background-color: rgba(0,0,0,0.55);
 }
+
+

@@ -64,7 +64,7 @@ var App = function(eeMapId, eeToken, eeMapURL, countryNames,provinceNames) {
   PROVINCES = provinceNames;
   COUNTRIES = countryNames;
 
-  channel = new goog.appengine.Channel(eeToken);
+  // channel = new goog.appengine.Channel(eeToken);
 
   // create listeners for buttons and sliders
   setupListeners();
@@ -277,7 +277,7 @@ var showPie = function() {
    showButton.style.display = 'none';
 
    var hideButton = document.getElementById('hideChart');
-   hideButton.style.display = 'block';
+   hideButton.style.display = 'inline';
 
 }
 
@@ -293,7 +293,7 @@ var hideChartArea = function() {
    graphscreen.style.display = 'none';
 
    var showButton = document.getElementById('showChart');
-   showButton.style.display = 'block';
+   showButton.style.display = 'inline';
 
    var hideButton = document.getElementById('hideChart');
    hideButton.style.display = 'none';
@@ -388,7 +388,7 @@ var aboutPage = function(){
 function updateButton() {
 
 	update_button = document.getElementById('updateMap')
-	update_button.style.display = 'none';
+	// update_button.style.display = 'none';
 
 	ShowMap();
 }
@@ -456,8 +456,6 @@ var slider = function() {
     from: 2009,
     to: 2019,
     onChange: function (data) {
-              update_button = document.getElementById('updateMap')
-              update_button.style.display = 'block';
             },
   });
 
@@ -470,8 +468,7 @@ var slider = function() {
     from: 2002,
     to: 2008,
     onChange: function (data) {
-          update_button = document.getElementById('updateMap')
-          update_button.style.display = 'block';
+      
             },
   });
 
@@ -898,10 +895,10 @@ var showChart = function(timeseries) {
 
   // show the clear chart button
    var chartbutton = document.getElementById('clearchart');
-   chartbutton.style.display = 'block';
+   chartbutton.style.display = 'inline';
 
    var exportButton = document.getElementById('export')
-   exportButton.style.display = 'block';
+   exportButton.style.display = 'inline';
 
    var showlink = document.getElementById("link")
    showlink.style.display = 'none';
@@ -982,10 +979,10 @@ var showLargeChart = function(timeseries) {
 
   // show the clear chart button
    var chartbutton = document.getElementById('clearchart');
-   chartbutton.style.display = 'block';
+   chartbutton.style.display = 'inline';
 
    var exportButton = document.getElementById('export')
-   exportButton.style.display = 'block';
+   exportButton.style.display = 'inline';
 
    var showlink = document.getElementById("link")
    showlink.style.display = 'none';
